@@ -1698,6 +1698,13 @@ body {
   will-change: transform;
   filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.35));
 }
+/* tree-tall-1.png and tree-tall-2.png have visible spreading roots painted
+   into the bottom of the PNG. Default -60px isn't deep enough to bury those
+   roots, so they appear to float above the grass. Push them deeper. */
+.dig-forest .bg-tree[src$="tree-tall-1.png"],
+.dig-forest .bg-tree[src$="tree-tall-2.png"] {
+  bottom: -110px;
+}
 /* mirrored tree keeps its flip + still receives parallax */
 .dig-forest .bg-tree--mirror,
 .dig-forest .bg-tree--far-right { transform: scaleX(-1) translateY(var(--py, 0)); }

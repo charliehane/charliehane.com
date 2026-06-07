@@ -1,0 +1,33 @@
+<!--
+  skeleton.svg — the pirate skeleton inside the special skeleton coffin
+  (top of postproduction underground). viewBox="0 0 100 200".
+
+  REQUIRED structure for the eye-glow-on-hover effect:
+    • <circle id="skullEyeL">    left eye (turns red on hover)
+    • <circle id="skullEyeR">    right eye (turns red on hover)
+
+  Everything else is freely replaceable (skull, hat, ribs, limbs, etc.).
+-->
+<svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="50" cy="52" rx="14" ry="16" fill="#e8e0d4"/>
+  <rect x="44" y="66" width="12" height="6" fill="#e8e0d4"/>
+  <!-- pirate tricorn hat -->
+  <g class="pirate-hat">
+    <path d="M28 36 Q50 22 72 36 L70 40 Q50 30 30 40 Z" fill="#1a1614"/>
+    <path d="M30 40 L70 40 Q72 46 68 50 L32 50 Q28 46 30 40 Z" fill="#1a1614"/>
+    <ellipse cx="50" cy="34" rx="3.5" ry="3" fill="#e8e0d4"/>
+    <line x1="48" y1="36" x2="52" y2="38" stroke="#1a1614" stroke-width="0.8"/>
+    <line x1="52" y1="36" x2="48" y2="38" stroke="#1a1614" stroke-width="0.8"/>
+  </g>
+  <!-- eyes — keep these IDs! they get color-swapped by JS on hover -->
+  <circle class="skull-eye" id="skullEyeL" cx="44" cy="50" r="3" fill="#1a0a08"/>
+  <circle class="skull-eye" id="skullEyeR" cx="56" cy="50" r="3" fill="#1a0a08"/>
+  <line x1="50" y1="72" x2="50" y2="124" stroke="#e8e0d4" stroke-width="3"/>
+  <path d="M40 80 L60 80 M40 88 L60 88 M40 96 L60 96 M40 104 L60 104"
+        stroke="#e8e0d4" stroke-width="2" fill="none"/>
+  <ellipse cx="50" cy="128" rx="14" ry="5" fill="#e8e0d4"/>
+  <line x1="40" y1="82" x2="28" y2="112" stroke="#e8e0d4" stroke-width="2.5"/>
+  <line x1="60" y1="82" x2="72" y2="112" stroke="#e8e0d4" stroke-width="2.5"/>
+  <line x1="44" y1="132" x2="38" y2="172" stroke="#e8e0d4" stroke-width="2.5"/>
+  <line x1="56" y1="132" x2="62" y2="172" stroke="#e8e0d4" stroke-width="2.5"/>
+</svg>

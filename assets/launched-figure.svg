@@ -1,0 +1,19 @@
+<!--
+  launched-figure.svg — the cream/pale stick figure that gets thrown off the
+  bike and arcs across the screen after the crash on preproduction.
+  viewBox="0 0 80 110".
+
+  No animation hooks needed inside — only the wrapper element's transform is
+  animated by JS (translate + rotate). Anything that fits the viewBox works.
+  Keep the rough head-at-top, feet-at-bottom orientation so the spin reads.
+-->
+<svg viewBox="0 0 80 110" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="#f3ebe0" stroke-width="3" stroke-linecap="round" fill="none">
+    <circle cx="40" cy="20" r="10" fill="#f3ebe0" stroke="#1a1614" stroke-width="2"/>
+    <line x1="40" y1="30" x2="40" y2="68"/>
+    <line x1="40" y1="44" x2="20" y2="32"/>
+    <line x1="40" y1="44" x2="62" y2="36"/>
+    <line x1="40" y1="68" x2="22" y2="92"/>
+    <line x1="40" y1="68" x2="58" y2="98"/>
+  </g>
+</svg>

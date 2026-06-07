@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Charlie Hane — Filmmaker</title>
+  <meta name="description" content="Charlie Hane — preproduction, production, postproduction." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="building-blocks/css/style.css" />
+</head>
+<body class="page-landing">
+
+  <nav class="nav nav--blend">
+    <span class="nav-mark">CH—</span>
+    <ul class="nav-sections">
+      <li><a href="preproduction.html"  data-content="navLabels.preproduction">preproduction</a></li>
+      <li><a href="production.html"     data-content="navLabels.production">production</a></li>
+      <li><a href="postproduction.html" data-content="navLabels.postproduction">postproduction</a></li>
+    </ul>
+  </nav>
+
+  <!-- ========== PORTAL — name + foot crush + blood ========== -->
+  <section class="portal" id="portal">
+   <div class="portal-sticky" id="portalSticky">
+    <p class="portal-eyebrow" data-content="site.tagline">— filmmaker, b. somewhere quieter</p>
+
+    <div class="portal-stage">
+
+      <!-- Foot is centered on the page; the C is absolutely positioned
+           inside the foot's bounding box (upper-left negative space). -->
+      <div class="portal-foot-area">
+        <!-- Foot sprite: 4-frame animated PNG, plays continuously on its own
+             loop. The foot's `transform` is set by landing.js for the stomp;
+             sprite cycle uses background-position so they don't conflict. -->
+        <div class="portal-foot portal-foot--sprite" id="portalFoot" aria-hidden="true"></div>
+
+        <!-- Decorative C — sits in the foot's upper-left negative space.
+             Independent of scroll, unaffected by the stomp transform. -->
+        <div class="portal-c portal-c--sprite" id="portalC" aria-hidden="true"></div>
+      </div>
+
+      <div class="portal-name-wrap" id="portalNameWrap">
+        <h1 class="portal-name" id="portalName">Charlie<br><em>Hane.</em></h1>
+        <div class="portal-blood" id="portalBlood" aria-hidden="true">
+          <!-- short drips emerging from letter positions only -->
+          <div class="portal-blood-drip" style="left: 6%"></div>
+          <div class="portal-blood-drip" style="left: 18%"></div>
+          <div class="portal-blood-drip" style="left: 30%"></div>
+          <div class="portal-blood-drip" style="left: 42%"></div>
+          <div class="portal-blood-drip" style="left: 54%"></div>
+          <div class="portal-blood-drip" style="left: 66%"></div>
+          <div class="portal-blood-drip" style="left: 80%"></div>
+          <div class="portal-blood-drip" style="left: 94%"></div>
+          <!-- horizontal splat pool that grows into a "floor" -->
+          <div class="portal-blood-pool"></div>
+          <div class="portal-blood-splat">
+            <svg viewBox="0 0 600 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 40 Q30 12 60 32 Q90 8 120 28 Q150 18 180 36 Q210 6 240 30 Q270 14 300 32 Q330 8 360 28 Q390 16 420 34 Q450 10 480 30 Q510 20 540 36 Q570 14 600 32 L600 80 L0 80 Z"
+                    fill="#8a0808"/>
+              <path d="M0 50 Q30 28 60 44 Q90 22 120 42 Q150 32 180 48 Q210 22 240 44 Q270 30 300 46 Q330 24 360 42 Q390 32 420 48 Q450 26 480 44 Q510 36 540 50 Q570 30 600 46 L600 80 L0 80 Z"
+                    fill="#5a0404"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="portal-blurb" data-content="site.blurb">scroll into the woods to find the work.</p>
+    <span class="portal-cue">scroll ↓</span>
+   </div>
+  </section>
+
+  <!-- ========== FOREST — cinema scroll with interactive signs ========== -->
+  <!--
+    The forest is a pre-rendered After Effects clip that scrubs with scroll.
+    Three sign hotspots become clickable as their scroll windows hit; clicking
+    one opens the modal at the end of <body> with the full quote and any video.
+
+    To wire in the actual render: set forest.videoSrc in
+    "Editable Text Content.json" (e.g., "assets/forest.mp4"), then tweak each
+    quote's scrollIn / scrollOut / hotspot.{x,y,w,h} until the click target
+    sits on the sign in the rendered comp.
+  -->
+  <section class="forest forest-cine" id="forest">
+    <div class="forest-pin">
+
+      <!-- Cinema video — scroll position drives currentTime. muted+playsinline
+           lets iOS Safari paint frames on currentTime sets without requiring a
+           user-initiated play(). preload=auto so the browser starts buffering
+           as soon as it can. -->
+      <video
+        class="forest-cine-video"
+        id="forestCineVideo"
+        muted
+        playsinline
+        preload="auto"
+        aria-hidden="true"
+      ></video>
+
+      <!-- Hint overlay shown while the video is loading or absent -->
+      <div class="forest-cine-pending" id="forestCinePending" aria-hidden="true">
+        <p>forest sequence loading…</p>
+        <p class="forest-cine-pending-hint">(scroll to ride)</p>
+      </div>
+
+      <!-- Hotspots populated by JS from forest.quotes -->
+      <div class="forest-hotspots" id="forestHotspots" aria-label="Interactive testimonial signs"></div>
+
+    </div>
+  </section>
+
+  <!-- ========== BIG SECTION LINKS ========== -->
+  <section class="lander-sections">
+    <p class="sections-eyebrow">— jump to the work directly</p>
+    <a class="big-link" href="preproduction.html">
+      <span class="bl-num">01</span><span class="bl-label">Preproduction</span><span class="bl-arrow">↗</span>
+    </a>
+    <a class="big-link" href="production.html">
+      <span class="bl-num">02</span><span class="bl-label">Production</span><span class="bl-arrow">↗</span>
+    </a>
+    <a class="big-link" href="postproduction.html">
+      <span class="bl-num">03</span><span class="bl-label">Postproduction</span><span class="bl-arrow">↗</span>
+    </a>
+  </section>
+
+  <footer class="lander-footer">
+    <span data-content="site.email">charlie@charliehane.com</span>
+    <span>© <span id="year">2026</span> · <span data-content="site.domain">charliehane.com</span></span>
+  </footer>
+
+  <!-- Sign modal — opened when a forest hotspot is clicked. Populated by JS
+       with the quote text and optional video. Lives at the end of body so
+       it stacks above everything and isn't clipped by section overflow. -->
+  <div class="sign-modal" id="signModal" hidden role="dialog" aria-modal="true" aria-labelledby="signModalRole">
+    <button class="sign-modal-close" id="signModalClose" aria-label="Close">×</button>
+    <div class="sign-modal-backdrop" id="signModalBackdrop"></div>
+    <div class="sign-modal-card">
+      <p class="sm-role" id="signModalRole"></p>
+      <h2 class="sm-title" id="signModalTitle" hidden></h2>
+      <blockquote class="sm-quote" id="signModalQuote"></blockquote>
+      <cite class="sm-cite" id="signModalCite">
+        <span id="signModalBy"></span>
+        · <em id="signModalFilm"></em>
+      </cite>
+      <div class="sm-body" id="signModalBody" hidden></div>
+      <div class="sm-video" id="signModalVideo"></div>
+    </div>
+  </div>
+
+  <script src="building-blocks/js/content-loader.js"></script>
+  <script src="building-blocks/js/art-loader.js"></script>
+  <script src="building-blocks/js/landing.js"></script>
+</body>
+</html>

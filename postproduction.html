@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title data-content="postproduction.pageTitle">Charlie Hane — Postproduction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="building-blocks/css/style.css" />
+</head>
+<body class="page-editor-dig">
+
+  <nav class="nav nav--blend">
+    <a href="index.html" class="nav-home" data-content="navLabels.home">← home</a>
+    <ul class="nav-sections">
+      <li><a href="preproduction.html"  data-content="navLabels.preproduction">preproduction</a></li>
+      <li><a href="production.html"     data-content="navLabels.production">production</a></li>
+      <li><a href="postproduction.html" class="is-current" data-content="navLabels.postproduction">postproduction</a></li>
+    </ul>
+  </nav>
+
+  <section class="dig-world" id="digWorld">
+
+    <div class="dig-sky" aria-hidden="true"></div>
+
+    <!-- DEEP BACKGROUND — hills with scroll-parallax (slowest movers) -->
+    <div class="dig-hills" aria-hidden="true">
+      <img class="hill hill-back"  src="assets/scenery/hill-back.png"  alt="" data-parallax="0.15">
+      <img class="hill hill-mid"   src="assets/scenery/hill-mid.png"   alt="" data-parallax="0.25">
+      <img class="hill hill-front" src="assets/scenery/hill-front.png" alt="" data-parallax="0.35">
+    </div>
+
+    <div class="dig-clouds" id="digClouds" aria-hidden="true"></div>
+
+    <!-- FOREST — three depth-bands of trees flanking the gravestone.
+         Parallax speed varies by depth: lower = further away. -->
+    <div class="dig-forest" aria-hidden="true">
+      <!-- distant band (slowest, smallest, dimmed) -->
+      <img class="bg-tree bg-tree--far-left"    src="assets/scenery/tree-tall-1.png" alt="" data-parallax="0.35">
+      <img class="bg-tree bg-tree--far-right    bg-tree--mirror" src="assets/scenery/tree-tall-2.png" alt="" data-parallax="0.35">
+      <img class="bg-tree bg-tree--far-l2"      src="assets/scenery/tree-tall-2.png" alt="" data-parallax="0.38">
+      <img class="bg-tree bg-tree--far-r2       bg-tree--mirror" src="assets/scenery/tree-tall-1.png" alt="" data-parallax="0.38">
+      <img class="bg-tree bg-tree--far-deep-l"  src="assets/scenery/tree-short.png"  alt="" data-parallax="0.30">
+      <img class="bg-tree bg-tree--far-deep-r   bg-tree--mirror" src="assets/scenery/tree-short.png"  alt="" data-parallax="0.30">
+
+      <!-- mid band -->
+      <img class="bg-tree bg-tree--mid-left"    src="assets/scenery/tree-short.png"  alt="" data-parallax="0.50">
+      <img class="bg-tree bg-tree--mid-right    bg-tree--mirror" src="assets/scenery/tree-short.png"  alt="" data-parallax="0.50">
+      <img class="bg-tree bg-tree--mid-l2"      src="assets/scenery/tree-tall-2.png" alt="" data-parallax="0.52">
+      <img class="bg-tree bg-tree--mid-r2       bg-tree--mirror" src="assets/scenery/tree-tall-1.png" alt="" data-parallax="0.52">
+
+      <!-- near band (largest, fully opaque) -->
+      <img class="bg-tree bg-tree--near-left"   src="assets/scenery/tree-tall-2.png" alt="" data-parallax="0.65">
+      <img class="bg-tree bg-tree--near-right   bg-tree--mirror" src="assets/scenery/tree-tall-1.png" alt="" data-parallax="0.65">
+
+      <!-- fallen tree as foreground decoration -->
+      <img class="bg-tree bg-tree--fallen"      src="assets/scenery/tree-fallen.png" alt="" data-parallax="0.75">
+    </div>
+
+    <div class="dig-sky-text-wrap">
+      <div class="dig-sky-text">
+        <p class="page-eyebrow"  data-content="postproduction.eyebrow">section iii</p>
+        <h1 class="page-title"   data-content="postproduction.title">Postproduction.</h1>
+        <p class="page-lede"     data-content="postproduction.lede">an editor takes thousands of feet of footage and finds the film hiding inside it...</p>
+      </div>
+    </div>
+
+    <!-- gravestone — swap by editing assets/gravestone.svg -->
+    <div class="dig-gravestone-center" data-art="gravestone" aria-hidden="true"></div>
+
+    <!-- tree on the right — swap by editing assets/tree.svg -->
+    <div class="dig-tree-bike" aria-hidden="true">
+      <div class="dig-tree" data-art="tree"></div>
+    </div>
+
+    <!-- grass strip -->
+    <div class="dig-grass" id="digGrass" aria-hidden="true">
+      <canvas class="dig-grass-canvas" id="digGrassCanvas"></canvas>
+    </div>
+
+    <!-- underground -->
+    <div class="dig-underground" id="digUnderground">
+
+      <!-- crawling worm — swap by editing assets/worm.svg -->
+      <div class="dig-worm" data-art="worm" aria-hidden="true"></div>
+
+      <!-- coffins are rendered from content.json into this container -->
+      <div data-template="coffinTpl" data-source="postproduction.coffins"></div>
+
+      <template id="coffinTpl">
+        <article class="coffin" data-style-from="position">
+          <!-- coffin shape — swap by editing assets/coffin.svg -->
+          <div class="coffin-shape" data-art="coffin"></div>
+          <div class="coffin-content">
+            <p class="coffin-tag"    data-field="tag"></p>
+            <h3 class="coffin-title" data-field="title"></h3>
+            <p class="coffin-credit" data-field="credit"></p>
+          </div>
+        </article>
+      </template>
+
+      <!-- skeleton coffin — coffin shell from assets/coffin.svg, skeleton from assets/skeleton.svg -->
+      <article class="coffin coffin--skeleton" id="coffinSkeleton" style="top: 62%; right: 12%; --rot: -10deg;">
+        <div class="coffin-shape" data-art="coffin"></div>
+        <div class="coffin-skeleton" data-art="skeleton"></div>
+      </article>
+
+      <!-- dirt clumps for atmosphere -->
+      <div class="dirt-clump" style="top: 18%; left: 12%;"></div>
+      <div class="dirt-clump" style="top: 38%; left: 75%;"></div>
+      <div class="dirt-clump" style="top: 48%; left: 30%;"></div>
+      <div class="dirt-clump" style="top: 68%; left: 62%;"></div>
+      <div class="dirt-clump" style="top: 88%; left: 40%;"></div>
+
+    </div>
+
+  </section>
+
+  <!-- ========== HELL — fiery wasteland below the dirt ========== -->
+  <section class="hell" id="hell" aria-label="hell">
+
+    <article class="coffin coffin--charlie" id="coffinCharlie">
+      <svg class="coffin-shape coffin-shape--smashed" viewBox="0 0 100 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 0 L92 30 L92 150 L80 150 L74 156 L66 152 L60 158 L50 154 L40 158 L34 152 L26 156 L20 150 L8 150 L8 30 Z"
+              fill="#3a2510" stroke="#1a0e08" stroke-width="3"/>
+        <path d="M50 8 L84 36 L84 142 L80 142 L74 148 L66 144 L60 150 L50 146 L40 150 L34 144 L26 148 L20 142 L16 142 L16 36 Z" fill="rgba(8, 4, 2, 0.92)"/>
+        <path d="M28 162 L34 172 L30 174 Z" fill="#3a2510"/>
+        <path d="M68 160 L72 172 L66 172 Z" fill="#3a2510"/>
+        <path d="M50 168 L52 178 L48 178 Z" fill="#3a2510"/>
+      </svg>
+      <!-- charlie figure — swap by editing assets/charlie-figure.svg.
+           Required structure inside that file:
+             - <g class="charlie-legs" id="charlieLegs"> wrapping
+               <line class="charlie-leg-l"> and <line class="charlie-leg-r">
+             - hands reach to viewBox x=0 and x=80 (touch coffin walls) -->
+      <div class="charlie-fig" id="charlieFig" data-art="charlie-figure" data-art-fit="aspect"></div>
+    </article>
+
+    <div class="hell-fire" aria-hidden="true">
+      <span class="flame flame--1"></span>
+      <span class="flame flame--2"></span>
+      <span class="flame flame--3"></span>
+      <span class="flame flame--4"></span>
+      <span class="flame flame--5"></span>
+      <span class="flame flame--6"></span>
+      <span class="flame flame--7"></span>
+      <span class="flame flame--8"></span>
+    </div>
+    <div class="hell-smoke" aria-hidden="true">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="hell-menu"
+         data-template="menuLinkTpl"
+         data-source="menus.hellMenu">
+      <p class="hell-eyebrow">— from down here</p>
+    </div>
+
+    <template id="menuLinkTpl">
+      <a class="big-link" data-attr-href="href">
+        <span class="bl-num"   data-field="num"></span>
+        <span class="bl-label" data-field="label"></span>
+        <span class="bl-arrow">↗</span>
+      </a>
+    </template>
+  </section>
+
+  <footer class="page-footer page-footer--hell">
+    <p data-content="site.email">charlie@charliehane.com</p>
+    <p>see you on the other side.</p>
+  </footer>
+
+  <script src="building-blocks/js/content-loader.js"></script>
+  <script src="building-blocks/js/art-loader.js"></script>
+  <script src="building-blocks/js/postproduction-dig.js"></script>
+</body>
+</html>

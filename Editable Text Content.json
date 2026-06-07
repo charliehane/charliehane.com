@@ -1,0 +1,205 @@
+{
+  "site": {
+    "name": "Charlie Hane",
+    "nameLine1": "Charlie",
+    "nameLine2": "Hane.",
+    "tagline": "— filmmaker, b. somewhere quieter",
+    "blurb": "scroll into the woods to find the work.",
+    "email": "charlie@charliehane.com",
+    "domain": "charliehane.com",
+    "year": "2026",
+    "moreSoon": "more soon."
+  },
+
+  "navLabels": {
+    "home": "← home",
+    "preproduction": "preproduction",
+    "production": "production",
+    "postproduction": "postproduction"
+  },
+
+  "forest": {
+    "_comment": "scrollIn/scrollOut are 0..1 across the forest section's scroll length, matching when the sign is visible in the AE render. hotspot.{x,y,w,h} are percent-of-viewport rects positioning the invisible click target over where the sign lands in frame. video is optional — when set, the modal embeds it.",
+    "videoSrc": "assets/tiny-world.mp4",
+    "bios": [
+      {
+        "kind": "bio",
+        "role": "Bio Pt. 1",
+        "title": "Charlie Hane",
+        "scrollIn": 0.06,
+        "scrollOut": 0.38,
+        "hotspot": { "x": "0%", "y": "0%", "w": "100%", "h": "100%" },
+        "labelShort": "click the sign",
+        "paragraphs": [
+          "Charlie Hane has been creating films since long before high school, but it was there that he really began finding his voice, when he was selected to direct the final project at Northwestern University's National High School Film &amp; Video Institute before going on to study Film and Business at Syracuse University. His directing and writing soon started winning awards: <em>FIVE STRING</em>, which he directed, shot, and edited, won Outstanding Cinematography at the National New Age Film Festival, and <em>SHE'S A GOOD GIRL</em>, which he wrote, won Best Picture at the Texas 48 Hour Film Festival. During the COVID-19 pandemic he stepped into producing, co-founding the Austin-based production company Voyager LLC, which generated more than $29,000 in gross profit in under six months while producing the $25,000+ short film <em>HALCYON DAYS</em>. He studied abroad his junior year at Prague's renowned FAMU Film School, joined Happy Accidents Media as an intern in the fall of his senior year, and graduated from Syracuse in 2023 with a 3.8 GPA."
+        ]
+      },
+      {
+        "kind": "bio",
+        "role": "Bio Pt. 2",
+        "title": "Charlie Hane",
+        "scrollIn": 0.38,
+        "scrollOut": 0.64,
+        "hotspot": { "x": "0%", "y": "0%", "w": "100%", "h": "100%" },
+        "labelShort": "click the sign",
+        "paragraphs": [
+          "Three and a half years later, he is the Coordinator at Happy Accidents Media, helping oversee more than fifteen productions simultaneously while supporting senior producers and reporting to Holly Hines (<em>GINNY &amp; GEORGIA</em>, <em>THE OFFICE</em>) and Eric Jarboe (<em>THE PRINCESS SWITCH</em>). Alongside his production work, he contributes film criticism to Bright Lights Film Journal, including a 2024 interview with the Palme d'Or and Academy Award-winning producer of <em>ANORA</em>. He also associate produced the SAG-AFTRA series <em>SWOLE MATE</em>, a $250,000 production filmed across fourteen consecutive shooting days."
+        ]
+      },
+      {
+        "kind": "bio",
+        "role": "Bio Pt. 3",
+        "title": "Charlie Hane",
+        "scrollIn": 0.64,
+        "scrollOut": 1.0,
+        "hotspot": { "x": "0%", "y": "0%", "w": "100%", "h": "100%" },
+        "labelShort": "click the sign",
+        "paragraphs": [
+          "The past two years have marked a rapid expansion of Charlie's filmmaking career. In 2025, he wrote, directed, and edited <em>DIVORCED DADS HOTEL</em>, which won awards from IndieFEST Film Awards and International Independent Shorts Awards and was named a Semi-Finalist at the Cannes Indie Shorts Awards. That summer he began producing the feature documentary <em>THE ETERNAL STEPPE</em>, building the production from the ground up in Mongolia's remote steppe and leading a twelve-person international crew that captured more than 100 hours of footage; the film is now in post-production with PBS distribution conversations underway. In 2026, he produced and assistant-directed <em>MASHA/MARIA</em>, a Dance on Camera Production Grant recipient that premiered at Film at Lincoln Center and was shot using SCUBA cinematography in a blackout pool; produced the music video and album artwork for <em>HALCYON BLUES</em> by Citizen, a band with more than 200 million Spotify streams; and creatively produced and animated the proof-of-concept pilot <em>UP THE WATER SPOUT</em>, which garnered 500,000 Instagram views within its first 24 hours online."
+        ]
+      }
+    ],
+    "quotes": []
+  },
+
+  "preproduction": {
+    "pageTitle": "Charlie Hane — Preproduction",
+    "title": "Preproduction.",
+    "eyebrow": "section i",
+    "lede": "ride through the films i've shepherded — click to jump and bust the bricks open.",
+    "caption": "— the world · scroll to ride · click to jump",
+    "_comment": "atmosphere is non-visible documentation for Charlie's art — describes the time/mood each scene should feel. Reorder, rename, or replace film titles freely; the page rebuilds from this array.",
+    "films": [
+      {
+        "scene": "Forest",
+        "atmosphere": "night — deep green, dark canopy, moonlight",
+        "sceneNum": "01 / forest",
+        "tag": "FILM 01 · PRODUCER",
+        "title": "An Atlas of Quiet Rooms",
+        "meta": "Pilot · 2024 · 28 min"
+      },
+      {
+        "scene": "Mountains",
+        "atmosphere": "blue hour — cold cobalt sky, silhouetted peaks",
+        "sceneNum": "02 / mountains",
+        "tag": "FILM 02 · PRODUCER",
+        "title": "Above the Treeline",
+        "meta": "Short documentary · 2024 · 22 min"
+      },
+      {
+        "scene": "Coast",
+        "atmosphere": "sunrise — orange and pink, low sun glinting on water",
+        "sceneNum": "03 / coast",
+        "tag": "FILM 03 · CO-PRODUCER",
+        "title": "Last Light at Tally Beach",
+        "meta": "Short film · 2023 · 18 min"
+      },
+      {
+        "scene": "Hilly Town",
+        "atmosphere": "midday — warm bright, soft shadows, summer haze",
+        "sceneNum": "04 / hilly town",
+        "tag": "FILM 04 · PRODUCER",
+        "title": "Vossen Ice Cream — Summer Spot",
+        "meta": "Commercial · 2023 · 60s"
+      },
+      {
+        "scene": "City",
+        "atmosphere": "midday — urban bright, hard light, traffic + glass",
+        "sceneNum": "05 / city",
+        "tag": "FILM 05 · PRODUCER",
+        "title": "Tin Roof Empire",
+        "meta": "Feature · 2025 · 96 min"
+      }
+    ]
+  },
+
+  "production": {
+    "pageTitle": "Charlie Hane — Production",
+    "title": "Production.",
+    "eyebrow": "section ii",
+    "lede": "a smaller, slower pile — the films where i had to sit in the chair and decide things.",
+    "works": [
+      {
+        "tag": "001 / music video / 2024",
+        "title": "Underwater",
+        "credit": "Director · for Ada Vale · 4 min",
+        "blurb": "Single-take swimming-pool video shot at 3am in a closed YMCA using a borrowed underwater rig."
+      },
+      {
+        "tag": "002 / short film / 2023",
+        "title": "Bones in the Garden",
+        "credit": "Writer / Director · 14 min",
+        "blurb": "A mother and her grown daughter dig up the backyard, looking for something neither of them will name."
+      },
+      {
+        "tag": "003 / brand film / 2024",
+        "title": "Patagonia: Made for Mending",
+        "credit": "Director · 3 min",
+        "blurb": "Portrait of a small repair shop in Ventura, told entirely through the hands of the people who work there."
+      },
+      {
+        "tag": "004 / short documentary / 2022",
+        "title": "Fluorescent",
+        "credit": "Director · 11 min",
+        "blurb": "A 24 hour shift inside an all-night laundromat in Queens. Made with two cameras and far too much coffee."
+      }
+    ]
+  },
+
+  "postproduction": {
+    "pageTitle": "Charlie Hane — Postproduction",
+    "title": "Postproduction.",
+    "eyebrow": "section iii",
+    "lede": "an editor takes thousands of feet of footage and finds the film hiding inside it — listening for rhythm, cutting against expectation, doing the writing that happens at night with a screen and too much coffee. scroll down to dig the cuts up.",
+    "coffins": [
+      {
+        "tag": "001 · 2024",
+        "title": "Shipwreck",
+        "credit": "Editor · feature · 104 min",
+        "position": { "top": "6%", "left": "6%", "rot": "-8deg" }
+      },
+      {
+        "tag": "002 · 2023",
+        "title": "The Walk Home",
+        "credit": "Editor · short · 9 min",
+        "position": { "top": "24%", "right": "6%", "rot": "12deg" }
+      },
+      {
+        "tag": "003 · 2024",
+        "title": "Ralph Lauren — Heritage Spring",
+        "credit": "Editor · 90s spot",
+        "position": { "top": "44%", "left": "30%", "rot": "4deg" }
+      },
+      {
+        "tag": "004 · 2024",
+        "title": "Untitled Apple TV+ Pilot",
+        "credit": "Asst. Editor · 56 min",
+        "position": { "top": "78%", "left": "12%", "rot": "-14deg" }
+      }
+    ],
+    "skeletonCoffinPosition": { "top": "62%", "right": "12%", "rot": "-10deg" }
+  },
+
+  "menus": {
+    "home": [
+      { "label": "Preproduction", "href": "preproduction.html", "num": "01" },
+      { "label": "Production",    "href": "production.html",    "num": "02" },
+      { "label": "Postproduction","href": "postproduction.html", "num": "03" }
+    ],
+    "afterPreproduction": [
+      { "label": "Production",    "href": "production.html",    "num": "02" },
+      { "label": "Postproduction","href": "postproduction.html", "num": "03" },
+      { "label": "Home",          "href": "index.html",         "num": "↺" }
+    ],
+    "afterProduction": [
+      { "label": "Postproduction","href": "postproduction.html", "num": "03" },
+      { "label": "Preproduction", "href": "preproduction.html", "num": "01" },
+      { "label": "Home",          "href": "index.html",         "num": "↺" }
+    ],
+    "hellMenu": [
+      { "label": "Home",          "href": "index.html",         "num": "↺" },
+      { "label": "Preproduction", "href": "preproduction.html", "num": "01" },
+      { "label": "Production",    "href": "production.html",    "num": "02" }
+    ]
+  }
+}

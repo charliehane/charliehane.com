@@ -1,0 +1,18 @@
+# macOS Finder metadata — auto-generated, no value in source control
+.DS_Store
+._*
+
+# Personal art-spec notes — kept locally, never deployed
+Assets_Specs/
+
+# Raw art source files (huge .png / .ai / .aep / .psd files) — only
+# the web-optimized versions in assets/scenery/ ship to the live site
+Animations/
+
+# Claude Code local config (preview server, etc.) — machine-specific
+.claude/
+
+# Common editor metadata — ignored just in case
+.vscode/
+.idea/
+*.swp

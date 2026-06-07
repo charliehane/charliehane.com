@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title data-content="preproduction.pageTitle">Charlie Hane — Preproduction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="building-blocks/css/style.css" />
+</head>
+<body class="page-producer page-producer-ride">
+
+  <nav class="nav nav--blend">
+    <a href="index.html" class="nav-home" data-content="navLabels.home">← home</a>
+    <ul class="nav-sections">
+      <li><a href="preproduction.html"  class="is-current" data-content="navLabels.preproduction">preproduction</a></li>
+      <li><a href="production.html"     data-content="navLabels.production">production</a></li>
+      <li><a href="postproduction.html" data-content="navLabels.postproduction">postproduction</a></li>
+    </ul>
+  </nav>
+
+  <header class="page-header">
+    <p class="page-eyebrow"  data-content="preproduction.eyebrow">section i</p>
+    <h1 class="page-title"   data-content="preproduction.title">Preproduction.</h1>
+    <p class="page-lede"     data-content="preproduction.lede">ride through the films i've shepherded — click to jump and bust the bricks open.</p>
+  </header>
+
+  <section class="world-section" id="worldSection">
+    <div class="world-pin">
+
+      <div class="world-track-clip">
+      <div class="world-track" id="worldTrack"
+           data-template="sceneTpl"
+           data-source="preproduction.films"
+           data-item-prefix="scene">
+      </div>
+      </div><!-- /.world-track-clip -->
+
+      <template id="sceneTpl" data-modifier-count="5">
+        <div class="scene" data-modifier>
+          <span class="scene-num"  data-field="sceneNum"></span>
+          <span class="scene-name" data-field="scene"></span>
+          <button class="brick" type="button" aria-label="reveal project">
+            <span class="brick-rivets" aria-hidden="true"></span>
+            <span class="brick-mark">?</span>
+          </button>
+          <div class="brick-popup">
+            <p class="popup-tag"     data-field="tag"></p>
+            <h4 class="popup-title"  data-field="title"></h4>
+            <p class="popup-meta"    data-field="meta"></p>
+          </div>
+        </div>
+      </template>
+
+      <p class="world-caption" data-content="preproduction.caption">— the world · scroll to ride · click to jump</p>
+      <div class="world-progress"><div class="world-progress-bar" id="worldProgressBar"></div></div>
+    </div>
+
+    <!-- bike + stick figure rider -->
+    <div class="world-bike-stage">
+      <div class="world-bike-pos" id="worldBikePos">
+        <!-- bike art lives in assets/bike-with-rider.svg — swap that file -->
+        <!-- Bike: 14-frame sprite from assets/bike-sprite.png. Frame index
+             advances based on scroll velocity (preproduction.js handles it). -->
+        <div class="world-bike world-bike--sprite" id="worldBike" aria-hidden="true"></div>
+      </div>
+
+      <!-- launched figure — swap by editing assets/launched-figure.svg -->
+      <div class="launched-figure" id="launchedFigure" data-art="launched-figure" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- post-ride menu — rendered from content.json -->
+  <section class="post-ride-menu"
+           data-template="menuLinkTpl"
+           data-source="menus.afterPreproduction">
+    <p class="sections-eyebrow">— off the bike. where to next?</p>
+  </section>
+
+  <template id="menuLinkTpl">
+    <a class="big-link" data-attr-href="href">
+      <span class="bl-num"   data-field="num"></span>
+      <span class="bl-label" data-field="label"></span>
+      <span class="bl-arrow">↗</span>
+    </a>
+  </template>
+
+  <footer class="page-footer">
+    <p data-content="site.email">charlie@charliehane.com</p>
+    <p data-content="site.moreSoon">more soon.</p>
+  </footer>
+
+  <script src="building-blocks/js/content-loader.js"></script>
+  <script src="building-blocks/js/art-loader.js"></script>
+  <script src="building-blocks/js/preproduction.js"></script>
+</body>
+</html>

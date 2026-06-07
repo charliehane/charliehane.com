@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title data-content="production.pageTitle">Charlie Hane — Production</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="building-blocks/css/style.css" />
+</head>
+<body class="page-director page-sky">
+
+  <div class="sky-bg" aria-hidden="true"></div>
+  <div class="sky-clouds" id="skyClouds" aria-hidden="true"></div>
+  <div class="sky-birds"  id="skyBirds"  aria-hidden="true"></div>
+
+  <nav class="nav">
+    <a href="index.html" class="nav-home" data-content="navLabels.home">← home</a>
+    <ul class="nav-sections">
+      <li><a href="preproduction.html"  data-content="navLabels.preproduction">preproduction</a></li>
+      <li><a href="production.html" class="is-current" data-content="navLabels.production">production</a></li>
+      <li><a href="postproduction.html" data-content="navLabels.postproduction">postproduction</a></li>
+    </ul>
+  </nav>
+
+  <header class="page-header sky-header">
+    <p class="page-eyebrow"  data-content="production.eyebrow">section ii</p>
+    <h1 class="page-title"   data-content="production.title">Production.</h1>
+    <p class="page-lede"     data-content="production.lede">a smaller, slower pile — the films where i had to sit in the chair and decide things.</p>
+  </header>
+
+  <!-- works render from content.json into this main, using the workTpl below -->
+  <main class="works sky-works"
+        data-template="workTpl"
+        data-source="production.works"
+        data-item-prefix="work-thumb">
+  </main>
+
+  <template id="workTpl" data-modifier-count="12">
+    <article class="work">
+      <div class="work-thumb" data-modifier></div>
+      <div class="work-meta">
+        <p class="work-tag"    data-field="tag"></p>
+        <h2 class="work-title" data-field="title"></h2>
+        <p class="work-credit" data-field="credit"></p>
+        <p class="work-blurb"  data-field="blurb"></p>
+      </div>
+    </article>
+  </template>
+
+  <!-- empty sky buffer — guarantees a clean stretch of sky between the
+       last work and the concrete strip, so the skyline only ever appears
+       below the works content (never overlapping text/videos) -->
+  <div class="director-sky-buffer" aria-hidden="true"></div>
+
+  <!-- city skyline — populated by production.js with 13 buildings in 3
+       depth bands. Anchored just above the concrete strip. -->
+  <div class="director-skyline" id="directorSkyline" aria-hidden="true"></div>
+
+  <!-- concrete floor — stick figure splats here when crossed -->
+  <section class="director-concrete" id="directorConcrete">
+    <div class="concrete-cracks" aria-hidden="true"></div>
+    <!-- smushed body — swap by editing assets/smushed-body.svg -->
+    <div class="smushed-body" id="smushedBody" data-art="smushed-body" aria-hidden="true"></div>
+  </section>
+
+  <section class="post-floor-menu"
+           data-template="menuLinkTpl"
+           data-source="menus.afterProduction"
+           data-anchor=".sections-eyebrow ~ template">
+    <p class="sections-eyebrow">— other ground</p>
+  </section>
+
+  <template id="menuLinkTpl">
+    <a class="big-link" data-attr-href="href">
+      <span class="bl-num"   data-field="num"></span>
+      <span class="bl-label" data-field="label"></span>
+      <span class="bl-arrow">↗</span>
+    </a>
+  </template>
+
+  <footer class="page-footer">
+    <p data-content="site.email">charlie@charliehane.com</p>
+    <p data-content="site.moreSoon">more soon.</p>
+  </footer>
+
+  <script src="building-blocks/js/content-loader.js"></script>
+  <script src="building-blocks/js/art-loader.js"></script>
+  <script src="building-blocks/js/lottie.min.js"></script>
+  <script src="building-blocks/js/lottie-loader.js"></script>
+  <script src="building-blocks/js/production.js"></script>
+</body>
+</html>

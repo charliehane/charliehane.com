@@ -1,0 +1,37 @@
+<!--
+  worm.svg — the worm crawling across the postproduction underground.
+
+  viewBox="0 0 800 200". Internals are NOT animated; only the container
+  position is animated by CSS, so any layout works. The worm should "face"
+  LEFT (its eyes/head on the left side of the SVG) so its motion direction
+  matches its eye direction.
+-->
+<svg viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="wormGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#e2a39a"/>
+      <stop offset="100%" stop-color="#a05a4a"/>
+    </linearGradient>
+  </defs>
+  <g fill="url(#wormGrad)" stroke="#5a2a1a" stroke-width="2.5">
+    <ellipse cx="80"  cy="100" rx="52" ry="32"/>
+    <ellipse cx="172" cy="78"  rx="54" ry="33"/>
+    <ellipse cx="266" cy="100" rx="52" ry="32"/>
+    <ellipse cx="360" cy="122" rx="54" ry="33"/>
+    <ellipse cx="454" cy="100" rx="52" ry="32"/>
+    <ellipse cx="548" cy="78"  rx="54" ry="33"/>
+    <ellipse cx="642" cy="100" rx="52" ry="32"/>
+    <ellipse cx="734" cy="122" rx="48" ry="28"/>
+  </g>
+  <g stroke="#5a2a1a" stroke-width="1.5" fill="none" opacity="0.6">
+    <path d="M118 78  Q126 100 132 122"/>
+    <path d="M212 56  Q220 78 226 100"/>
+    <path d="M306 78  Q314 100 320 122"/>
+    <path d="M400 100 Q408 122 414 144"/>
+    <path d="M494 78  Q502 100 508 122"/>
+    <path d="M588 56  Q596 78 602 100"/>
+    <path d="M682 78  Q690 100 696 122"/>
+  </g>
+  <circle cx="74" cy="92" r="6" fill="#1a0a08"/>
+  <circle cx="72" cy="91" r="2" fill="#fff5e8"/>
+</svg>

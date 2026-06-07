@@ -1,0 +1,13 @@
+<!--
+  coffin.svg — the regular hexagonal coffin used for editor projects on
+  postproduction. viewBox="0 0 100 200". No animation hooks needed — this is
+  the BACKGROUND shape behind project text, so anything coffin-shaped works.
+  The project text is rendered on top of this by the page (not inside the
+  SVG itself), so don't include text in the SVG.
+-->
+<svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+  <path d="M50 0 L92 30 L92 170 L50 200 L8 170 L8 30 Z"
+        fill="#3a2510" stroke="#1a0e08" stroke-width="3"/>
+  <path d="M50 8 L84 36 L84 164 L50 192 L16 164 L16 36 Z"
+        fill="rgba(20, 12, 4, 0.85)"/>
+</svg>

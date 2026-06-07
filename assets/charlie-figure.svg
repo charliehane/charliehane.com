@@ -1,0 +1,27 @@
+<!--
+  charlie-figure.svg — Charlie inside the smashed coffin at the bottom of
+  postproduction (kicks legs into hell). viewBox="0 0 80 110".
+
+  REQUIRED structure for the leg-kicking animation:
+    • <g class="charlie-legs" id="charlieLegs">
+        <line class="charlie-leg-l">    left leg (animated)
+        <line class="charlie-leg-r">    right leg (animated)
+
+  Hands ALSO must reach to viewBox x=0 and x=80 so they touch the inner
+  walls of the coffin. Other anatomy is up to you.
+-->
+<svg viewBox="0 0 80 110" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+  <g stroke="#1a1614" stroke-width="3.5" stroke-linecap="round" fill="none">
+    <circle cx="40" cy="20" r="11" fill="#f4d4a8" stroke="#1a1614" stroke-width="2.5"/>
+    <line x1="40" y1="31" x2="40" y2="68"/>
+    <!-- arms reach to coffin walls (viewBox x=0 / 80) -->
+    <line x1="40" y1="44" x2="0"  y2="56"/>
+    <line x1="40" y1="44" x2="80" y2="56"/>
+    <g class="charlie-legs" id="charlieLegs">
+      <line class="charlie-leg-l" x1="40" y1="68" x2="26" y2="98"/>
+      <line class="charlie-leg-r" x1="40" y1="68" x2="54" y2="98"/>
+    </g>
+  </g>
+  <circle cx="0"  cy="56" r="4" fill="#1a1614"/>
+  <circle cx="80" cy="56" r="4" fill="#1a1614"/>
+</svg>

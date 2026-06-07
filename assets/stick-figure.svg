@@ -1,0 +1,19 @@
+<!--
+  stick-figure.svg — the cursor figure on production page (head-down,
+  spinning, with wind streaks behind feet). viewBox="0 0 80 110".
+
+  No required class names inside. Production.js builds the wind streaks
+  separately, and rotates the WHOLE figure as one unit. Anything that fits
+  the viewBox works — head at top, feet at bottom (the figure is rendered
+  upside-down by the page when chasing the cursor).
+-->
+<svg viewBox="0 0 80 110" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="#1a1614" stroke-width="3.5" stroke-linecap="round" fill="none">
+    <circle cx="40" cy="20" r="11" fill="#f3ebe0" stroke="#1a1614" stroke-width="2.5"/>
+    <line x1="40" y1="31" x2="40" y2="68"/>
+    <line x1="40" y1="44" x2="20" y2="56"/>
+    <line x1="40" y1="44" x2="60" y2="56"/>
+    <line x1="40" y1="68" x2="26" y2="98"/>
+    <line x1="40" y1="68" x2="54" y2="98"/>
+  </g>
+</svg>

@@ -1,0 +1,24 @@
+<!-- The boot in the landing portal that "stomps" Charlie Hane.
+     If you redraw this:
+       • Keep the viewBox at 280×200 (or update CSS .portal-foot if you change it).
+       • The whole boot should fit inside the viewBox so the squish animation lines up. -->
+<svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg">
+  <path d="M55 10 L55 145 Q55 175 85 178 L240 178 Q262 175 264 165 Q260 156 248 156 L105 156 L105 10 Q80 0 55 10 Z"
+        fill="#1a1614" stroke="#000" stroke-width="3"/>
+  <path d="M52 178 L264 175 L264 192 L52 195 Z" fill="#0a0608"/>
+  <rect x="48" y="178" width="40" height="22" fill="#0a0608" rx="2"/>
+  <g stroke="#5a4530" stroke-width="2.5" fill="none">
+    <path d="M62 30  L98 52"/><path d="M62 52  L98 30"/>
+    <path d="M62 70  L98 92"/><path d="M62 92  L98 70"/>
+    <path d="M62 110 L98 132"/><path d="M62 132 L98 110"/>
+  </g>
+  <g fill="#5a4530">
+    <circle cx="62" cy="30"  r="3"/><circle cx="98" cy="30"  r="3"/>
+    <circle cx="62" cy="52"  r="3"/><circle cx="98" cy="52"  r="3"/>
+    <circle cx="62" cy="70"  r="3"/><circle cx="98" cy="70"  r="3"/>
+    <circle cx="62" cy="92"  r="3"/><circle cx="98" cy="92"  r="3"/>
+    <circle cx="62" cy="110" r="3"/><circle cx="98" cy="110" r="3"/>
+    <circle cx="62" cy="132" r="3"/><circle cx="98" cy="132" r="3"/>
+  </g>
+  <path d="M210 156 Q232 152 252 160 Q254 166 248 170" stroke="#0a0608" stroke-width="2" fill="none"/>
+</svg>

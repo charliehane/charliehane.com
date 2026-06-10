@@ -624,11 +624,17 @@ body {
    03 Coast at sunrise → peach/orange sky into cool reflective water
    04 Hilly Town at midday → warm pale sky into sunlit grass
    05 City at midday → bright urban sky into glass and concrete */
-.scene--01 { background: linear-gradient(180deg, #14342a 0%, #0e2818 55%, #061a0e 100%); }
-.scene--02 { background: linear-gradient(180deg, #3a567c 0%, #1f3358 55%, #0a1428 100%); }
-.scene--03 { background: linear-gradient(180deg, #f6c5a8 0%, #ea8a5c 50%, #7a98b0 100%); }
-.scene--04 { background: linear-gradient(180deg, #c8e0e6 0%, #a8c878 60%, #d4b878 100%); }
-.scene--05 { background: linear-gradient(180deg, #b8d8ec 0%, #c8d2da 55%, #88909a 100%); }
+/* Per-scene gradient backdrops — DISABLED while the scroll-scrub bike-scene-bg
+   video is the world's backdrop. Re-enable any of these if you want the
+   old gradient look back for a specific scene (the video will be hidden
+   behind it). Kept here as one-line restorable comments. */
+/* .scene--01 { background: linear-gradient(180deg, #14342a 0%, #0e2818 55%, #061a0e 100%); } */
+/* .scene--02 { background: linear-gradient(180deg, #3a567c 0%, #1f3358 55%, #0a1428 100%); } */
+/* .scene--03 { background: linear-gradient(180deg, #f6c5a8 0%, #ea8a5c 50%, #7a98b0 100%); } */
+/* .scene--04 { background: linear-gradient(180deg, #c8e0e6 0%, #a8c878 60%, #d4b878 100%); } */
+/* .scene--05 { background: linear-gradient(180deg, #b8d8ec 0%, #c8d2da 55%, #88909a 100%); } */
+.scene,
+.scene--night { background: transparent; }
 
 /* ----- bricks (Mario ?-block) ----- */
 .brick {

@@ -553,10 +553,25 @@ body {
   align-items: center;
   overflow: visible;
 }
+/* Scroll-scrubbed AE background. Sits behind the brick world, the bike, and
+   the car. Its currentTime is driven by scroll progress in preproduction.js
+   so the camera 'crabs' through the 4 scenes (forest/mountains/coast/city)
+   in lockstep with how far you've scrolled. */
+.world-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--ink);
+}
 .world-track-clip {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  z-index: 1;
 }
 .world-bike-stage {
   position: sticky;

@@ -29,6 +29,19 @@
   <section class="world-section" id="worldSection">
     <div class="world-pin">
 
+      <!-- Scroll-scrubbed background video — Charlie's AE bike journey. The
+           video's currentTime is driven by scroll progress in preproduction.js.
+           Lives behind .world-track-clip so the bricks/bike/car render on top. -->
+      <video
+        class="world-bg-video"
+        id="worldBgVideo"
+        src="assets/bike-scene-bg.mp4"
+        muted
+        playsinline
+        preload="auto"
+        aria-hidden="true"
+      ></video>
+
       <div class="world-track-clip">
       <div class="world-track" id="worldTrack"
            data-template="sceneTpl"

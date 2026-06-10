@@ -27,6 +27,16 @@
   const bikePos    = document.getElementById('worldBikePos');
   const bikeEl     = document.getElementById('worldBike');
   const launchedEl = document.getElementById('launchedFigure');
+  const bgVideo    = document.getElementById('worldBgVideo');
+
+  // Scrub-friendly state for the background video. We avoid setting
+  // currentTime until loadedmetadata has fired (otherwise NaN errors).
+  let bgVideoDuration = 0;
+  if (bgVideo) {
+    bgVideo.addEventListener('loadedmetadata', () => {
+      bgVideoDuration = bgVideo.duration || 0;
+    });
+  }
   // bike rider lives inside the inlined SVG (loaded async by art-loader),
   // so look it up lazily each time it's needed
   const getBikeRider = () => document.querySelector('.bike-rider');
@@ -80,6 +90,12 @@
     const rect = section.getBoundingClientRect();
     const progress = Math.max(0, Math.min(1, -rect.top / Math.max(1, scrollableH)));
     if (bar) bar.style.width = `${progress * 100}%`;
+
+    // Scrub the BG video to match scroll progress. Wrapped in try/catch
+    // because iOS Safari can throw on currentTime sets while seeking.
+    if (bgVideo && bgVideoDuration > 0) {
+      try { bgVideo.currentTime = progress * bgVideoDuration; } catch (e) { /* swallow */ }
+    }
 
     const vw = window.innerWidth;
     const vh = window.innerHeight;

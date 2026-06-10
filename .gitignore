@@ -12,6 +12,9 @@ Animations/
 *.psd
 *.ai
 *.c4d
+# Adobe Media Encoder output folders — auto-named *.aep_AME, contain raw
+# renders we re-encode into assets/ before committing
+*.aep_AME/
 
 # Claude Code local config (preview server, etc.) — machine-specific
 .claude/

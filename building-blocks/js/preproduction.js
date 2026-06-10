@@ -91,10 +91,18 @@
     const progress = Math.max(0, Math.min(1, -rect.top / Math.max(1, scrollableH)));
     if (bar) bar.style.width = `${progress * 100}%`;
 
-    // Scrub the BG video to match scroll progress. Wrapped in try/catch
-    // because iOS Safari can throw on currentTime sets while seeking.
-    if (bgVideo && bgVideoDuration > 0) {
-      try { bgVideo.currentTime = progress * bgVideoDuration; } catch (e) { /* swallow */ }
+    // Scrub the BG video to match scroll progress. Two guards:
+    //   1. !bgVideo.seeking — if a previous seek hasn't finished decoding,
+    //      skip this update. Otherwise rapid scroll piles up abandoned
+    //      seeks and the browser stutters trying to keep up.
+    //   2. delta threshold — micro-changes (sub-pixel scrolls) don't need
+    //      to trigger a seek. Only update if progress moved >= 1 frame.
+    if (bgVideo && bgVideoDuration > 0 && !bgVideo.seeking) {
+      const target = progress * bgVideoDuration;
+      const delta = Math.abs(target - bgVideo.currentTime);
+      if (delta >= (1 / 30)) {            // 1 frame at 30fps
+        try { bgVideo.currentTime = target; } catch (e) { /* swallow */ }
+      }
     }
 
     const vw = window.innerWidth;

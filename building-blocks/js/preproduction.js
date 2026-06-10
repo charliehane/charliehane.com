@@ -35,7 +35,27 @@
   if (bgVideo) {
     bgVideo.addEventListener('loadedmetadata', () => {
       bgVideoDuration = bgVideo.duration || 0;
+      // iOS Safari quirk: a video at currentTime=0 with preload may not
+      // paint a first frame until something seeks. Nudge it to 0.001 to
+      // force the first frame to render so the page isn't blank on iOS.
+      try { bgVideo.currentTime = 0.001; } catch (e) { /* swallow */ }
     });
+
+    // iOS Safari refuses to render scrubbed-video frames until the user
+    // interacts with the page in a way that "unlocks" media. The dance:
+    // try to play() (autoplay attribute is set, so this is allowed when
+    // muted), then immediately pause(). After that, currentTime sets
+    // actually paint frames. Runs once on first scroll OR touchstart.
+    let unlocked = false;
+    const unlock = () => {
+      if (unlocked) return;
+      unlocked = true;
+      const p = bgVideo.play();
+      if (p && p.then) p.then(() => bgVideo.pause()).catch(() => { /* iOS may reject; that's OK */ });
+    };
+    document.addEventListener('touchstart', unlock, { once: true, passive: true });
+    document.addEventListener('scroll',     unlock, { once: true, passive: true });
+    window.addEventListener('load',         unlock, { once: true });
   }
   // bike rider lives inside the inlined SVG (loaded async by art-loader),
   // so look it up lazily each time it's needed

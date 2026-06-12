@@ -32,10 +32,14 @@
       <!-- Scroll-scrubbed background video — Charlie's AE bike journey. The
            video's currentTime is driven by scroll progress in preproduction.js.
            Lives behind .world-track-clip so the bricks/bike/car render on top. -->
+      <!-- Source is hosted on Cloudflare R2 (bucket: charliehane-assets) because
+           it's 87MB at native 1440p all-intra. Pages' 25MB per-file limit
+           would force a quality compromise; R2 free tier (10GB storage +
+           10GB monthly egress) handles it cleanly with proper Range support. -->
       <video
         class="world-bg-video"
         id="worldBgVideo"
-        src="assets/bike-scene-bg.mp4"
+        src="https://pub-3feaceb432134076b4773fdc45eba874.r2.dev/bike-scene-bg.mp4"
         muted
         playsinline
         webkit-playsinline

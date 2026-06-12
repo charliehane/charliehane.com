@@ -16,6 +16,12 @@ Animations/
 # renders we re-encode into assets/ before committing
 *.aep_AME/
 
+# Staging area at WEBSITE root for files headed to R2 (full-quality videos
+# too big for Cloudflare Pages' 25MB limit). The leading slash anchors to
+# this exact path so /bike-scene-bg.mp4 is ignored but assets/bike-scene-bg.mp4
+# (the smaller Pages copy) stays tracked.
+/bike-scene-bg.mp4
+
 # Claude Code local config (preview server, etc.) — machine-specific
 .claude/
 

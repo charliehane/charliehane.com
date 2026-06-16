@@ -28,35 +28,43 @@
   const bikeEl     = document.getElementById('worldBike');
   const launchedEl = document.getElementById('launchedFigure');
   const bgVideo    = document.getElementById('worldBgVideo');
+  const fgVideo    = document.getElementById('worldFgVideo');
 
-  // Scrub-friendly state for the background video. We avoid setting
-  // currentTime until loadedmetadata has fired (otherwise NaN errors).
+  // Scrub-friendly state for the background + foreground videos. We avoid
+  // setting currentTime until loadedmetadata has fired (otherwise NaN errors).
   let bgVideoDuration = 0;
-  if (bgVideo) {
-    bgVideo.addEventListener('loadedmetadata', () => {
-      bgVideoDuration = bgVideo.duration || 0;
+  let fgVideoDuration = 0;
+  const primeVideo = (video, setDuration) => {
+    if (!video) return;
+    video.addEventListener('loadedmetadata', () => {
+      setDuration(video.duration || 0);
       // iOS Safari quirk: a video at currentTime=0 with preload may not
       // paint a first frame until something seeks. Nudge it to 0.001 to
       // force the first frame to render so the page isn't blank on iOS.
-      try { bgVideo.currentTime = 0.001; } catch (e) { /* swallow */ }
+      try { video.currentTime = 0.001; } catch (e) { /* swallow */ }
     });
+  };
+  primeVideo(bgVideo, d => { bgVideoDuration = d; });
+  primeVideo(fgVideo, d => { fgVideoDuration = d; });
 
-    // iOS Safari refuses to render scrubbed-video frames until the user
-    // interacts with the page in a way that "unlocks" media. The dance:
-    // try to play() (autoplay attribute is set, so this is allowed when
-    // muted), then immediately pause(). After that, currentTime sets
-    // actually paint frames. Runs once on first scroll OR touchstart.
-    let unlocked = false;
-    const unlock = () => {
-      if (unlocked) return;
-      unlocked = true;
-      const p = bgVideo.play();
-      if (p && p.then) p.then(() => bgVideo.pause()).catch(() => { /* iOS may reject; that's OK */ });
-    };
-    document.addEventListener('touchstart', unlock, { once: true, passive: true });
-    document.addEventListener('scroll',     unlock, { once: true, passive: true });
-    window.addEventListener('load',         unlock, { once: true });
-  }
+  // iOS Safari refuses to render scrubbed-video frames until the user
+  // interacts with the page in a way that "unlocks" media. The dance:
+  // try to play() (autoplay attribute is set, so this is allowed when
+  // muted), then immediately pause(). After that, currentTime sets
+  // actually paint frames. Runs once on first scroll OR touchstart.
+  let videosUnlocked = false;
+  const unlockVideos = () => {
+    if (videosUnlocked) return;
+    videosUnlocked = true;
+    [bgVideo, fgVideo].forEach(v => {
+      if (!v) return;
+      const p = v.play();
+      if (p && p.then) p.then(() => v.pause()).catch(() => { /* iOS may reject; that's OK */ });
+    });
+  };
+  document.addEventListener('touchstart', unlockVideos, { once: true, passive: true });
+  document.addEventListener('scroll',     unlockVideos, { once: true, passive: true });
+  window.addEventListener('load',         unlockVideos, { once: true });
   // bike rider lives inside the inlined SVG (loaded async by art-loader),
   // so look it up lazily each time it's needed
   const getBikeRider = () => document.querySelector('.bike-rider');
@@ -111,19 +119,22 @@
     const progress = Math.max(0, Math.min(1, -rect.top / Math.max(1, scrollableH)));
     if (bar) bar.style.width = `${progress * 100}%`;
 
-    // Scrub the BG video to match scroll progress. Two guards:
-    //   1. !bgVideo.seeking — if a previous seek hasn't finished decoding,
+    // Scrub the BG + FG videos to match scroll progress. Two guards on each:
+    //   1. !video.seeking — if a previous seek hasn't finished decoding,
     //      skip this update. Otherwise rapid scroll piles up abandoned
     //      seeks and the browser stutters trying to keep up.
     //   2. delta threshold — micro-changes (sub-pixel scrolls) don't need
     //      to trigger a seek. Only update if progress moved >= 1 frame.
-    if (bgVideo && bgVideoDuration > 0 && !bgVideo.seeking) {
-      const target = progress * bgVideoDuration;
-      const delta = Math.abs(target - bgVideo.currentTime);
-      if (delta >= (1 / 30)) {            // 1 frame at 30fps
-        try { bgVideo.currentTime = target; } catch (e) { /* swallow */ }
+    const scrub = (video, duration) => {
+      if (!video || duration <= 0 || video.seeking) return;
+      const target = progress * duration;
+      const delta = Math.abs(target - video.currentTime);
+      if (delta >= (1 / 30)) {           // 1 frame at 30fps
+        try { video.currentTime = target; } catch (e) { /* swallow */ }
       }
-    }
+    };
+    scrub(bgVideo, bgVideoDuration);
+    scrub(fgVideo, fgVideoDuration);
 
     const vw = window.innerWidth;
     const vh = window.innerHeight;

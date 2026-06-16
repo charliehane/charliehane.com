@@ -562,7 +562,11 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  /* `contain` (not `cover`) — shows the FULL AE composition with
+     letterbox bars on any viewport whose aspect ratio doesn't match
+     the video's 1.89:1. No cropping. Must match the FG video's
+     object-fit so the two layers stay aligned. */
+  object-fit: contain;
   z-index: 0;
   pointer-events: none;
   background: var(--ink);
@@ -577,7 +581,8 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  /* Must match the BG's `contain` so the two layers scale identically. */
+  object-fit: contain;
   z-index: 10;
   pointer-events: none;
   background: transparent;

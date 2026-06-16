@@ -65,8 +65,18 @@ body {
   display: flex;
   gap: 26px;
   margin: 0; padding: 0;
+  /* isolate from the parent's mix-blend-mode (when .nav--blend is set on
+     pages like preproduction/postproduction). Lets the dark-red color
+     below render true on every page instead of getting differenced into
+     whatever the background frame happens to be. */
+  isolation: isolate;
 }
-.nav-sections a { position: relative; }
+.nav-sections a {
+  position: relative;
+  color: #8b0000;        /* dark red */
+  font-weight: 700;
+  mix-blend-mode: normal;
+}
 .nav-sections a::after {
   content: "";
   position: absolute;

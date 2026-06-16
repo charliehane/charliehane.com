@@ -568,17 +568,17 @@ body {
   background: var(--ink);
 }
 /* FG layer — same size/position as BG, but with alpha-channel video so the
-   BG shows through the transparent areas. Sits ABOVE the bike sprite (z:6)
-   so close scenery can pass in front of the rider, with the brick world on
-   top of everything so clickable bricks stay clickable. Its currentTime
-   tracks the BG. */
+   BG shows through the transparent areas. Sits ON TOP of EVERYTHING — bike,
+   bricks, scenes. Its `pointer-events: none` means clicks still pass through
+   to the bricks underneath, so they remain clickable even though they sit
+   below the FG visually. Its currentTime tracks the BG. */
 .world-fg-video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: 7;
+  z-index: 10;
   pointer-events: none;
   background: transparent;
 }
@@ -586,7 +586,7 @@ body {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  z-index: 8;
+  z-index: 1;
 }
 .world-bike-stage {
   position: sticky;
@@ -609,30 +609,14 @@ body {
   display: flex;
   align-items: flex-end;
   padding: 56px;
-  border-right: 1px dashed rgba(255,255,255,0.12);
+  /* dashed biome-divider removed — the AE video provides all the visual
+     separation between scenes now */
 }
-.scene-num {
-  position: absolute;
-  top: 56px; left: 56px;
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.22em;
-  color: var(--cream);
-  opacity: 0.5;
-  z-index: 2;
-}
-.scene-name {
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 350;
-  font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
-  font-size: clamp(60px, 12vw, 220px);
-  letter-spacing: -0.04em;
-  color: var(--cream);
-  line-height: 0.9;
-  position: relative;
-  z-index: 1;
-}
+/* Big scene-name text ("Forest" / "Mountains" / etc.) and the small
+   sceneNum label hidden — Charlie's AE BG video already says where you
+   are visually, the giant typographic labels were redundant. */
+.scene-num,
+.scene-name { display: none; }
 /* Scene atmospheres — match the time-of-day arc in the films array.
    01 Forest at night → deep moonlit greens
    02 Mountains at blue hour → cold cobalt sky into navy silhouette

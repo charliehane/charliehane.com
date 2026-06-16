@@ -568,15 +568,17 @@ body {
   background: var(--ink);
 }
 /* FG layer — same size/position as BG, but with alpha-channel video so the
-   BG shows through the transparent areas. Sits one z-index higher than the
-   BG and one lower than the brick world. Its currentTime tracks the BG. */
+   BG shows through the transparent areas. Sits ABOVE the bike sprite (z:6)
+   so close scenery can pass in front of the rider, with the brick world on
+   top of everything so clickable bricks stay clickable. Its currentTime
+   tracks the BG. */
 .world-fg-video {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: 1;
+  z-index: 7;
   pointer-events: none;
   background: transparent;
 }
@@ -584,7 +586,7 @@ body {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  z-index: 2;
+  z-index: 8;
 }
 .world-bike-stage {
   position: sticky;

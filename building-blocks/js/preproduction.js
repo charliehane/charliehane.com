@@ -38,6 +38,10 @@
     if (!video) return;
     video.addEventListener('loadedmetadata', () => {
       setDuration(video.duration || 0);
+      // Make sure the video is paused — even without the `autoplay`
+      // attribute, some browsers will start playback on metadata load.
+      // We're scrubbing it manually via currentTime, so it must stay paused.
+      try { video.pause(); } catch (e) { /* swallow */ }
       // iOS Safari quirk: a video at currentTime=0 with preload may not
       // paint a first frame until something seeks. Nudge it to 0.001 to
       // force the first frame to render so the page isn't blank on iOS.
@@ -49,9 +53,12 @@
 
   // iOS Safari refuses to render scrubbed-video frames until the user
   // interacts with the page in a way that "unlocks" media. The dance:
-  // try to play() (autoplay attribute is set, so this is allowed when
-  // muted), then immediately pause(). After that, currentTime sets
-  // actually paint frames. Runs once on first scroll OR touchstart.
+  // play() inside a user-gesture handler (allowed because muted +
+  // playsinline), then immediately pause(). After that, currentTime
+  // sets actually paint frames. Runs once on first scroll OR touchstart.
+  // NOTE: we do NOT use the `autoplay` HTML attribute because it'd make
+  // desktop browsers play the video continuously instead of waiting to be
+  // scrubbed by scroll.
   let videosUnlocked = false;
   const unlockVideos = () => {
     if (videosUnlocked) return;
@@ -130,6 +137,12 @@
       const target = progress * duration;
       const delta = Math.abs(target - video.currentTime);
       if (delta >= (1 / 30)) {           // 1 frame at 30fps
+        // Defensive: if the browser somehow has the video playing,
+        // pause it so currentTime sets actually freeze the frame
+        // (a playing video resumes playback from each set currentTime).
+        if (!video.paused) {
+          try { video.pause(); } catch (e) { /* swallow */ }
+        }
         try { video.currentTime = target; } catch (e) { /* swallow */ }
       }
     };

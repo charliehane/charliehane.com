@@ -93,19 +93,23 @@
 
       <p class="world-caption" data-content="preproduction.caption">— the world · scroll to ride · click to jump</p>
       <div class="world-progress"><div class="world-progress-bar" id="worldProgressBar"></div></div>
-    </div>
 
-    <!-- bike + stick figure rider -->
-    <div class="world-bike-stage">
-      <div class="world-bike-pos" id="worldBikePos">
-        <!-- bike art lives in assets/bike-with-rider.svg — swap that file -->
-        <!-- Bike: 14-frame sprite from assets/bike-sprite.png. Frame index
-             advances based on scroll velocity (preproduction.js handles it). -->
-        <div class="world-bike world-bike--sprite" id="worldBike" aria-hidden="true"></div>
+      <!-- bike + stick figure rider — lives INSIDE .world-pin so it shares
+           the same stacking context as the BG/FG videos. That lets z-index
+           order BG < bricks < bike < FG actually work; previously the bike
+           was a sibling of .world-pin and its z-index couldn't reach into
+           the FG video's stacking context above it. -->
+      <div class="world-bike-stage">
+        <div class="world-bike-pos" id="worldBikePos">
+          <!-- bike art lives in assets/bike-with-rider.svg — swap that file -->
+          <!-- Bike: 14-frame sprite from assets/bike-sprite.png. Frame index
+               advances based on scroll velocity (preproduction.js handles it). -->
+          <div class="world-bike world-bike--sprite" id="worldBike" aria-hidden="true"></div>
+        </div>
+
+        <!-- launched figure — swap by editing assets/launched-figure.svg -->
+        <div class="launched-figure" id="launchedFigure" data-art="launched-figure" aria-hidden="true"></div>
       </div>
-
-      <!-- launched figure — swap by editing assets/launched-figure.svg -->
-      <div class="launched-figure" id="launchedFigure" data-art="launched-figure" aria-hidden="true"></div>
     </div>
   </section>
 

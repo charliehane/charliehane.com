@@ -588,13 +588,14 @@ body {
   overflow: hidden;
   z-index: 1;
 }
+/* Lives inside .world-pin now, so the old sticky + negative-margin trick
+   that merged it with .world-pin's pinning is no longer needed. Just sits
+   absolute on top of the BG/bricks layers but below the FG video. */
 .world-bike-stage {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  margin-top: -100vh;
+  position: absolute;
+  inset: 0;
   pointer-events: none;
-  z-index: 6;
+  z-index: 5;
 }
 .world-track {
   display: flex;

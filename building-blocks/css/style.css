@@ -810,7 +810,7 @@ body {
   bottom: 28px; left: 56px; right: 56px;
   height: 1px;
   background: rgba(255,255,255,0.18);
-  z-index: 5;
+  z-index: 11;
 }
 .world-progress-bar {
   height: 100%;
@@ -830,7 +830,7 @@ body {
   color: var(--cream);
   opacity: 0.6;
   margin: 0;
-  z-index: 5;
+  z-index: 11;
   white-space: nowrap;
 }
 

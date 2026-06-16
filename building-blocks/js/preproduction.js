@@ -126,20 +126,27 @@
     const progress = Math.max(0, Math.min(1, -rect.top / Math.max(1, scrollableH)));
     if (bar) bar.style.width = `${progress * 100}%`;
 
-    // Scrub the BG + FG videos to match scroll progress. Two guards on each:
+    // Pre-crash progress: maps the [0, crashProgress] slice of scroll into
+    // a [0, 1] range. Used to drive both the horizontal track AND the
+    // BG/FG video scrubs. Once scroll passes crashProgress, tp clamps to 1
+    // — so the world stops moving and the videos freeze at their final
+    // frame. After that, post-crash scroll only animates the launched
+    // figure flying offscreen.
+    const tp = Math.min(progress, crashProgress) / Math.max(0.001, crashProgress);
+
+    // Scrub the BG + FG videos to match pre-crash progress. Three guards:
     //   1. !video.seeking — if a previous seek hasn't finished decoding,
     //      skip this update. Otherwise rapid scroll piles up abandoned
     //      seeks and the browser stutters trying to keep up.
     //   2. delta threshold — micro-changes (sub-pixel scrolls) don't need
     //      to trigger a seek. Only update if progress moved >= 1 frame.
+    //   3. pause defensively — a playing video resumes from each
+    //      currentTime set, so we explicitly stop it.
     const scrub = (video, duration) => {
       if (!video || duration <= 0 || video.seeking) return;
-      const target = progress * duration;
+      const target = tp * duration;
       const delta = Math.abs(target - video.currentTime);
       if (delta >= (1 / 30)) {           // 1 frame at 30fps
-        // Defensive: if the browser somehow has the video playing,
-        // pause it so currentTime sets actually freeze the frame
-        // (a playing video resumes playback from each set currentTime).
         if (!video.paused) {
           try { video.pause(); } catch (e) { /* swallow */ }
         }
@@ -154,7 +161,8 @@
 
     // pre-crash: track translates from 0 → trackXAtCrash (car centered).
     // post-crash: track stays at trackXAtCrash so bike & car remain visible centered.
-    const tp = Math.min(progress, crashProgress) / Math.max(0.001, crashProgress);
+    // (tp was computed earlier alongside the video scrubs so the world and
+    // videos all freeze in lockstep at crash.)
     track.style.transform = `translate3d(${-tp * trackXAtCrash}px, 0, 0)`;
 
     if (progress < crashProgress) {

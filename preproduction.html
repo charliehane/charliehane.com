@@ -107,8 +107,15 @@
           <div class="world-bike world-bike--sprite" id="worldBike" aria-hidden="true"></div>
         </div>
 
-        <!-- launched figure — swap by editing assets/launched-figure.svg -->
-        <div class="launched-figure" id="launchedFigure" data-art="launched-figure" aria-hidden="true"></div>
+        <!-- Launched figure (post-crash, flies through the air).
+             10-frame photo sprite from assets/you-sprite.png — the same
+             character we use for the production-page cursor. The inner
+             div is the actual sprite background; preproduction.js cycles
+             its background-position-x to animate the spin as the body
+             flies through its arc. -->
+        <div class="launched-figure" id="launchedFigure" aria-hidden="true">
+          <div class="launched-figure-sprite" id="launchedFigureSprite"></div>
+        </div>
       </div>
     </div>
   </section>

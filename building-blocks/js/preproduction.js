@@ -203,8 +203,16 @@
         const ease = Math.pow(t, 0.85);
         const lx = startX + (targetX - startX) * ease;
         const ly = startY + (targetY - startY) * ease - Math.sin(ease * Math.PI) * 80;
-        const rot = ease * 380;
-        launchedEl.style.transform = `translate(${lx - 40}px, ${ly - 55}px) rotate(${rot}deg)`;
+        // No CSS rotate — the sprite frames ARE the rotation. Translate only.
+        launchedEl.style.transform = `translate(${lx - 55}px, ${ly - 75}px)`;
+        // Advance the sprite frame to spin through the arc. ~2 full
+        // rotations across the launch (frame = floor(ease * 20) % 10).
+        // Frame width is 110px in CSS pixels (sprite scaled to 1100px wide).
+        const sprite = document.getElementById('launchedFigureSprite');
+        if (sprite) {
+          const frame = Math.floor(ease * 20) % 10;
+          sprite.style.backgroundPositionX = `${-frame * 110}px`;
+        }
       }
     }
   };

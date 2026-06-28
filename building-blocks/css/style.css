@@ -1400,13 +1400,16 @@ body {
 }
 .world-car svg { width: 100%; height: auto; }
 
-/* launched stick figure (post-crash, flies through the air) */
+/* launched figure (post-crash, flies through the air).
+   Outer .launched-figure positions+sizes the figure on screen; inner
+   .launched-figure-sprite displays one frame of assets/you-sprite.png
+   (10-frame 2000x275 sheet) — JS sets background-position-x to cycle. */
 .launched-figure {
   position: fixed;
   top: 0;
   left: 0;
-  width: 80px;
-  height: 110px;
+  width: 110px;
+  height: 151px;            /* 110 × (275/200) — preserves source aspect */
   pointer-events: none;
   z-index: 7;
   opacity: 0;
@@ -1414,7 +1417,16 @@ body {
   will-change: transform, opacity;
   filter: drop-shadow(0 6px 14px rgba(0,0,0,0.45));
 }
-.launched-figure svg { width: 100%; height: 100%; }
+.launched-figure-sprite {
+  width: 100%;
+  height: 100%;
+  background-image: url('../../assets/you-sprite.png');
+  /* full sheet = 10 frames × 110px = 1100px wide; height matches container */
+  background-size: 1100px 151px;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  will-change: background-position;
+}
 
 
 /* ============================================================

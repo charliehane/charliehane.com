@@ -134,17 +134,20 @@
     // figure flying offscreen.
     const tp = Math.min(progress, crashProgress) / Math.max(0.001, crashProgress);
 
-    // Scrub the BG + FG videos to match pre-crash progress. Three guards:
-    //   1. !video.seeking — if a previous seek hasn't finished decoding,
-    //      skip this update. Otherwise rapid scroll piles up abandoned
-    //      seeks and the browser stutters trying to keep up.
-    //   2. delta threshold — micro-changes (sub-pixel scrolls) don't need
-    //      to trigger a seek. Only update if progress moved >= 1 frame.
+    // Scrub the BG + FG videos to match FULL scroll progress (NOT tp).
+    // The new v4 video has the crash + aftermath baked into its final ~3
+    // seconds, so we want the scroll to advance the video all the way
+    // through. The launched-figure animation still triggers at the
+    // existing crashProgress (0.9) and overlays the video's crash content.
+    // Three guards:
+    //   1. !video.seeking — skip if a prior seek is still decoding so we
+    //      don't pile up abandoned seeks.
+    //   2. delta >= 1/30s — skip sub-frame updates from micro-scrolls.
     //   3. pause defensively — a playing video resumes from each
     //      currentTime set, so we explicitly stop it.
     const scrub = (video, duration) => {
       if (!video || duration <= 0 || video.seeking) return;
-      const target = tp * duration;
+      const target = progress * duration;
       const delta = Math.abs(target - video.currentTime);
       if (delta >= (1 / 30)) {           // 1 frame at 30fps
         if (!video.paused) {

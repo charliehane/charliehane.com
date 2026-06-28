@@ -75,49 +75,31 @@
   // bike rider lives inside the inlined SVG (loaded async by art-loader),
   // so look it up lazily each time it's needed
   const getBikeRider = () => document.querySelector('.bike-rider');
-  let sceneCar     = null;
 
-  // car placeholder — actual SVG is loaded from assets/car.svg by art-loader.
-  // we just need a positioned div that the layout/measure code can target.
-  const CAR_PLACEHOLDER = `
-    <div class="scene-car" id="sceneCar" data-art="car" data-art-fit="aspect" aria-hidden="true"></div>
-  `;
-
-  // after content loads, mark the last templated scene as Night (wider) and
-  // drop the car placeholder into it so the crash sequence still works.
-  // The art-loader fills the placeholder with the actual SVG either via its
-  // own art:loaded sweep (if art arrives later) or by us manually invoking
-  // window.inlineArt (if art is already cached).
+  // Procedural .scene-car SVG removed — the crash is now in the FG video.
+  // Charlie's AE comp draws the green Porsche hitting the bike directly;
+  // overlaying a second car-SVG would just sit awkwardly behind it.
   function setupNightScene() {
     const scenes = document.querySelectorAll('.scene');
     if (!scenes.length) return;
     const last = scenes[scenes.length - 1];
     last.classList.add('scene--night');
-    last.insertAdjacentHTML('beforeend', CAR_PLACEHOLDER);
-    sceneCar = document.getElementById('sceneCar');
-    if (window.inlineArt) window.inlineArt(last);
     measure();
     update();
   }
 
   let maxX = 0, scrollableH = 0;
-  let crashProgress = 1;
+  let crashProgress = 0.90;       // reserve last 10% of scroll for launched-figure arc
   let trackXAtCrash = 0;
 
   const measure = () => {
     if (!section || !track) return;
     maxX = Math.max(0, track.scrollWidth - window.innerWidth);
     scrollableH = section.offsetHeight - window.innerHeight;
-
-    if (sceneCar && bikeEl) {
-      // park the car so its LEFT edge meets the bike's RIGHT edge at crash
-      const carLeftInTrack = sceneCar.offsetParent
-        ? sceneCar.offsetLeft + sceneCar.parentElement.offsetLeft
-        : 0;
-      const bikeRightScreenX = window.innerWidth / 2 + (bikeEl.offsetWidth / 2);
-      trackXAtCrash = Math.max(100, Math.min(maxX, carLeftInTrack - bikeRightScreenX));
-      crashProgress = 0.90; // reserve last 10% for the launch
-    }
+    // No procedural car to align against any more, so translate the
+    // horizontal track all the way to maxX by crashProgress. The visual
+    // impact happens entirely in the scrub video.
+    trackXAtCrash = maxX;
   };
 
   const update = () => {
@@ -168,18 +150,45 @@
     // videos all freeze in lockstep at crash.)
     track.style.transform = `translate3d(${-tp * trackXAtCrash}px, 0, 0)`;
 
+    // -----------------------------------------------------------------
+    // Bike rotation — independent timeline from rider/launched-figure:
+    //   Before [crashProgress - 3f]:        upright (0deg)
+    //   [crashProgress - 3f → crashProgress]: ramp 0 → +12deg
+    //                                       (impact — BACK of bike lifts up,
+    //                                        positive = clockwise on a bike
+    //                                        facing right)
+    //   [crashProgress → crashProgress + 3f]: hold at +12deg
+    //   [crashProgress + 3f → +UNROTATE]:    ease back to 0 (bike falls back)
+    //   After: upright (0deg)
+    // -----------------------------------------------------------------
+    const FRAME_AS_PROGRESS = (1 / 30) / Math.max(1, bgVideoDuration || 27);
+    const ROT_PEAK_DEG = 12;
+    const ROT_RAMP_START = crashProgress - 3 * FRAME_AS_PROGRESS;
+    const ROT_HOLD_END   = crashProgress + 3 * FRAME_AS_PROGRESS;
+    const ROT_FALL_END   = ROT_HOLD_END + 0.04;    // ~32 frames to smoothly unrotate
+    let crashRot = 0;
+    if (progress < ROT_RAMP_START)         crashRot = 0;
+    else if (progress < crashProgress) {
+      const t = (progress - ROT_RAMP_START) / Math.max(1e-6, crashProgress - ROT_RAMP_START);
+      crashRot = t * ROT_PEAK_DEG;
+    } else if (progress < ROT_HOLD_END)    crashRot = ROT_PEAK_DEG;
+    else if (progress < ROT_FALL_END) {
+      const t = (progress - ROT_HOLD_END) / Math.max(1e-6, ROT_FALL_END - ROT_HOLD_END);
+      const ease = 1 - Math.pow(1 - t, 2);          // ease-out quadratic
+      crashRot = ROT_PEAK_DEG * (1 - ease);
+    } else                                  crashRot = 0;
+    if (bikeEl) bikeEl.style.setProperty('--crashRot', `${crashRot}deg`);
+
     if (progress < crashProgress) {
-      // pre-crash: bike centered on viewport, no rotation, rider on bike
+      // pre-crash: bike centered on viewport, rider on bike
       if (bikePos) bikePos.style.setProperty('--exitX', `0px`);
-      if (bikeEl)  bikeEl.style.setProperty('--crashRot', '0deg');
       const r = getBikeRider(); if (r) r.style.opacity = '1';
       if (launchedEl) launchedEl.style.opacity = '0';
     } else {
-      // post-crash phase
+      // post-crash phase — bike rotation is now handled by the timeline
+      // block above; here we just trigger the rider/launched-figure swap.
       const t = (progress - crashProgress) / Math.max(0.01, 1 - crashProgress);
 
-      // bike+car stay where they crashed. minor rotation on bike.
-      if (bikeEl) bikeEl.style.setProperty('--crashRot', `-12deg`);
       if (bikePos) bikePos.style.setProperty('--exitX', `0px`);
 
       // hide on-bike rider, show launched figure

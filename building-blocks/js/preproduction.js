@@ -208,11 +208,11 @@
       const rider = getBikeRider(); if (rider) rider.style.opacity = '0';
       if (launchedEl) {
         launchedEl.style.opacity = '1';
-        // arc starts as close to the front bike seat as possible (slightly
-        // right of viewport center, low — right where the front rider was
-        // sitting before getting launched) and ends offscreen upper-right.
-        const startX = vw * 0.5 + 50;  // slightly right of center → front seat
-        const startY = vh * 0.88;      // much lower than before → at the seat
+        // arc starts right above the front bike seat — where the front
+        // rider's torso/head was before getting launched (not at the seat
+        // itself which sat too low and too far right).
+        const startX = vw * 0.5 + 30;  // slight right of center → front seat column
+        const startY = vh * 0.75;      // above the bike, at rider's chest/head
         const targetX = vw + 200;       // offscreen right
         const targetY = -180;           // offscreen top
         const ease = Math.pow(t, 0.85);

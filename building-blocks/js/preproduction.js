@@ -152,20 +152,20 @@
 
     // -----------------------------------------------------------------
     // Bike rotation — independent timeline from rider/launched-figure:
-    //   Before [crashProgress - 3f]:        upright (0deg)
-    //   [crashProgress - 3f → crashProgress]: ramp 0 → +12deg
+    //   Before [crashProgress - 4f]:        upright (0deg)
+    //   [crashProgress - 4f → crashProgress]: ramp 0 → +12deg
     //                                       (impact — BACK of bike lifts up,
     //                                        positive = clockwise on a bike
     //                                        facing right)
-    //   [crashProgress → crashProgress + 3f]: hold at +12deg
-    //   [crashProgress + 3f → +UNROTATE]:    ease back to 0 (bike falls back)
+    //   [crashProgress → crashProgress + 1f]: hold at +12deg
+    //   [crashProgress + 1f → +UNROTATE]:    ease back to 0 (bike falls back)
     //   After: upright (0deg)
     // -----------------------------------------------------------------
     const FRAME_AS_PROGRESS = (1 / 30) / Math.max(1, bgVideoDuration || 27);
     const ROT_PEAK_DEG = 12;
-    const ROT_RAMP_START = crashProgress - 3 * FRAME_AS_PROGRESS;
-    const ROT_HOLD_END   = crashProgress + 3 * FRAME_AS_PROGRESS;
-    const ROT_FALL_END   = ROT_HOLD_END + 0.04;    // ~32 frames to smoothly unrotate
+    const ROT_RAMP_START = crashProgress - 4 * FRAME_AS_PROGRESS;  // start 1 frame earlier (was -3f)
+    const ROT_HOLD_END   = crashProgress + 1 * FRAME_AS_PROGRESS;  // shorter hold (was +3f)
+    const ROT_FALL_END   = ROT_HOLD_END + 0.02;                    // ~16 frames unrotate (was 0.04)
     let crashRot = 0;
     if (progress < ROT_RAMP_START)         crashRot = 0;
     else if (progress < crashProgress) {

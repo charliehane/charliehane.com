@@ -90,10 +90,9 @@
 
   let maxX = 0, scrollableH = 0;
   // crashProgress lines up with the visual contact moment in the AE
-  // crash render (the green car making contact with the bike). The bike
-  // rotation peak, sprite→crashed-bike swap, and figure launch all fire
-  // off this single value.
-  let crashProgress = 0.90;
+  // crash render. Nudged 4 frames earlier than 0.90 so the JS impact
+  // beat slightly leads the video — feels more reactive.
+  let crashProgress = 0.90 - (4 / (30 * 27));   // ≈ 0.8951
   let trackXAtCrash = 0;
 
   const measure = () => {
@@ -209,10 +208,11 @@
       if (launchedEl) {
         launchedEl.style.opacity = '1';
         // arc starts right above the front bike seat — where the front
-        // rider's torso/head was before getting launched (not at the seat
-        // itself which sat too low and too far right).
-        const startX = vw * 0.5 + 30;  // slight right of center → front seat column
-        const startY = vh * 0.75;      // above the bike, at rider's chest/head
+        // rider's torso/head was before getting launched. Subtle nudges
+        // from the previous spot (was +30/0.75): a touch left + a touch
+        // lower so the figure pops out exactly over the seat.
+        const startX = vw * 0.5 + 15;  // slight right of center, nudged left
+        const startY = vh * 0.77;      // above the bike, nudged slightly lower
         const targetX = vw + 200;       // offscreen right
         const targetY = -180;           // offscreen top
         const ease = Math.pow(t, 0.85);

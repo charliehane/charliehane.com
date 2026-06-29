@@ -1437,7 +1437,9 @@ body {
   pointer-events: none;
   z-index: 7;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  /* HARD CUT — no opacity fade. Figure appears in a single frame at
+     crashProgress so the swap from bike→launch reads as a clean impact
+     rather than a dissolve. */
   will-change: transform, opacity;
   filter: drop-shadow(0 6px 14px rgba(0,0,0,0.45));
   /* Rotate around the figure's belly (slightly below geometric center)

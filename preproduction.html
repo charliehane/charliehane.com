@@ -101,10 +101,14 @@
            the FG video's stacking context above it. -->
       <div class="world-bike-stage">
         <div class="world-bike-pos" id="worldBikePos">
-          <!-- bike art lives in assets/bike-with-rider.svg — swap that file -->
           <!-- Bike: 14-frame sprite from assets/bike-sprite.png. Frame index
                advances based on scroll velocity (preproduction.js handles it). -->
           <div class="world-bike world-bike--sprite" id="worldBike" aria-hidden="true"></div>
+          <!-- Crashed bike: shown at crashProgress when the launched figure
+               flies off. Inherits the same .world-bike positioning + rotation
+               (--crashRot cascades from .world-bike-pos), so it takes over
+               the rotation animation already in progress without any jump. -->
+          <div class="world-bike world-bike-crashed" id="worldBikeCrashed" aria-hidden="true"></div>
         </div>
 
         <!-- Launched figure (post-crash, flies through the air).

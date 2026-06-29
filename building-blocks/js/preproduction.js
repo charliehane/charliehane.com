@@ -177,7 +177,16 @@
       const ease = 1 - Math.pow(1 - t, 2);          // ease-out quadratic
       crashRot = ROT_PEAK_DEG * (1 - ease);
     } else                                  crashRot = 0;
-    if (bikeEl) bikeEl.style.setProperty('--crashRot', `${crashRot}deg`);
+    // Apply rotation on the parent so BOTH the moving bike sprite AND
+    // the crashed-bike sibling inherit it via CSS custom-property cascade.
+    if (bikePos) bikePos.style.setProperty('--crashRot', `${crashRot}deg`);
+
+    // Toggle which bike is visible: moving sprite pre-crash, crashed
+    // PNG once we hit crashProgress. The crossfade is handled by CSS.
+    if (bikePos) {
+      if (progress >= crashProgress) bikePos.classList.add('is-crashed');
+      else                            bikePos.classList.remove('is-crashed');
+    }
 
     if (progress < crashProgress) {
       // pre-crash: bike centered on viewport, rider on bike

@@ -1385,7 +1385,30 @@ body {
   background-size: 3360px 135px;
   background-position: 0 0;
   filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+  /* The crashed-bike sibling crossfades on top of this one at crashProgress. */
+  transition: opacity 0.12s ease;
 }
+/* Post-crash bike — single PNG of the lone rider on a busted bike,
+   takes over the world-bike position + rotation when the launched
+   figure flies off. Same source aspect (1.78:1) as the sprite so it
+   sits in the exact same footprint. */
+.page-producer-ride .world-bike-crashed {
+  width: 240px;
+  height: 135px;
+  background-image: url('../../assets/bike-crashed.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
+}
+/* At the moment of the launch, swap which bike is visible. The rotation
+   transform is shared via the --crashRot CSS variable cascading from
+   .world-bike-pos, so the crashed bike inherits whatever rotation the
+   moving bike had at crash — no visual jump on the swap. */
+.page-producer-ride .world-bike-pos.is-crashed .world-bike--sprite { opacity: 0; }
+.page-producer-ride .world-bike-pos.is-crashed .world-bike-crashed { opacity: 1; }
 
 /* car drives in from the right and crashes into the bike */
 .world-car {

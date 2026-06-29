@@ -89,7 +89,11 @@
   }
 
   let maxX = 0, scrollableH = 0;
-  let crashProgress = 0.90;       // reserve last 10% of scroll for launched-figure arc
+  // crashProgress shifted ~10 video-frames earlier (≈0.0123 progress at
+  // 27s/30fps) so the bike-swap + figure launch line up with the visual
+  // impact moment in the AE crash render. Bike rotation peak follows the
+  // same value since it's keyed off crashProgress.
+  let crashProgress = 0.90 - (10 / (30 * 27));   // ≈ 0.8877
   let trackXAtCrash = 0;
 
   const measure = () => {
@@ -204,11 +208,13 @@
       const rider = getBikeRider(); if (rider) rider.style.opacity = '0';
       if (launchedEl) {
         launchedEl.style.opacity = '1';
-        // arc from crash point (vw/2, vh*0.7) up and to the right; exits offscreen quickly
-        const startX = vw * 0.5;
-        const startY = vh * 0.72;
-        const targetX = vw + 200;     // offscreen right
-        const targetY = -180;          // offscreen top
+        // arc starts as close to the front bike seat as possible (slightly
+        // right of viewport center, low — right where the front rider was
+        // sitting before getting launched) and ends offscreen upper-right.
+        const startX = vw * 0.5 + 50;  // slightly right of center → front seat
+        const startY = vh * 0.88;      // much lower than before → at the seat
+        const targetX = vw + 200;       // offscreen right
+        const targetY = -180;           // offscreen top
         const ease = Math.pow(t, 0.85);
         const lx = startX + (targetX - startX) * ease;
         const ly = startY + (targetY - startY) * ease - Math.sin(ease * Math.PI) * 80;
@@ -221,11 +227,14 @@
         const rot = ease * 380;
         launchedEl.style.transform = `translate(${lx - 55}px, ${ly - 75}px) rotate(${rot}deg)`;
         // Advance the sprite frame to spin through the arc. ~2 full
-        // sprite cycles across the launch (frame = floor(ease * 20) % 10).
+        // sprite cycles across the launch. Offset by +7 so the very
+        // first visible frame is frame 7 (the 3rd-to-last in the 10-frame
+        // sequence) — Charlie's preferred starting pose with the head
+        // already tilted back and ready to launch.
         // Frame width is 110px in CSS pixels (sprite scaled to 1100px wide).
         const sprite = document.getElementById('launchedFigureSprite');
         if (sprite) {
-          const frame = Math.floor(ease * 20) % 10;
+          const frame = (Math.floor(ease * 20) + 7) % 10;
           sprite.style.backgroundPositionX = `${-frame * 110}px`;
         }
       }

@@ -1385,8 +1385,10 @@ body {
   background-size: 3360px 135px;
   background-position: 0 0;
   filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
-  /* The crashed-bike sibling crossfades on top of this one at crashProgress. */
-  transition: opacity 0.12s ease;
+  /* HARD CUT to crashed-bike — no fade. Per Charlie: the swap should
+     happen in a single frame, hidden by the launched-figure starting to
+     fly, so it reads as the impact 'broke' the bike rather than a
+     dissolve. */
 }
 /* Post-crash bike — single PNG of the lone rider on a busted bike,
    takes over the world-bike position + rotation when the launched
@@ -1400,7 +1402,6 @@ body {
   background-size: contain;
   background-position: center;
   opacity: 0;
-  transition: opacity 0.12s ease;
   filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
 }
 /* At the moment of the launch, swap which bike is visible. The rotation

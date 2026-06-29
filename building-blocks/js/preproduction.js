@@ -203,10 +203,16 @@
         const ease = Math.pow(t, 0.85);
         const lx = startX + (targetX - startX) * ease;
         const ly = startY + (targetY - startY) * ease - Math.sin(ease * Math.PI) * 80;
-        // No CSS rotate — the sprite frames ARE the rotation. Translate only.
-        launchedEl.style.transform = `translate(${lx - 55}px, ${ly - 75}px)`;
+        // Two rotations layered: the sprite frames cycle (in-plane spin
+        // of the character's body), and a CSS rotate that tumbles the
+        // whole figure around its belly center (transform-origin set in
+        // .launched-figure CSS to 50% 55%, roughly the figure's middle).
+        // rot = ease * 380 → slightly more than one full tumble across
+        // the arc, same as the original stick-figure animation.
+        const rot = ease * 380;
+        launchedEl.style.transform = `translate(${lx - 55}px, ${ly - 75}px) rotate(${rot}deg)`;
         // Advance the sprite frame to spin through the arc. ~2 full
-        // rotations across the launch (frame = floor(ease * 20) % 10).
+        // sprite cycles across the launch (frame = floor(ease * 20) % 10).
         // Frame width is 110px in CSS pixels (sprite scaled to 1100px wide).
         const sprite = document.getElementById('launchedFigureSprite');
         if (sprite) {

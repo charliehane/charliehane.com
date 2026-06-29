@@ -1416,6 +1416,10 @@ body {
   transition: opacity 0.3s ease;
   will-change: transform, opacity;
   filter: drop-shadow(0 6px 14px rgba(0,0,0,0.45));
+  /* Rotate around the figure's belly (slightly below geometric center)
+     so the tumble pivots on the body's mass center rather than between
+     the legs. */
+  transform-origin: 50% 55%;
 }
 .launched-figure-sprite {
   width: 100%;

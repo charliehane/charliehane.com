@@ -89,11 +89,11 @@
   }
 
   let maxX = 0, scrollableH = 0;
-  // crashProgress shifted ~10 video-frames earlier (≈0.0123 progress at
-  // 27s/30fps) so the bike-swap + figure launch line up with the visual
-  // impact moment in the AE crash render. Bike rotation peak follows the
-  // same value since it's keyed off crashProgress.
-  let crashProgress = 0.90 - (10 / (30 * 27));   // ≈ 0.8877
+  // crashProgress lines up with the visual contact moment in the AE
+  // crash render (the green car making contact with the bike). The bike
+  // rotation peak, sprite→crashed-bike swap, and figure launch all fire
+  // off this single value.
+  let crashProgress = 0.90;
   let trackXAtCrash = 0;
 
   const measure = () => {

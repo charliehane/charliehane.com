@@ -188,6 +188,52 @@
       }
       draw(cx, cy);
     }, { passive: true });
+
+    // ============================================================
+    // WORM TRAIL — worm leaves the same shovel-style dark line as
+    // the mouse-driven grass trail, dragged behind its front (head)
+    // as it drifts right→left across the underground.
+    // ============================================================
+    const wormEl = document.querySelector('.dig-worm');
+    if (wormEl) {
+      let lastWX = null, lastWY = null;
+      const trackWorm = () => {
+        const wormRect = wormEl.getBoundingClientRect();
+        const canvasRect = canvas.getBoundingClientRect();
+        // Worm eyes face LEFT — its FRONT (head) is the leftmost point.
+        // Start the trail from just AT the front so the line trails behind.
+        const frontX = wormRect.left - canvasRect.left;
+        // Trail sits at the worm's belly-line (bottom of container).
+        const y = wormRect.bottom - canvasRect.top;
+        // Only draw if the front is inside the canvas area
+        if (frontX >= 0 && frontX <= canvasRect.width && y >= 0 && y <= canvasRect.height) {
+          if (lastWX !== null && (Math.abs(frontX - lastWX) > 0.5 || Math.abs(y - lastWY) > 0.5)) {
+            // Same paint spec as the shovel-on-grass trail
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = 36;
+            ctx.strokeStyle = 'rgba(40, 24, 12, 0.95)';
+            ctx.beginPath();
+            ctx.moveTo(lastWX, lastWY);
+            ctx.lineTo(frontX, y);
+            ctx.stroke();
+            for (let i = 0; i < 4; i++) {
+              const px = frontX + (Math.random() - 0.5) * 30;
+              const py = y + (Math.random() - 0.5) * 16;
+              ctx.fillStyle = 'rgba(20, 12, 6, 0.85)';
+              ctx.beginPath();
+              ctx.arc(px, py, 1.5 + Math.random() * 2.5, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+          lastWX = frontX; lastWY = y;
+        } else {
+          lastWX = null; lastWY = null;
+        }
+        requestAnimationFrame(trackWorm);
+      };
+      requestAnimationFrame(trackWorm);
+    }
   }
 
 

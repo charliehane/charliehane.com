@@ -204,16 +204,17 @@
       const drawWormTunnel = (px0, py0, px1, py1) => {
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        // outer cavern wall
-        ctx.lineWidth = 170;
+        // outer cavern wall — reduced 170 → 130
+        ctx.lineWidth = 130;
         ctx.strokeStyle = 'rgba(8, 4, 2, 0.55)';
         ctx.beginPath(); ctx.moveTo(px0, py0); ctx.lineTo(px1, py1); ctx.stroke();
-        // mid layer
-        ctx.lineWidth = 135;
+        // mid layer — 135 → 108
+        ctx.lineWidth = 108;
         ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
         ctx.beginPath(); ctx.moveTo(px0, py0); ctx.lineTo(px1, py1); ctx.stroke();
-        // inner pitch black — sized so a 98px-tall worm sits comfortably inside
-        ctx.lineWidth = 110;
+        // inner pitch black — 110 → 90 (worm body barely peeks through the
+        // wall, but that reads as 'chewing at the front' not as 'too big'.)
+        ctx.lineWidth = 90;
         ctx.strokeStyle = 'rgba(0, 0, 0, 0.97)';
         ctx.beginPath(); ctx.moveTo(px0, py0); ctx.lineTo(px1, py1); ctx.stroke();
 
@@ -253,9 +254,12 @@
         }
       };
 
-      // Sprite cell has ~30px transparent padding either side (in display
-      // pixels), so the worm's ACTUAL head is that far inside container.left.
-      const HEAD_OFFSET_PX = 30;
+      // The tunnel is drawn with a round-cap stroke, so its round leading
+      // edge extends outerLineWidth/2 = 65px LEFT of the point we draw to.
+      // To make the visible tunnel front-edge line up with the worm's
+      // actual face pixel, we set the draw point INSIDE the worm by:
+      //   [sprite transparent-padding ≈ 30] + [round cap radius ≈ 65] = 95.
+      const HEAD_OFFSET_PX = 95;
 
       let lastWX = null, lastWY = null;
       const trackWorm = () => {

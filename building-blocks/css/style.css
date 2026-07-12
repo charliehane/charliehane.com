@@ -569,6 +569,90 @@ body {
    BICYCLE WORLD (horizontal pin-and-pan + bricks + bike)
    ============================================================ */
 
+/* ============================================================
+   PREPRODUCTION LOADING OVERLAY — hides until videos are ready.
+   - Cream base + scaled-up paper-texture overlay
+   - Texture rotates/translates/inverts randomly every 2-3 frames
+     (at 24fps ≈ every 85-125ms) for a jittery film-grain feel
+   - LOADING text cycles: LOADING → LOADING. → ... → DANG, STILL
+     LOADING.... → restart (JS-driven)
+   - 14-frame bike sprite pedaling in place below the text
+   - Fades out via opacity when JS adds .is-loaded
+   ============================================================ */
+.preprod-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s ease, visibility 0s linear 0s;
+}
+.preprod-loading.is-loaded {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+  pointer-events: none;
+}
+/* Paper-texture layer. Sized ~1.5x viewport so rotations + position
+   shifts never expose the edges. When assets/paper-texture.jpg is
+   present it's used; otherwise the layer stays transparent and the
+   cream base shows through cleanly. */
+.preprod-loading-texture {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200vmax;
+  height: 200vmax;
+  transform: translate(-50%, -50%);
+  background-image: url('../../assets/paper-texture.jpg');
+  background-size: 60vmax 60vmax;
+  background-repeat: repeat;
+  background-position: 0 0;
+  mix-blend-mode: multiply;
+  opacity: 0.7;
+  pointer-events: none;
+  will-change: transform, background-position, filter;
+}
+.preprod-loading-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+.preprod-loading-text {
+  font-family: "refrigerator-deluxe", sans-serif;
+  font-weight: 900 !important;
+  font-size: clamp(48px, 8vw, 120px);
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  text-align: center;
+  min-height: 1.2em;
+  line-height: 1.1;
+  /* Fixed width for the widest state so text doesn't reflow */
+  min-width: 12ch;
+}
+.preprod-loading-bike {
+  width: 240px;
+  height: 135px;
+  background-image: url('../../assets/bike-sprite.png');
+  background-repeat: no-repeat;
+  background-size: 3360px 135px;   /* 14 frames × 240 wide */
+  background-position: 0 0;
+  animation: preprodLoadingBikePedal 0.9s steps(14) infinite;
+  transform: scale(1.2);
+}
+@keyframes preprodLoadingBikePedal {
+  from { background-position-x: 0; }
+  to   { background-position-x: -3360px; }
+}
+
 .world-section {
   position: relative;
   height: 500vh;

@@ -12,6 +12,17 @@
 </head>
 <body class="page-producer page-producer-ride">
 
+  <!-- Loading overlay — sits above everything until BG + FG videos have
+       enough data to scrub smoothly. Hides via .is-loaded class from
+       preproduction.js. -->
+  <div class="preprod-loading" id="preprodLoading" aria-hidden="true">
+    <div class="preprod-loading-texture" id="preprodLoadingTexture"></div>
+    <div class="preprod-loading-content">
+      <span class="preprod-loading-text" id="preprodLoadingText">LOADING</span>
+      <div class="preprod-loading-bike" id="preprodLoadingBike" aria-hidden="true"></div>
+    </div>
+  </div>
+
   <nav class="nav nav--blend">
     <a href="index.html" class="nav-home" data-content="navLabels.home">← home</a>
     <ul class="nav-sections">

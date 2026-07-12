@@ -21,6 +21,69 @@
   // WORLD — pin-and-pan; car is a STILL element inside Night scene
   // ============================================================
 
+  // ============================================================
+  // LOADING OVERLAY — visible until BG + FG videos have enough
+  // buffer to scrub smoothly (readyState >= 3, HAVE_FUTURE_DATA),
+  // or after a hard 5s timeout so a stalled network doesn't hang
+  // the page forever. LOADING text cycles through escalating states;
+  // the paper-texture layer jitters (rotate/translate/invert)
+  // every 85-125ms for a film-grain feel.
+  // ============================================================
+  const loadingOverlay = document.getElementById('preprodLoading');
+  const loadingText    = document.getElementById('preprodLoadingText');
+  const loadingTex     = document.getElementById('preprodLoadingTexture');
+
+  if (loadingText) {
+    const STATES = [
+      'LOADING',
+      'LOADING.',
+      'LOADING..',
+      'LOADING...',
+      'STILL LOADING....',
+      'DANG, STILL LOADING....',
+    ];
+    let stateIdx = 0;
+    const advanceText = () => {
+      if (!loadingText) return;
+      loadingText.textContent = STATES[stateIdx];
+      stateIdx = (stateIdx + 1) % STATES.length;
+    };
+    advanceText();
+    setInterval(advanceText, 500);
+  }
+
+  if (loadingTex) {
+    // Jitter the texture every 85-125ms (2-3 frames at 24fps):
+    //   - random rotate: 0, 90, 180, 270
+    //   - random translate offset (small)
+    //   - random invert on/off
+    const rots = [0, 90, 180, 270];
+    let inverted = false;
+    const jitter = () => {
+      const rot = rots[Math.floor(Math.random() * rots.length)];
+      const bx = (Math.random() * 60).toFixed(1);
+      const by = (Math.random() * 60).toFixed(1);
+      inverted = Math.random() < 0.35 ? !inverted : inverted;
+      loadingTex.style.transform =
+        `translate(-50%, -50%) rotate(${rot}deg)`;
+      loadingTex.style.backgroundPosition = `${bx}vmax ${by}vmax`;
+      loadingTex.style.filter = inverted ? 'invert(1)' : 'none';
+      setTimeout(jitter, 85 + Math.random() * 40);
+    };
+    jitter();
+  }
+
+  const hideLoading = () => {
+    if (loadingOverlay && !loadingOverlay.classList.contains('is-loaded')) {
+      loadingOverlay.classList.add('is-loaded');
+    }
+  };
+
+  // Fallback: after 5s, hide the overlay regardless of video state so
+  // a slow/stalled network doesn't leave visitors stuck.
+  setTimeout(hideLoading, 5000);
+
+
   const section    = document.getElementById('worldSection');
   const track      = document.getElementById('worldTrack');
   const bar        = document.getElementById('worldProgressBar');
@@ -79,6 +142,30 @@
   };
   primeVideo(bgVideo, d => { bgVideoDuration = d; });
   primeVideo(fgVideo, d => { fgVideoDuration = d; });
+
+  // Hide loading overlay once BOTH videos have enough buffered data
+  // to scrub smoothly (canplaythrough fires when the browser thinks
+  // it can play through without pausing). Wired here (right after
+  // primeVideo) so both handlers are attached before any events fire.
+  {
+    let bgReady = false, fgReady = false;
+    const check = () => { if (bgReady && fgReady) hideLoading(); };
+    if (bgVideo) {
+      const onBg = () => { bgReady = true; check(); };
+      bgVideo.addEventListener('canplaythrough', onBg);
+      bgVideo.addEventListener('loadeddata', () => {
+        if (bgVideo.readyState >= 3) onBg();
+      });
+    } else { bgReady = true; }
+    if (fgVideo) {
+      const onFg = () => { fgReady = true; check(); };
+      fgVideo.addEventListener('canplaythrough', onFg);
+      fgVideo.addEventListener('loadeddata', () => {
+        if (fgVideo.readyState >= 3) onFg();
+      });
+    } else { fgReady = true; }
+    check();   // both may already be ready if cached
+  }
 
   // iOS Safari refuses to render scrubbed-video frames until the user
   // interacts with the page in a way that "unlocks" media. The dance:

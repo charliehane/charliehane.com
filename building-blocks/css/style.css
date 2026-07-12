@@ -1351,6 +1351,20 @@ body {
   to   { background-position-x: -1300px; }
 }
 
+/* Second worm — one full viewport below the first, moving left→right.
+   Same sprite, mirrored via scaleX(-1) in the crawl keyframes so its
+   face points the way it's traveling. */
+.dig-worm--rev {
+  top: calc(32% + 100vh);
+  animation:
+    wormCrawlRev 28s linear infinite,
+    wormCycle 1s steps(5) infinite;
+}
+@keyframes wormCrawlRev {
+  from { transform: translate(-280px, 0) scaleX(-1); }
+  to   { transform: translate(110vw, 0)  scaleX(-1); }
+}
+
 .casket {
   position: absolute;
   width: 320px;

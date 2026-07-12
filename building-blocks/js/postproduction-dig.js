@@ -195,8 +195,8 @@
     // inside its tunnel. Uses independent lastWX/Y state so it doesn't
     // fight the mouse trail's lx/ly closure vars.
     // ============================================================
-    const wormEl = document.querySelector('.dig-worm');
-    if (wormEl) {
+    const wormEls = [...document.querySelectorAll('.dig-worm')];
+    if (wormEls.length) {
       // Same paint spec as the mouse-driven draw() above but with wider
       // strokes so the ~100px-tall worm body fits inside the pitch-black
       // inner tunnel. Also skips scattering rocks / droplets / dust so far
@@ -254,31 +254,45 @@
       };
 
       // The tunnel is drawn with a round-cap stroke, so its round leading
-      // edge extends outerLineWidth/2 = 55px LEFT of the point we draw to.
+      // edge extends outerLineWidth/2 = 55px past the point we draw to.
       // To make the visible tunnel front-edge line up with the worm's
       // actual face pixel, we set the draw point INSIDE the worm by:
       //   [sprite transparent-padding ≈ 30] + [round cap radius ≈ 55] = 85.
-      const HEAD_OFFSET_PX = 85;
+      // For the default (right→left) worm the face is on the LEFT of its
+      // container, so headOffset from the container's LEFT edge = 85.
+      // For the reversed (left→right) worm (scaleX(-1)) the face is on
+      // the RIGHT of its container, so headOffset from the LEFT edge =
+      //   container_width - 85 = 260 - 85 = 175.
+      const HEAD_OFFSET_PX     = 85;
+      const HEAD_OFFSET_PX_REV = 175;
 
-      let lastWX = null, lastWY = null;
-      const trackWorm = () => {
-        const wr = wormEl.getBoundingClientRect();
+      // One tracker per worm — each keeps its own lastWX/lastWY so
+      // trails don't cross-connect when a worm exits/enters the canvas.
+      const trackers = wormEls.map(el => ({
+        el,
+        headOffset: el.classList.contains('dig-worm--rev') ? HEAD_OFFSET_PX_REV : HEAD_OFFSET_PX,
+        lastX: null,
+        lastY: null,
+      }));
+
+      const trackWorms = () => {
         const cr = canvas.getBoundingClientRect();
-        // Head at the worm's front-body pixel (not container edge)
-        const headX = wr.left + HEAD_OFFSET_PX - cr.left;
-        // Vertical: center on the worm's body-line
-        const y = wr.top + wr.height / 2 - cr.top;
-        if (headX >= 0 && headX <= cr.width && y >= 0 && y <= cr.height) {
-          if (lastWX !== null && (Math.abs(headX - lastWX) > 0.5 || Math.abs(y - lastWY) > 0.5)) {
-            drawWormTunnel(lastWX, lastWY, headX, y);
+        for (const t of trackers) {
+          const wr = t.el.getBoundingClientRect();
+          const headX = wr.left + t.headOffset - cr.left;
+          const y = wr.top + wr.height / 2 - cr.top;
+          if (headX >= 0 && headX <= cr.width && y >= 0 && y <= cr.height) {
+            if (t.lastX !== null && (Math.abs(headX - t.lastX) > 0.5 || Math.abs(y - t.lastY) > 0.5)) {
+              drawWormTunnel(t.lastX, t.lastY, headX, y);
+            }
+            t.lastX = headX; t.lastY = y;
+          } else {
+            t.lastX = null; t.lastY = null;
           }
-          lastWX = headX; lastWY = y;
-        } else {
-          lastWX = null; lastWY = null;
         }
-        requestAnimationFrame(trackWorm);
+        requestAnimationFrame(trackWorms);
       };
-      requestAnimationFrame(trackWorm);
+      requestAnimationFrame(trackWorms);
     }
   }
 

@@ -85,7 +85,7 @@
       if (sprite) {
         const bloodT = Math.max(0, Math.min(1, (t - 0.5) * 2));  // [0..1] across smush zone
         const FRAMES = 10;
-        const FRAME_W = 500;    // matches .portal-blood-sprite background-size (was 400)
+        const FRAME_W = 400;    // matches .portal-blood-sprite background-size
         const frameIdx = Math.min(FRAMES - 1, Math.floor(bloodT * FRAMES));
         sprite.style.backgroundPositionX = `${-frameIdx * FRAME_W}px`;
       }

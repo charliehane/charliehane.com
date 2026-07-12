@@ -2227,10 +2227,16 @@ body {
   top: 0;              /* blood line at Hane.'s baseline */
   left: 50%;
   transform: translateX(-50%);
-  width: 500px;        /* was 400; wider so widest frame never crops */
-  height: 400px;       /* extra room below so tallest drips never crop */
+  /* Container width kept at 400 (down from 500) so the sprite never
+     exceeds the horizontal room inside .portal-sticky's overflow:hidden
+     on narrower viewports (8vw side padding eats into the content area
+     fast on smaller screens, and 500px was clipping the wound-line
+     edges). Widest frame content is 322px so 400 leaves comfortable
+     margin on each side and still no crop. */
+  width: 400px;
+  height: 320px;       /* room below so tallest drips never crop */
   background-image: url('../../assets/blood-sprite.png');
-  background-size: 5000px 346px;
+  background-size: 4000px 277px;
   background-repeat: no-repeat;
   background-position: 0 0;
   opacity: 0;

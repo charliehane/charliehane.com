@@ -2205,10 +2205,45 @@ body {
   width: 350px;
   transform: translateX(-50%);
   pointer-events: none;
-  z-index: 5;
+  /* z:1 sits underneath the foot (z:2) so the foot visibly crushes
+     down onto the blood pool, not covered by it. */
+  z-index: 1;
   height: 0;
   overflow: visible;
 }
+/* Sprite-based blood — 10 frames, 3280×299 native, one horizontal row.
+   Displayed at 350×319 so each frame is 350px wide (background-size
+   3500×319). Anchored to top of the .portal-blood at bottom-of-name-wrap;
+   the horizontal blood line sits right at the crush point, drips extend
+   downward. Animation runs ONCE (steps(9) → forwards) when the
+   .is-bleeding class is added. */
+.portal-blood-sprite {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 350px;
+  height: 319px;
+  background-image: url('../../assets/blood-sprite.png');
+  background-size: 3500px 319px;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+.portal-blood.is-bleeding .portal-blood-sprite {
+  opacity: 1;
+  animation: bloodDrip 0.8s steps(9) forwards;
+}
+@keyframes bloodDrip {
+  from { background-position-x: 0; }
+  to   { background-position-x: -3150px; }  /* 9 × 350 = 3150 → lands on frame 9 */
+}
+/* Legacy blood elements — hidden. The sprite above replaces them. */
+.portal-blood-drip,
+.portal-blood-pool,
+.portal-blood-splat { display: none; }
 .portal-blood-pool {
   position: absolute;
   bottom: -8px;
@@ -2605,7 +2640,10 @@ body {
   pointer-events: none;
   height: 0;
   overflow: visible;
-  z-index: 5;
+  /* z:1 sits underneath the foot (z:2). Was z:5 before, which put
+     the blood ON TOP OF the foot — Charlie wants the foot visible over
+     the blood pool. */
+  z-index: 1;
 }
 .portal-blood span {
   display: block;

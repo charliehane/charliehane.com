@@ -44,6 +44,14 @@
       <div class="portal-name-wrap" id="portalNameWrap">
         <h1 class="portal-name" id="portalName">Charlie<br><em>Hane.</em></h1>
         <div class="portal-blood" id="portalBlood" aria-hidden="true">
+          <!-- 10-frame drip sprite from assets/blood-sprite.png. Animates
+               once when JS adds `.is-bleeding` (scroll t > 0.5). Lives
+               underneath the foot (foot z:2, blood z:1) so the foot
+               visibly crushes down onto the blood. -->
+          <div class="portal-blood-sprite" id="portalBloodSprite"></div>
+          <!-- Legacy CSS blood elements below — kept for structure but
+               hidden via CSS (see .portal-blood-drip / -pool / -splat
+               display:none rules). -->
           <!-- short drips emerging from letter positions only -->
           <div class="portal-blood-drip" style="left: 6%"></div>
           <div class="portal-blood-drip" style="left: 18%"></div>

@@ -2211,21 +2211,23 @@ body {
   height: 0;
   overflow: visible;
 }
-/* Sprite-based blood — 10 frames, 3280×299 native, one horizontal row.
-   Displayed at 350×319 so each frame is 350px wide (background-size
-   3500×319). Anchored to top of the .portal-blood at bottom-of-name-wrap;
-   the horizontal blood line sits right at the crush point, drips extend
-   downward. Animation runs ONCE (steps(9) → forwards) when the
-   .is-bleeding class is added. */
+/* Sprite-based blood — 10 frames, 3380×234 native, one horizontal row.
+   Displayed at 400×277 so each frame is 400px wide (background-size
+   4000×277). Each frame's blood is anchored at its own top-center to
+   the same point in the cell, so every frame lines up perfectly at the
+   'wound line' regardless of drip length. Anchored to top of .portal-blood
+   which itself sits at bottom of .portal-name-wrap — sprite `top: 0` puts
+   the horizontal blood line right at Hane.'s baseline; drips extend down.
+   Animation runs ONCE (steps(9) → forwards) when .is-bleeding is added. */
 .portal-blood-sprite {
   position: absolute;
-  top: -30px;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 350px;
-  height: 319px;
+  width: 400px;
+  height: 277px;
   background-image: url('../../assets/blood-sprite.png');
-  background-size: 3500px 319px;
+  background-size: 4000px 277px;
   background-repeat: no-repeat;
   background-position: 0 0;
   opacity: 0;
@@ -2238,7 +2240,7 @@ body {
 }
 @keyframes bloodDrip {
   from { background-position-x: 0; }
-  to   { background-position-x: -3150px; }  /* 9 × 350 = 3150 → lands on frame 9 */
+  to   { background-position-x: -3600px; }  /* 9 × 400 = 3600 → lands on frame 9 */
 }
 /* Legacy blood elements — hidden. The sprite above replaces them. */
 .portal-blood-drip,

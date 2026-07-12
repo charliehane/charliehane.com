@@ -81,8 +81,11 @@
     <!-- underground -->
     <div class="dig-underground" id="digUnderground">
 
-      <!-- crawling worm — swap by editing assets/worm.svg -->
-      <div class="dig-worm" data-art="worm" aria-hidden="true"></div>
+      <!-- crawling worm — 10-frame sprite from assets/worm-sprite.png.
+           Two CSS animations layered: wormCrawl drifts the whole container
+           right→left across the sky; wormCycle cycles the sprite frames
+           for the crawl motion. Swap the sprite PNG to change look. -->
+      <div class="dig-worm" aria-hidden="true"></div>
 
       <!-- coffins are rendered from content.json into this container -->
       <div data-template="coffinTpl" data-source="postproduction.coffins"></div>

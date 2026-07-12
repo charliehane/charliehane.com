@@ -1191,22 +1191,38 @@ body {
   pointer-events: none;
 }
 
+/* 10-frame photo sprite (assets/worm-sprite.png) — 3072x120, arranged
+   as one horizontal row of 10 frames × 307×120. Container width 400 →
+   background-size 4000×156 scales one frame to 400×156. Two animations
+   layered: wormCrawl moves the whole container from right→left across
+   the sky over 28s, wormCycle steps background-position through the 10
+   frames on a fast ~1.2s loop. */
 .dig-worm {
   position: absolute;
   top: 32%;
   left: 0;
-  width: 540px;
-  height: 160px;
-  animation: wormCrawl 28s linear infinite;
+  width: 400px;
+  height: 156px;
+  background-image: url('../../assets/worm-sprite.png');
+  background-size: 4000px 156px;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  animation:
+    wormCrawl 28s linear infinite,
+    wormCycle 1.2s steps(10) infinite;
   filter: drop-shadow(0 6px 14px rgba(0,0,0,0.7));
   z-index: 3;
   pointer-events: none;
 }
-.dig-worm svg { width: 100%; height: 100%; }
 /* worm always moves the direction its eyes point — right→left, no bobbing */
 @keyframes wormCrawl {
   from { transform: translate(110vw, 0); }
-  to   { transform: translate(-560px, 0); }
+  to   { transform: translate(-420px, 0); }
+}
+/* Frame cycle — 10 steps × 400px each = full sprite width. */
+@keyframes wormCycle {
+  from { background-position-x: 0; }
+  to   { background-position-x: -4000px; }
 }
 
 .casket {

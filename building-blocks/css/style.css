@@ -1191,20 +1191,22 @@ body {
   pointer-events: none;
 }
 
-/* 10-frame photo sprite (assets/worm-sprite.png) — 3072x180, arranged
-   as one horizontal row of 10 frames × 307×180. Container width 400 →
-   background-size 4000×234 scales one frame to 400×234. Two animations
-   layered: wormCrawl moves the whole container from right→left across
-   the sky over 28s, wormCycle steps background-position through the 10
-   frames on a fast ~1.2s loop. */
+/* 10-frame photo sprite (assets/worm-sprite.png) — 4900×290, one
+   horizontal row of 10 frames × 490×290. Each frame contains one worm
+   bottom-aligned + centered, with generous transparent padding so no
+   adjacent-frame bleed. Container 260×154 keeps the worm at a modest
+   crawling-through-dirt scale. Two animations layered: wormCrawl moves
+   the whole container right→left across the section over 28s;
+   wormCycle steps background-position through the 10 frames on a fast
+   ~1.2s loop. */
 .dig-worm {
   position: absolute;
   top: 32%;
   left: 0;
-  width: 400px;
-  height: 234px;
+  width: 260px;
+  height: 154px;
   background-image: url('../../assets/worm-sprite.png');
-  background-size: 4000px 234px;
+  background-size: 2600px 154px;
   background-repeat: no-repeat;
   background-position: 0 0;
   animation:
@@ -1217,12 +1219,12 @@ body {
 /* worm always moves the direction its eyes point — right→left, no bobbing */
 @keyframes wormCrawl {
   from { transform: translate(110vw, 0); }
-  to   { transform: translate(-420px, 0); }
+  to   { transform: translate(-280px, 0); }
 }
-/* Frame cycle — 10 steps × 400px each = full sprite width. */
+/* Frame cycle — 10 steps × 260px each = full sprite width (2600). */
 @keyframes wormCycle {
   from { background-position-x: 0; }
-  to   { background-position-x: -4000px; }
+  to   { background-position-x: -2600px; }
 }
 
 .casket {

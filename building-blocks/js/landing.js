@@ -32,6 +32,16 @@
   const portalHero  = document.getElementById('portalHero');
   const portalC     = document.getElementById('portalC');
 
+  // Signal to the loading overlay that the hero is ready — as soon as
+  // the 3.1MB foot-smush sprite sheet has decoded, everything else is
+  // lightweight enough to render immediately.
+  if (window.PageLoading) {
+    const heroImg = new Image();
+    heroImg.onload = () => window.PageLoading.hide();
+    heroImg.onerror = () => window.PageLoading.hide();
+    heroImg.src = 'assets/foot-smush-sprite.png';
+  }
+
   const SMUSH_FRAMES = 20;
   // Frames 0..SMUSH_LAST_HOLD are the "smush" (foot slamming down).
   // Frames SMUSH_LAST_HOLD+1..SMUSH_FRAMES-1 are the "blood" drip out.

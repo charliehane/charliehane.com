@@ -12,14 +12,14 @@
 </head>
 <body class="page-producer page-producer-ride">
 
-  <!-- Loading overlay — sits above everything until BG + FG videos have
-       enough data to scrub smoothly. Hides via .is-loaded class from
-       preproduction.js. -->
-  <div class="preprod-loading" id="preprodLoading" aria-hidden="true">
-    <div class="preprod-loading-texture" id="preprodLoadingTexture"></div>
-    <div class="preprod-loading-content">
-      <span class="preprod-loading-text" id="preprodLoadingText">LOADING</span>
-      <div class="preprod-loading-bike" id="preprodLoadingBike" aria-hidden="true"></div>
+  <!-- Loading overlay (reusable — see loading-overlay.js). Preproduction
+       uses the bike centerpiece. Hides once BG + FG videos are ready
+       for smooth scrubbing (preproduction.js wires the check). -->
+  <div class="page-loading" id="pageLoading" aria-hidden="true">
+    <div class="page-loading-texture" id="pageLoadingTexture"></div>
+    <div class="page-loading-content">
+      <span class="page-loading-text" id="pageLoadingText">LOADING</span>
+      <div class="page-loading-centerpiece page-loading-centerpiece--bike" id="pageLoadingCenterpiece" aria-hidden="true"></div>
     </div>
   </div>
 
@@ -156,6 +156,7 @@
     <p data-content="site.moreSoon">more soon.</p>
   </footer>
 
+  <script src="building-blocks/js/loading-overlay.js"></script>
   <script src="building-blocks/js/content-loader.js"></script>
   <script src="building-blocks/js/art-loader.js"></script>
   <script src="building-blocks/js/preproduction.js"></script>

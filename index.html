@@ -13,6 +13,17 @@
 </head>
 <body class="page-landing">
 
+  <!-- Loading overlay (reusable — see loading-overlay.js). Home uses
+       the foot centerpiece. Hides once the foot-smush sprite sheet
+       (3.1MB) has decoded so the hero doesn't flash unstyled. -->
+  <div class="page-loading" id="pageLoading" aria-hidden="true">
+    <div class="page-loading-texture" id="pageLoadingTexture"></div>
+    <div class="page-loading-content">
+      <span class="page-loading-text" id="pageLoadingText">LOADING</span>
+      <div class="page-loading-centerpiece page-loading-centerpiece--foot" id="pageLoadingCenterpiece" aria-hidden="true"></div>
+    </div>
+  </div>
+
   <nav class="nav nav--blend">
     <span class="nav-mark">CH—</span>
     <ul class="nav-sections">
@@ -128,6 +139,7 @@
     </div>
   </div>
 
+  <script src="building-blocks/js/loading-overlay.js"></script>
   <script src="building-blocks/js/content-loader.js"></script>
   <script src="building-blocks/js/art-loader.js"></script>
   <script src="building-blocks/js/landing.js"></script>

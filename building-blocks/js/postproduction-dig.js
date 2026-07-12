@@ -190,43 +190,86 @@
     }, { passive: true });
 
     // ============================================================
-    // WORM TRAIL — worm leaves the same shovel-style dark line as
-    // the mouse-driven grass trail, dragged behind its front (head)
-    // as it drifts right→left across the underground.
+    // WORM TRAIL — worm chews out the same 3-layer black cavern the
+    // mouse-driven shovel does, sized wider so the worm's body fits
+    // inside its tunnel. Uses independent lastWX/Y state so it doesn't
+    // fight the mouse trail's lx/ly closure vars.
     // ============================================================
     const wormEl = document.querySelector('.dig-worm');
     if (wormEl) {
+      // Same paint spec as the mouse-driven draw() above but with wider
+      // strokes so the ~100px-tall worm body fits inside the pitch-black
+      // inner tunnel. Also skips scattering rocks / droplets / dust so far
+      // outside the tunnel — the ranges are proportionally larger.
+      const drawWormTunnel = (px0, py0, px1, py1) => {
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        // outer cavern wall
+        ctx.lineWidth = 170;
+        ctx.strokeStyle = 'rgba(8, 4, 2, 0.55)';
+        ctx.beginPath(); ctx.moveTo(px0, py0); ctx.lineTo(px1, py1); ctx.stroke();
+        // mid layer
+        ctx.lineWidth = 135;
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
+        ctx.beginPath(); ctx.moveTo(px0, py0); ctx.lineTo(px1, py1); ctx.stroke();
+        // inner pitch black — sized so a 98px-tall worm sits comfortably inside
+        ctx.lineWidth = 110;
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.97)';
+        ctx.beginPath(); ctx.moveTo(px0, py0); ctx.lineTo(px1, py1); ctx.stroke();
+
+        const segLen = Math.hypot(px1 - px0, py1 - py0);
+        const segs = Math.max(1, Math.floor(segLen / 8));
+        // rocks
+        for (let i = 0; i < segs; i++) {
+          if (Math.random() < 0.18) {
+            const t = i / segs;
+            const rx = px0 + (px1 - px0) * t + (Math.random() - 0.5) * 140;
+            const ry = py0 + (py1 - py0) * t + (Math.random() - 0.5) * 140;
+            ctx.fillStyle = `rgba(${50 + Math.random() * 30}, ${42 + Math.random() * 24}, ${36 + Math.random() * 20}, 0.9)`;
+            ctx.beginPath(); ctx.arc(rx, ry, 3 + Math.random() * 5, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = 'rgba(180, 160, 140, 0.5)';
+            ctx.beginPath(); ctx.arc(rx - 1, ry - 1, 1, 0, Math.PI * 2); ctx.fill();
+          }
+        }
+        // droplets
+        for (let i = 0; i < segs; i++) {
+          if (Math.random() < 0.08) {
+            const t = i / segs;
+            const rx = px0 + (px1 - px0) * t + (Math.random() - 0.5) * 90;
+            const ry = py0 + (py1 - py0) * t + (Math.random() - 0.5) * 90;
+            ctx.fillStyle = 'rgba(120, 160, 180, 0.55)';
+            ctx.beginPath(); ctx.arc(rx, ry, 2 + Math.random() * 1.5, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = 'rgba(220, 240, 255, 0.7)';
+            ctx.beginPath(); ctx.arc(rx - 0.6, ry - 0.6, 0.6, 0, Math.PI * 2); ctx.fill();
+          }
+        }
+        // dirt
+        for (let i = 0; i < segs; i++) {
+          const t = i / segs;
+          const rx = px0 + (px1 - px0) * t + (Math.random() - 0.5) * 110;
+          const ry = py0 + (py1 - py0) * t + (Math.random() - 0.5) * 110;
+          ctx.fillStyle = 'rgba(20, 12, 6, 0.4)';
+          ctx.beginPath(); ctx.arc(rx, ry, 1.2 + Math.random() * 2, 0, Math.PI * 2); ctx.fill();
+        }
+      };
+
+      // Sprite cell has ~30px transparent padding either side (in display
+      // pixels), so the worm's ACTUAL head is that far inside container.left.
+      const HEAD_OFFSET_PX = 30;
+
       let lastWX = null, lastWY = null;
       const trackWorm = () => {
-        const wormRect = wormEl.getBoundingClientRect();
-        const canvasRect = canvas.getBoundingClientRect();
-        // Worm eyes face LEFT — its FRONT (head) is the leftmost point.
-        // Start the trail from just AT the front so the line trails behind.
-        const frontX = wormRect.left - canvasRect.left;
-        // Trail sits at the worm's belly-line (bottom of container).
-        const y = wormRect.bottom - canvasRect.top;
-        // Only draw if the front is inside the canvas area
-        if (frontX >= 0 && frontX <= canvasRect.width && y >= 0 && y <= canvasRect.height) {
-          if (lastWX !== null && (Math.abs(frontX - lastWX) > 0.5 || Math.abs(y - lastWY) > 0.5)) {
-            // Same paint spec as the shovel-on-grass trail
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.lineWidth = 36;
-            ctx.strokeStyle = 'rgba(40, 24, 12, 0.95)';
-            ctx.beginPath();
-            ctx.moveTo(lastWX, lastWY);
-            ctx.lineTo(frontX, y);
-            ctx.stroke();
-            for (let i = 0; i < 4; i++) {
-              const px = frontX + (Math.random() - 0.5) * 30;
-              const py = y + (Math.random() - 0.5) * 16;
-              ctx.fillStyle = 'rgba(20, 12, 6, 0.85)';
-              ctx.beginPath();
-              ctx.arc(px, py, 1.5 + Math.random() * 2.5, 0, Math.PI * 2);
-              ctx.fill();
-            }
+        const wr = wormEl.getBoundingClientRect();
+        const cr = canvas.getBoundingClientRect();
+        // Head at the worm's front-body pixel (not container edge)
+        const headX = wr.left + HEAD_OFFSET_PX - cr.left;
+        // Vertical: center on the worm's body-line
+        const y = wr.top + wr.height / 2 - cr.top;
+        if (headX >= 0 && headX <= cr.width && y >= 0 && y <= cr.height) {
+          if (lastWX !== null && (Math.abs(headX - lastWX) > 0.5 || Math.abs(y - lastWY) > 0.5)) {
+            drawWormTunnel(lastWX, lastWY, headX, y);
           }
-          lastWX = frontX; lastWY = y;
+          lastWX = headX; lastWY = y;
         } else {
           lastWX = null; lastWY = null;
         }

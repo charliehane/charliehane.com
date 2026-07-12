@@ -30,6 +30,35 @@
   const bgVideo    = document.getElementById('worldBgVideo');
   const fgVideo    = document.getElementById('worldFgVideo');
 
+  // ============================================================
+  // AUTO-SCALE — .world-section height is fixed in CSS at 500vh for
+  // the original 4 scenes (125vh/scene). When Charlie adds more films
+  // to preproduction.films in the JSON, more .scene blocks render and
+  // the horizontal track (width: max-content) grows — so we need
+  // proportionally more vertical scroll to pan through them at the
+  // same speed. The bike-jump click handler already works for any
+  // count (querySelectorAll('.brick')). Brick + popup positions cycle
+  // through the 5 scene--01..scene--05 CSS presets automatically via
+  // content-loader's modulo modifier.
+  // ============================================================
+  const VH_PER_SCENE = 125;
+  const scaleSectionToSceneCount = () => {
+    if (!section) return;
+    const count = document.querySelectorAll('.scene').length;
+    if (!count) return;
+    // Never shorter than the original 4-scene height so 4-film pages
+    // remain identical to Charlie's tuned defaults.
+    const vh = Math.max(500, count * VH_PER_SCENE);
+    section.style.height = `${vh}vh`;
+  };
+  if (document.querySelectorAll('.scene').length) scaleSectionToSceneCount();
+  document.addEventListener('content:loaded', () => {
+    scaleSectionToSceneCount();
+    // Trigger a re-measure so maxX / scrollableH are recomputed
+    // against the new section height.
+    if (typeof measure === 'function') { measure(); update(); }
+  });
+
   // Scrub-friendly state for the background + foreground videos. We avoid
   // setting currentTime until loadedmetadata has fired (otherwise NaN errors).
   let bgVideoDuration = 0;

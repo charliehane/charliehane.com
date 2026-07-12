@@ -23,87 +23,51 @@
 
 
   // ============================================================
-  // PORTAL — boot stomps as scroll progresses
+  // PORTAL — hero is a 20-frame foot-smush sprite sheet, scroll-scrubbed.
+  // Scroll progress through .portal maps to background-position-x on the
+  // sprite (0% = frame 1, 100% = frame 20). The ornate C is a separate
+  // 4-frame sprite overlaid on top so it keeps its own independent loop.
   // ============================================================
-  const portal         = document.getElementById('portal');
-  const portalFoot     = document.getElementById('portalFoot');
-  const portalNameWrap = document.getElementById('portalNameWrap');
-  const portalName     = document.getElementById('portalName');
-  const portalBlood    = document.getElementById('portalBlood');
+  const portal      = document.getElementById('portal');
+  const portalHero  = document.getElementById('portalHero');
+  const portalC     = document.getElementById('portalC');
 
-  // Randomize foot-sprite cycle so every page load has its own cadence:
-  // - random duration in 0.45–0.85s range (different walking speed)
-  // - random negative delay so it starts on a different frame each time
-  if (portalFoot && portalFoot.classList.contains('portal-foot--sprite')) {
-    const dur = 0.45 + Math.random() * 0.40;
-    portalFoot.style.animationDuration = `${dur.toFixed(2)}s`;
-    portalFoot.style.animationDelay = `-${(Math.random() * dur).toFixed(2)}s`;
-  }
-  // Same treatment for the C sprite — independent randomization so the
-  // two animations aren't lock-step with each other.
-  const portalC = document.getElementById('portalC');
+  const SMUSH_FRAMES = 20;
+  // Frames 0..SMUSH_LAST_HOLD are the "smush" (foot slamming down).
+  // Frames SMUSH_LAST_HOLD+1..SMUSH_FRAMES-1 are the "blood" drip out.
+  const SMUSH_LAST_HOLD = 14;
+  // Scroll fraction where blood starts. Smush spans t=[0..SMUSH_SPLIT],
+  // blood spans t=[SMUSH_SPLIT..1]. With portal 360vh (sticky range
+  // 260vh), 140/260 ≈ 0.538 puts blood in the last ~120vh of scroll.
+  const SMUSH_SPLIT = 140 / 260;
+
   if (portalC && portalC.classList.contains('portal-c--sprite')) {
     const dur = 0.45 + Math.random() * 0.40;
     portalC.style.animationDuration = `${dur.toFixed(2)}s`;
     portalC.style.animationDelay = `-${(Math.random() * dur).toFixed(2)}s`;
   }
 
-  // Motion-blur state — separate raf loop continuously decays the blur
-  // so it feels like real motion (builds up during scroll, smoothly fades
-  // back to 0 after movement stops).
-  let prevSquash = 0;
-  let blurAmount = 0;
-
   const updatePortal = () => {
-    if (!portal) return;
+    if (!portal || !portalHero) return;
     const rect = portal.getBoundingClientRect();
     const stickyRange = Math.max(1, portal.offsetHeight - window.innerHeight);
     const t = Math.max(0, Math.min(1, -rect.top / stickyRange));
 
-    if (portalName) {
-      const k = Math.min(1, t);
-      const scaleY = Math.max(0, 1 - k * 1.0); // fully crushed at end
-      portalName.style.transform = `scaleY(${scaleY})`;
-      if (portalFoot && portalNameWrap) {
-        const wrapRect = portalNameWrap.getBoundingClientRect();
-        const squashAmt = wrapRect.height * (1 - scaleY);
-        portalFoot.style.transform = `translateY(${squashAmt}px)`;
+    let frameIdx;
+    if (t < SMUSH_SPLIT) {
+      // Smush zone: map t=[0..SMUSH_SPLIT] → frames [0..SMUSH_LAST_HOLD]
+      const smushT = t / SMUSH_SPLIT;
+      frameIdx = Math.min(SMUSH_LAST_HOLD, Math.floor(smushT * (SMUSH_LAST_HOLD + 1)));
+    } else {
+      // Blood zone: map t=[SMUSH_SPLIT..1] → frames [SMUSH_LAST_HOLD+1..SMUSH_FRAMES-1]
+      const bloodT = (t - SMUSH_SPLIT) / (1 - SMUSH_SPLIT);
+      const bloodFrames = SMUSH_FRAMES - 1 - SMUSH_LAST_HOLD;
+      frameIdx = Math.min(SMUSH_FRAMES - 1, SMUSH_LAST_HOLD + 1 + Math.floor(bloodT * bloodFrames));
+    }
 
-        // Bump blur by how far the foot moved this update (Δ squash).
-        // The decay loop below smoothly winds it back down to 0.
-        const delta = Math.abs(squashAmt - prevSquash);
-        prevSquash = squashAmt;
-        blurAmount = Math.min(12, blurAmount + delta * 0.8);
-      }
-    }
-    if (portalBlood) {
-      // is-bleeding controls opacity (fade in via CSS transition when t > 0.5).
-      portalBlood.classList.toggle('is-bleeding', t > 0.5);
-      // Position-mapped sprite frame: scroll drives the drip growth.
-      // t=0.5 → frame 0; t=1.0 → frame 9. Scrolling back up reverses.
-      const sprite = document.getElementById('portalBloodSprite');
-      if (sprite) {
-        const bloodT = Math.max(0, Math.min(1, (t - 0.5) * 2));  // [0..1] across smush zone
-        const FRAMES = 10;
-        const FRAME_W = 400;    // matches .portal-blood-sprite background-size
-        const frameIdx = Math.min(FRAMES - 1, Math.floor(bloodT * FRAMES));
-        sprite.style.backgroundPositionX = `${-frameIdx * FRAME_W}px`;
-      }
-    }
+    const posPct = (frameIdx / (SMUSH_FRAMES - 1)) * 100;
+    portalHero.style.backgroundPositionX = `${posPct}%`;
   };
-
-  // Continuous decay so the blur smoothly winds down after scroll stops.
-  // Runs every frame regardless of scroll — cheap, just a single style write.
-  const decayBlur = () => {
-    if (portalFoot) {
-      blurAmount = Math.max(0, blurAmount - 0.6);
-      portalFoot.style.filter = blurAmount > 0.05
-        ? `blur(${blurAmount.toFixed(2)}px)`
-        : '';
-    }
-    requestAnimationFrame(decayBlur);
-  };
-  requestAnimationFrame(decayBlur);
 
   // ============================================================
   // FOREST — cinema scrub + interactive sign hotspots

@@ -284,6 +284,136 @@
 
 
   // ============================================================
+  // COFFIN AUTO-PLACEMENT — coffins with an explicit `position` in
+  // Editable Text Content.json stay pinned exactly where Charlie put
+  // them. Any coffin WITHOUT a `position` (i.e., new ones Charlie adds
+  // later) gets scattered randomly across .dig-underground with a
+  // collision-avoidance sweep. If placed coffins would cover more than
+  // 25% of the underground surface, .dig-world extends by another
+  // viewport of underground so there's room to breathe (and for
+  // visitors to explore the extra cavern).
+  //
+  // Runs on content:loaded (after content-loader has rendered the
+  // coffin templates from JSON). Idempotent — safe to call again on
+  // resize since we re-check for unplaced coffins.
+  // ============================================================
+  const undergroundHost = document.getElementById('digUnderground');
+  const digWorldHost    = document.getElementById('digWorld');
+  const COFFIN_W_PX     = 200;   // matches .coffin { width: 200px }
+  const COFFIN_H_PX     = 320;   // matches .coffin { height: 320px }
+  const COFFIN_PAD_PX   = 40;    // min gap between any two coffins
+  const COVERAGE_MAX    = 0.25;  // trigger for extending underground
+  const PLACE_ATTEMPTS  = 60;    // retries per unplaced coffin
+
+  // Detect whether a coffin already has an explicit position (pinned by
+  // JSON via data-style-from). content-loader writes `top:...; left:...`
+  // as an inline style attribute — we look for that.
+  const isPinned = (el) =>
+    /\btop\s*:/i.test(el.getAttribute('style') || '') &&
+    (/\bleft\s*:/i.test(el.getAttribute('style') || '') ||
+     /\bright\s*:/i.test(el.getAttribute('style') || ''));
+
+  // Turn a coffin element's on-screen box into underground-local coords.
+  const localRect = (el, ugRect) => {
+    const r = el.getBoundingClientRect();
+    return { x: r.left - ugRect.left, y: r.top - ugRect.top, w: r.width, h: r.height };
+  };
+
+  // Bounding-box overlap check with padding around each rect.
+  const overlaps = (a, b) =>
+    !(a.x + a.w + COFFIN_PAD_PX < b.x ||
+      a.x - COFFIN_PAD_PX > b.x + b.w ||
+      a.y + a.h + COFFIN_PAD_PX < b.y ||
+      a.y - COFFIN_PAD_PX > b.y + b.h);
+
+  const placeUnpinnedCoffins = () => {
+    if (!undergroundHost || !digWorldHost) return;
+
+    const coffins = [...undergroundHost.querySelectorAll('.coffin')]
+      .filter(el => !el.classList.contains('coffin--skeleton') &&
+                    !el.classList.contains('coffin--charlie'));
+    if (!coffins.length) return;
+
+    const unpinned = coffins.filter(el => !isPinned(el));
+    if (!unpinned.length) return;   // nothing to do — every coffin is pinned
+
+    // Reset any prior auto-placement so re-runs on resize start clean.
+    unpinned.forEach(el => {
+      el.style.top = '';
+      el.style.left = '';
+      el.style.removeProperty('--rot');
+    });
+
+    let extensionVh = 0;
+    const attemptRound = () => {
+      const ugRect = undergroundHost.getBoundingClientRect();
+      // pinned coffins have already been laid out by CSS — read their
+      // current pixel positions after any extension we've applied.
+      const pinnedRects = coffins.filter(isPinned).map(el => localRect(el, ugRect));
+
+      // Also count the skeleton/charlie coffins so they don't get
+      // overlapped by random placement (they're structural, not in the
+      // JSON list).
+      const skeleton = undergroundHost.querySelector('#coffinSkeleton');
+      if (skeleton) pinnedRects.push(localRect(skeleton, ugRect));
+
+      const placed = [...pinnedRects];
+      const usableW = ugRect.width  - COFFIN_W_PX - 2 * COFFIN_PAD_PX;
+      const usableH = ugRect.height - COFFIN_H_PX - 2 * COFFIN_PAD_PX;
+      if (usableW <= 0 || usableH <= 0) return false;   // underground too small
+
+      for (const el of unpinned) {
+        let ok = false;
+        for (let i = 0; i < PLACE_ATTEMPTS; i++) {
+          const x = COFFIN_PAD_PX + Math.random() * usableW;
+          const y = COFFIN_PAD_PX + Math.random() * usableH;
+          const candidate = { x, y, w: COFFIN_W_PX, h: COFFIN_H_PX };
+          if (placed.every(p => !overlaps(candidate, p))) {
+            const rotDeg = (Math.random() * 24 - 12).toFixed(1);
+            el.style.top  = `${(y / ugRect.height * 100).toFixed(2)}%`;
+            el.style.left = `${(x / ugRect.width  * 100).toFixed(2)}%`;
+            el.style.setProperty('--rot', `${rotDeg}deg`);
+            placed.push(candidate);
+            ok = true;
+            break;
+          }
+        }
+        if (!ok) return false;      // couldn't fit — bail so we extend
+      }
+
+      // Coverage check: reject if total coffin area exceeds threshold.
+      const coffinArea = placed.reduce((sum, r) => sum + r.w * r.h, 0);
+      const totalArea  = ugRect.width * ugRect.height;
+      return (coffinArea / totalArea) <= COVERAGE_MAX;
+    };
+
+    // Try to place; each failure extends .dig-world by another viewport
+    // of underground and retries. Cap at 8 extensions so we can't loop
+    // forever if the viewport is impossibly small.
+    for (let round = 0; round < 8; round++) {
+      // Reset positions for a clean attempt
+      unpinned.forEach(el => { el.style.top = ''; el.style.left = ''; el.style.removeProperty('--rot'); });
+      if (attemptRound()) return;
+
+      extensionVh += 100;
+      digWorldHost.style.height = `calc(320vh + ${extensionVh}vh)`;
+      // Force layout so the next getBoundingClientRect sees the new size.
+      void digWorldHost.offsetHeight;
+    }
+  };
+
+  if (document.querySelector('.dig-underground .coffin')) placeUnpinnedCoffins();
+  document.addEventListener('content:loaded', placeUnpinnedCoffins);
+  // Re-run on resize with a debounce so proportions stay sensible when
+  // viewport changes.
+  let coffinResizeT = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(coffinResizeT);
+    coffinResizeT = setTimeout(placeUnpinnedCoffins, 250);
+  });
+
+
+  // ============================================================
   // SKELETON COFFIN — eyes glow red as you scroll deeper
   // CHARLIE COFFIN — scratch animation as you scroll deeper
   // ============================================================

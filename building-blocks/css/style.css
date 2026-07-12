@@ -22,9 +22,21 @@ button { font: inherit; background: none; border: 0; padding: 0; }
   --moss-2:    #5a7556;
   --hairline:  rgba(26,22,20,0.16);
 
-  --serif: 'Fraunces', 'Times New Roman', serif;
-  --sans:  'Inter', system-ui, sans-serif;
-  --mono:  'JetBrains Mono', ui-monospace, monospace;
+  /* Refrigerator Deluxe (Adobe Fonts / Typekit yfy2byi) is the only
+     font in use across the site. Only Heavy (900) is licensed —
+     the global rule below forces every element to that weight so
+     nothing tries to load a lighter/italic variant and fall through
+     to a fallback family. Google Fonts stack kept as ultimate
+     fallback if Typekit fails to load. */
+  --serif: "refrigerator-deluxe", 'Fraunces', 'Times New Roman', serif;
+  --sans:  "refrigerator-deluxe", 'Inter', system-ui, sans-serif;
+  --mono:  "refrigerator-deluxe", 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Force Refrigerator Deluxe's only available variant everywhere. */
+*, *::before, *::after {
+  font-weight: 900 !important;
+  font-style: normal !important;
 }
 
 body {
@@ -113,7 +125,10 @@ body {
    ============================================================ */
 
 .portal {
-  min-height: 220vh;
+  /* Sticky range = 70vh of scroll — tight, punchy timing. Frame timing
+     remapped in landing.js so smush (frames 0-14) takes the first ~38vh
+     and blood (frames 15-19) drips out across the last ~32vh. */
+  min-height: 170vh;
   padding: 0;
   position: relative;
   background: var(--cream);
@@ -124,7 +139,11 @@ body {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* space-between distributes 3 children: eyebrow at top, stage in the
+     middle (vertically centered), blurb at bottom. portal-cue is
+     absolutely positioned so it doesn't affect this distribution. */
+  justify-content: space-between;
+  align-items: center;
   padding: 60px 8vw 80px;
   overflow: hidden;
 }
@@ -2541,6 +2560,48 @@ body {
   position: relative;
   margin-bottom: 36px;
   text-align: center;           /* center text inside name/blurb */
+}
+
+/* Hero: 20-frame foot-smush sprite sheet, scroll-scrubbed.
+   Sprite is 10000×841 (20 × 500×841 frames, laid out horizontally).
+   Sized by viewport height (not width) so it always fits above the
+   eyebrow / below the blurb without overflowing. Width follows aspect.
+   Wrapper is a positioning context so the C sprite can overlay the
+   upper-left. */
+.portal-hero-wrap {
+  position: relative;
+  height: min(72vh, 707px);
+  aspect-ratio: 500 / 841;
+  max-width: 72vw;
+  /* Nudge downward off perceived center — the nav bar + eyebrow above
+     the hero visually outweigh the blurb + cue below, so mathematical
+     center of the sticky reads as too high. */
+  margin: 18vh auto 0;
+}
+.portal-hero {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  pointer-events: none;
+}
+.portal-hero--sprite {
+  background-image: url('../../assets/foot-smush-sprite.png');
+  background-repeat: no-repeat;
+  /* Image is 20× wider than one frame — so at background-size 2000% wide,
+     the sheet is scaled so each frame == container width. Then
+     background-position-x is a percentage across the 20 frames:
+     0% shows frame 1, 100% shows frame 20. */
+  background-size: 2000% 100%;
+  background-position: 0% 0%;
+}
+/* Position-only override for the legacy .portal-c--sprite so it sits over
+   the foot's upper-left negative space in the new hero. Keep the sprite's
+   native 145×145 sizing intact — the 4-frame @keyframes cStep shifts by
+   fixed -580px and only lines up cleanly at that native size. */
+.portal-hero-wrap .portal-c--sprite {
+  top: 8px;
+  left: -18px;
 }
 .portal-foot {
   width: 280px;

@@ -7,6 +7,7 @@
   <meta name="description" content="Charlie Hane — preproduction, production, postproduction." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://use.typekit.net/yfy2byi.css">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="building-blocks/css/style.css" />
 </head>
@@ -27,53 +28,22 @@
     <p class="portal-eyebrow" data-content="site.tagline">— filmmaker</p>
 
     <div class="portal-stage">
-
-      <!-- Foot is centered on the page; the C is absolutely positioned
-           inside the foot's bounding box (upper-left negative space). -->
-      <div class="portal-foot-area">
-        <!-- Foot sprite: 4-frame animated PNG, plays continuously on its own
-             loop. The foot's `transform` is set by landing.js for the stomp;
-             sprite cycle uses background-position so they don't conflict. -->
-        <div class="portal-foot portal-foot--sprite" id="portalFoot" aria-hidden="true"></div>
-
-        <!-- Decorative C — sits in the foot's upper-left negative space.
-             Independent of scroll, unaffected by the stomp transform. -->
+      <!-- Hero: animated GIF of foot slamming down onto CHARLIE HANE wordmark
+           + blood dripping out (assets/logo-hero.gif, aka Foot Smush).
+           The ornate C sprite is layered on top as a separate element so it
+           can keep its own independent 4-frame animation and stay preserved
+           across GIF swaps. -->
+      <div class="portal-hero-wrap">
+        <!-- Scroll-scrubbed foot smush. 20-frame horizontal sprite sheet
+             (assets/foot-smush-sprite.png) with alpha. JS maps scroll
+             progress → frame via background-position-x. -->
+        <div
+          class="portal-hero portal-hero--sprite"
+          id="portalHero"
+          aria-label="Charlie Hane"
+        ></div>
         <div class="portal-c portal-c--sprite" id="portalC" aria-hidden="true"></div>
       </div>
-
-      <div class="portal-name-wrap" id="portalNameWrap">
-        <h1 class="portal-name" id="portalName">Charlie<br><em>Hane.</em></h1>
-        <div class="portal-blood" id="portalBlood" aria-hidden="true">
-          <!-- 10-frame drip sprite from assets/blood-sprite.png. Animates
-               once when JS adds `.is-bleeding` (scroll t > 0.5). Lives
-               underneath the foot (foot z:2, blood z:1) so the foot
-               visibly crushes down onto the blood. -->
-          <div class="portal-blood-sprite" id="portalBloodSprite"></div>
-          <!-- Legacy CSS blood elements below — kept for structure but
-               hidden via CSS (see .portal-blood-drip / -pool / -splat
-               display:none rules). -->
-          <!-- short drips emerging from letter positions only -->
-          <div class="portal-blood-drip" style="left: 6%"></div>
-          <div class="portal-blood-drip" style="left: 18%"></div>
-          <div class="portal-blood-drip" style="left: 30%"></div>
-          <div class="portal-blood-drip" style="left: 42%"></div>
-          <div class="portal-blood-drip" style="left: 54%"></div>
-          <div class="portal-blood-drip" style="left: 66%"></div>
-          <div class="portal-blood-drip" style="left: 80%"></div>
-          <div class="portal-blood-drip" style="left: 94%"></div>
-          <!-- horizontal splat pool that grows into a "floor" -->
-          <div class="portal-blood-pool"></div>
-          <div class="portal-blood-splat">
-            <svg viewBox="0 0 600 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0 40 Q30 12 60 32 Q90 8 120 28 Q150 18 180 36 Q210 6 240 30 Q270 14 300 32 Q330 8 360 28 Q390 16 420 34 Q450 10 480 30 Q510 20 540 36 Q570 14 600 32 L600 80 L0 80 Z"
-                    fill="#8a0808"/>
-              <path d="M0 50 Q30 28 60 44 Q90 22 120 42 Q150 32 180 48 Q210 22 240 44 Q270 30 300 46 Q330 24 360 42 Q390 32 420 48 Q450 26 480 44 Q510 36 540 50 Q570 30 600 46 L600 80 L0 80 Z"
-                    fill="#5a0404"/>
-            </svg>
-          </div>
-        </div>
-      </div>
-
     </div>
 
     <p class="portal-blurb" data-content="site.blurb">scroll into the woods to find the work.</p>

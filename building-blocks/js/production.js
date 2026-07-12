@@ -1,6 +1,35 @@
 (() => {
 
   // ============================================================
+  // AUTO-SCALE — the sky background is `position: fixed` so it
+  // already covers however tall the page grows; adding more works
+  // just extends the page naturally. What we DO scale explicitly:
+  //   1. Top padding on .works — more works get more sky-headroom
+  //      at the top so the eyebrow/title/lede breathe as the pile
+  //      gets deeper (extends the blue sky at the top first).
+  //   2. Bottom sky-buffer — keeps the same visual gap between the
+  //      last work and the city skyline no matter how many works
+  //      Charlie adds.
+  // Work-thumb color modifiers cycle through 12 presets in
+  // content-loader (data-modifier-count="12"), so any count works.
+  // ============================================================
+  const SKY_HEADROOM_PER_EXTRA_WORK_PX = 60;
+  const scaleSkyForWorks = () => {
+    const worksEl = document.querySelector('.works');
+    if (!worksEl) return;
+    const count = worksEl.querySelectorAll('.work').length;
+    if (!count) return;
+    // Add extra sky-headroom at the top only when Charlie exceeds the
+    // original 4-work count — small counts keep the tuned baseline.
+    const extras = Math.max(0, count - 4);
+    const topPad = 60 + extras * SKY_HEADROOM_PER_EXTRA_WORK_PX;
+    worksEl.style.paddingTop = `${topPad}px`;
+  };
+  if (document.querySelectorAll('.work').length) scaleSkyForWorks();
+  document.addEventListener('content:loaded', scaleSkyForWorks);
+
+
+  // ============================================================
   // STICK FIGURE CURSOR — always head-down (perpendicular),
   // very fast corkscrew with motion blur, looping wind streaks
   // ============================================================

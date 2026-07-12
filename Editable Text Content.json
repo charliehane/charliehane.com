@@ -74,33 +74,33 @@
         "scene": "Forest",
         "atmosphere": "night — deep green, dark canopy, moonlight",
         "sceneNum": "01 / forest",
-        "tag": "FILM 01 · PRODUCER",
-        "title": "An Atlas of Quiet Rooms",
-        "meta": "Pilot · 2024 · 28 min"
+        "tag": "FILM 01",
+        "title": "UPLOADS IN PROGRESS - Preproduction #1",
+        "meta": ""
       },
       {
         "scene": "Mountains",
         "atmosphere": "blue hour — cold cobalt sky, silhouetted peaks",
         "sceneNum": "02 / mountains",
-        "tag": "FILM 02 · PRODUCER",
-        "title": "Above the Treeline",
-        "meta": "Short documentary · 2024 · 22 min"
+        "tag": "FILM 02",
+        "title": "UPLOADS IN PROGRESS - Preproduction #2",
+        "meta": ""
       },
       {
         "scene": "Coast",
         "atmosphere": "sunrise — orange and pink, low sun glinting on water",
         "sceneNum": "03 / coast",
-        "tag": "FILM 03 · CO-PRODUCER",
-        "title": "Last Light at Tally Beach",
-        "meta": "Short film · 2023 · 18 min"
+        "tag": "FILM 03",
+        "title": "UPLOADS IN PROGRESS - Preproduction #3",
+        "meta": ""
       },
       {
         "scene": "City",
         "atmosphere": "midday — urban bright, hard light, traffic + glass",
         "sceneNum": "04 / city",
-        "tag": "FILM 04 · PRODUCER",
-        "title": "Tin Roof Empire",
-        "meta": "Feature · 2025 · 96 min"
+        "tag": "FILM 04",
+        "title": "UPLOADS IN PROGRESS - Preproduction #4",
+        "meta": ""
       }
     ]
   },
@@ -112,28 +112,28 @@
     "lede": "a smaller, slower pile — the films where i had to sit in the chair and decide things.",
     "works": [
       {
-        "tag": "001 / music video / 2024",
-        "title": "Underwater",
-        "credit": "Director · for Ada Vale · 4 min",
-        "blurb": "Single-take swimming-pool video shot at 3am in a closed YMCA using a borrowed underwater rig."
+        "tag": "001",
+        "title": "UPLOADS IN PROGRESS - Production #1",
+        "credit": "",
+        "blurb": ""
       },
       {
-        "tag": "002 / short film / 2023",
-        "title": "Bones in the Garden",
-        "credit": "Writer / Director · 14 min",
-        "blurb": "A mother and her grown daughter dig up the backyard, looking for something neither of them will name."
+        "tag": "002",
+        "title": "UPLOADS IN PROGRESS - Production #2",
+        "credit": "",
+        "blurb": ""
       },
       {
-        "tag": "003 / brand film / 2024",
-        "title": "Patagonia: Made for Mending",
-        "credit": "Director · 3 min",
-        "blurb": "Portrait of a small repair shop in Ventura, told entirely through the hands of the people who work there."
+        "tag": "003",
+        "title": "UPLOADS IN PROGRESS - Production #3",
+        "credit": "",
+        "blurb": ""
       },
       {
-        "tag": "004 / short documentary / 2022",
-        "title": "Fluorescent",
-        "credit": "Director · 11 min",
-        "blurb": "A 24 hour shift inside an all-night laundromat in Queens. Made with two cameras and far too much coffee."
+        "tag": "004",
+        "title": "UPLOADS IN PROGRESS - Production #4",
+        "credit": "",
+        "blurb": ""
       }
     ]
   },
@@ -145,27 +145,27 @@
     "lede": "an editor takes thousands of feet of footage and finds the film hiding inside it — listening for rhythm, cutting against expectation, doing the writing that happens at night with a screen and too much coffee. scroll down to dig the cuts up.",
     "coffins": [
       {
-        "tag": "001 · 2024",
-        "title": "Shipwreck",
-        "credit": "Editor · feature · 104 min",
+        "tag": "001",
+        "title": "UPLOADS IN PROGRESS - Postproduction #1",
+        "credit": "",
         "position": { "top": "6%", "left": "6%", "rot": "-8deg" }
       },
       {
-        "tag": "002 · 2023",
-        "title": "The Walk Home",
-        "credit": "Editor · short · 9 min",
+        "tag": "002",
+        "title": "UPLOADS IN PROGRESS - Postproduction #2",
+        "credit": "",
         "position": { "top": "24%", "right": "6%", "rot": "12deg" }
       },
       {
-        "tag": "003 · 2024",
-        "title": "Ralph Lauren — Heritage Spring",
-        "credit": "Editor · 90s spot",
+        "tag": "003",
+        "title": "UPLOADS IN PROGRESS - Postproduction #3",
+        "credit": "",
         "position": { "top": "44%", "left": "30%", "rot": "4deg" }
       },
       {
-        "tag": "004 · 2024",
-        "title": "Untitled Apple TV+ Pilot",
-        "credit": "Asst. Editor · 56 min",
+        "tag": "004",
+        "title": "UPLOADS IN PROGRESS - Postproduction #4",
+        "credit": "",
         "position": { "top": "78%", "left": "12%", "rot": "-14deg" }
       }
     ],

@@ -585,7 +585,10 @@ body {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: var(--cream);
+  /* Slightly warmer/more yellow than site-wide --cream (#f3ebe0)
+     so the loading canvas reads as a printed page rather than the
+     web body color. */
+  background: #f5ead0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -614,7 +617,7 @@ body {
   background-repeat: repeat;
   background-position: 0 0;
   mix-blend-mode: multiply;
-  opacity: 0.7;
+  opacity: 0.28;
   pointer-events: none;
   will-change: transform, background-position, filter;
 }

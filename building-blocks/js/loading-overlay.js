@@ -49,8 +49,8 @@
   }
 
   // Texture jitter — rotate 0/90/180/270°, random position shift, ~35%
-  // chance to toggle invert on each tick. Runs every 85-125ms (2-3
-  // frames at 24fps) for a film-grain feel.
+  // chance to toggle invert on each tick. Runs every 260-360ms so the
+  // grain shift reads as intentional rather than frantic.
   let jitterTimer = 0;
   if (texEl) {
     const rots = [0, 90, 180, 270];
@@ -63,7 +63,7 @@
       texEl.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
       texEl.style.backgroundPosition = `${bx}vmax ${by}vmax`;
       texEl.style.filter = inverted ? 'invert(1)' : 'none';
-      jitterTimer = setTimeout(jitter, 85 + Math.random() * 40);
+      jitterTimer = setTimeout(jitter, 260 + Math.random() * 100);
     };
     jitter();
   }

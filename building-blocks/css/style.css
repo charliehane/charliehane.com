@@ -1191,27 +1191,27 @@ body {
   pointer-events: none;
 }
 
-/* 10-frame photo sprite (assets/worm-sprite.png) — 4900×290, one
-   horizontal row of 10 frames × 490×290. Each frame contains one worm
-   bottom-aligned + centered, with generous transparent padding so no
-   adjacent-frame bleed. Container 260×154 keeps the worm at a modest
-   crawling-through-dirt scale. Two animations layered: wormCrawl moves
-   the whole container right→left across the section over 28s;
-   wormCycle steps background-position through the 10 frames on a fast
-   ~1.2s loop. */
+/* 5-frame photo sprite (assets/worm-sprite.png) — 2010×152, one
+   horizontal row of 5 frames × 402×152. Each frame is one pose of the
+   claymation-style worm mid-wiggle, bottom-aligned so the ground line
+   is consistent frame-to-frame. Container 260×98 keeps the worm at a
+   modest crawling-through-dirt scale. Two animations layered:
+   wormCrawl moves the whole container right→left across the section
+   over 28s; wormCycle steps background-position through the 5 frames
+   on a slower 1s loop (5-frame cycles look jerky if too fast). */
 .dig-worm {
   position: absolute;
   top: 32%;
   left: 0;
   width: 260px;
-  height: 154px;
+  height: 98px;
   background-image: url('../../assets/worm-sprite.png');
-  background-size: 2600px 154px;
+  background-size: 1300px 98px;
   background-repeat: no-repeat;
   background-position: 0 0;
   animation:
     wormCrawl 28s linear infinite,
-    wormCycle 1.2s steps(10) infinite;
+    wormCycle 1s steps(5) infinite;
   filter: drop-shadow(0 6px 14px rgba(0,0,0,0.7));
   z-index: 3;
   pointer-events: none;
@@ -1221,10 +1221,10 @@ body {
   from { transform: translate(110vw, 0); }
   to   { transform: translate(-280px, 0); }
 }
-/* Frame cycle — 10 steps × 260px each = full sprite width (2600). */
+/* Frame cycle — 5 steps × 260px each = full sprite width (1300). */
 @keyframes wormCycle {
   from { background-position-x: 0; }
-  to   { background-position-x: -2600px; }
+  to   { background-position-x: -1300px; }
 }
 
 .casket {

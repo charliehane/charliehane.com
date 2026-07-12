@@ -1,7 +1,10 @@
-// Reusable loading overlay — visible on page entry until the caller
-// signals ready (via a readiness check or an explicit hideLoading()
-// call), or after a 5s hard timeout so a stalled network doesn't hang
-// the page forever.
+// Reusable loading overlay — visible on page entry only if the page's
+// heavy assets take more than SHOW_DELAY ms to become ready. On cached
+// visits (assets already decoded) the overlay never renders — no flash
+// of loading state for a quick reload or back-navigation.
+//
+// Also cleans up centerpiece + text animations once hidden so the
+// paint doesn't keep churning behind the actual page.
 //
 // Usage on any page:
 //   1. Include this script BEFORE the page-specific script.
@@ -10,17 +13,13 @@
 //          <div class="page-loading-texture" id="pageLoadingTexture"></div>
 //          <div class="page-loading-content">
 //            <span class="page-loading-text" id="pageLoadingText">LOADING</span>
-//            <!-- centerpiece — any sprite/element you want -->
 //            <div class="page-loading-centerpiece" id="pageLoadingCenterpiece"></div>
 //          </div>
 //        </div>
-//   3. Page CSS supplies the centerpiece background-image + sprite animation
-//      (see .preprod-loading-bike or .home-loading-foot for examples).
-//   4. Page-specific script calls window.PageLoading.hideWhenReady(readyPromise)
-//      or window.PageLoading.hide() when everything's decoded.
-//
-// The overlay's LOADING text auto-cycles and the paper-texture layer
-// auto-jitters as long as the overlay is visible.
+//   3. Page CSS supplies the centerpiece background-image + animation
+//      (see .page-loading-centerpiece--bike / --foot).
+//   4. Page-specific script calls window.PageLoading.hide() when its
+//      heavy assets are ready.
 (() => {
   const overlay = document.getElementById('pageLoading');
   if (!overlay) return;
@@ -28,34 +27,45 @@
   const textEl = document.getElementById('pageLoadingText');
   const texEl  = document.getElementById('pageLoadingTexture');
 
-  // Text state cycle — escalates from casual to exasperated.
-  const STATES = [
-    'LOADING',
-    'LOADING.',
-    'LOADING..',
-    'LOADING...',
-    'STILL LOADING....',
-    'DANG, STILL LOADING....',
-  ];
-  let stateIdx = 0;
-  let textTimer = 0;
-  if (textEl) {
+  // If hide() is called before SHOW_DELAY ms elapses, the overlay
+  // never becomes visible at all — bypassing the "flash of loading
+  // state" on cached visits.
+  const SHOW_DELAY = 300;
+
+  // Start invisible so we can decide whether to reveal.
+  overlay.style.opacity = '0';
+  overlay.style.visibility = 'hidden';
+
+  let shown  = false;
+  let hidden = false;
+  let showTimer   = 0;
+  let textTimer   = 0;
+  let jitterTimer = 0;
+
+  const startTextCycle = () => {
+    if (!textEl) return;
+    const STATES = [
+      'LOADING',
+      'LOADING.',
+      'LOADING..',
+      'LOADING...',
+      'STILL LOADING....',
+      'DANG, STILL LOADING....',
+    ];
+    let idx = 0;
     const advance = () => {
-      textEl.textContent = STATES[stateIdx];
-      stateIdx = (stateIdx + 1) % STATES.length;
+      textEl.textContent = STATES[idx];
+      idx = (idx + 1) % STATES.length;
     };
     advance();
     textTimer = setInterval(advance, 500);
-  }
+  };
 
-  // Texture jitter — rotate 0/90/180/270°, random position shift, ~35%
-  // chance to toggle invert on each tick. Runs every 260-360ms so the
-  // grain shift reads as intentional rather than frantic.
-  let jitterTimer = 0;
-  if (texEl) {
+  const startJitter = () => {
+    if (!texEl) return;
     const rots = [0, 90, 180, 270];
     let inverted = false;
-    const jitter = () => {
+    const tick = () => {
       const rot = rots[Math.floor(Math.random() * rots.length)];
       const bx = (Math.random() * 60).toFixed(1);
       const by = (Math.random() * 60).toFixed(1);
@@ -63,28 +73,50 @@
       texEl.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
       texEl.style.backgroundPosition = `${bx}vmax ${by}vmax`;
       texEl.style.filter = inverted ? 'invert(1)' : 'none';
-      jitterTimer = setTimeout(jitter, 260 + Math.random() * 100);
+      jitterTimer = setTimeout(tick, 260 + Math.random() * 100);
     };
-    jitter();
-  }
+    tick();
+  };
 
-  let hidden = false;
+  const show = () => {
+    if (hidden || shown) return;
+    shown = true;
+    overlay.style.visibility = 'visible';
+    overlay.style.opacity = '1';
+    startTextCycle();
+    startJitter();
+  };
+
   const hide = () => {
     if (hidden) return;
     hidden = true;
+    clearTimeout(showTimer);
+    if (!shown) {
+      // Never showed — pull it out of the layout entirely so nothing
+      // (including cached centerpiece pixels) can flash over the page.
+      overlay.style.display = 'none';
+      return;
+    }
+    // Clear the inline show() styles so the .is-loaded CSS rule (with
+    // its opacity: 0 + visibility: hidden transition) actually wins.
+    overlay.style.opacity = '';
+    overlay.style.visibility = '';
     overlay.classList.add('is-loaded');
-    // Stop timers — no need to keep cycling once hidden.
     if (textTimer)   clearInterval(textTimer);
     if (jitterTimer) clearTimeout(jitterTimer);
   };
 
-  // Hard fallback: hide after 5s regardless of readiness.
-  const fallbackT = setTimeout(hide, 5000);
+  // Delay before showing — if the page-script calls hide() first, the
+  // overlay stays invisible and gets pulled from the layout entirely.
+  showTimer = setTimeout(show, SHOW_DELAY);
 
-  // Public API for page-specific scripts.
+  // Hard fallback: hide after 5s regardless so a stalled network
+  // doesn't leave visitors stuck (in that case, the overlay WILL show
+  // because we're past SHOW_DELAY).
+  setTimeout(hide, 5000);
+
   window.PageLoading = {
     hide,
-    // Convenience: hide when all promises resolve (or reject).
     hideWhenReady: (...promises) => {
       Promise.allSettled(promises).then(hide);
     },

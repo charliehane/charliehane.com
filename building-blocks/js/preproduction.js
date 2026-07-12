@@ -48,14 +48,15 @@
   // through the 5 scene--01..scene--05 CSS presets automatically via
   // content-loader's modulo modifier.
   // ============================================================
-  const VH_PER_SCENE = 125;
+  const VH_PER_SCENE = 250;
   const scaleSectionToSceneCount = () => {
     if (!section) return;
     const count = document.querySelectorAll('.scene').length;
     if (!count) return;
-    // Never shorter than the original 4-scene height so 4-film pages
-    // remain identical to Charlie's tuned defaults.
-    const vh = Math.max(500, count * VH_PER_SCENE);
+    // Never shorter than the 4-scene baseline (1000vh — doubled from
+    // the original 500vh so scroll → animation runs at half speed and
+    // viewers have longer to enjoy each scene).
+    const vh = Math.max(1000, count * VH_PER_SCENE);
     section.style.height = `${vh}vh`;
   };
   if (document.querySelectorAll('.scene').length) scaleSectionToSceneCount();

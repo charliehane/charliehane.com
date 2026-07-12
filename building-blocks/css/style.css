@@ -593,8 +593,10 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  opacity: 1;
-  visibility: visible;
+  /* Starts invisible — loading-overlay.js reveals only if heavy
+     assets take >300ms. On cached loads the overlay never shows. */
+  opacity: 0;
+  visibility: hidden;
   transition: opacity 0.5s ease, visibility 0s linear 0s;
 }
 .page-loading.is-loaded {
@@ -671,7 +673,10 @@ body {
 
 .world-section {
   position: relative;
-  height: 500vh;
+  /* Doubled from 500vh — scroll input maps to animation progress at
+     half the rate, so viewers have twice as long to enjoy each scene.
+     landing.js VH_PER_SCENE mirrors this at 250vh/scene. */
+  height: 1000vh;
   background: var(--ink);
 }
 .world-pin {

@@ -2212,24 +2212,25 @@ body {
   overflow: visible;
 }
 /* Sprite-based blood — 10 frames, 3380×234 native, one horizontal row.
-   Displayed at 400×277 so each frame is 400px wide (background-size
-   4000×277). Each frame's blood is anchored at its own top-center to
+   Displayed at 500×346 so each frame is 500px wide (background-size
+   5000×346). Each frame's blood is anchored at its own top-center to
    the same point in the cell, so every frame lines up perfectly at the
-   'wound line' regardless of drip length. Raised (top: -80) so the wound
-   line sits IN THE MIDDLE OF 'Hane.' — the name text has a higher
-   z-index so it stays visibly over the blood.
+   'wound line' regardless of drip length. Blood LINE at top:0 sits
+   right at Hane.'s baseline — drips extend down BELOW the name. This
+   avoids the blood being visible through the transparent negative-space
+   of the letter shapes (which CSS z-index alone can't mask).
    Frame advancement is scroll-position-driven (see landing.js). NO CSS
    animation — every pixel of scroll bumps a new frame; scrolling back
    up shrinks the blood back down. */
 .portal-blood-sprite {
   position: absolute;
-  top: -80px;
+  top: 0;              /* blood line at Hane.'s baseline */
   left: 50%;
   transform: translateX(-50%);
-  width: 400px;
-  height: 320px;      /* extra room below so tallest drips never crop */
+  width: 500px;        /* was 400; wider so widest frame never crops */
+  height: 400px;       /* extra room below so tallest drips never crop */
   background-image: url('../../assets/blood-sprite.png');
-  background-size: 4000px 277px;
+  background-size: 5000px 346px;
   background-repeat: no-repeat;
   background-position: 0 0;
   opacity: 0;

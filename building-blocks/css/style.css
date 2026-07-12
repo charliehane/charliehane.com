@@ -673,10 +673,11 @@ body {
 
 .world-section {
   position: relative;
-  /* Doubled from 500vh — scroll input maps to animation progress at
-     half the rate, so viewers have twice as long to enjoy each scene.
-     landing.js VH_PER_SCENE mirrors this at 250vh/scene. */
-  height: 1000vh;
+  /* Halved-again pace: 500vh (original) → 1000vh → 2000vh. Scroll
+     input drives animation progress at one-quarter the original
+     rate, so viewers have four times as long to enjoy each scene.
+     preproduction.js VH_PER_SCENE mirrors this at 500vh/scene. */
+  height: 2000vh;
   background: var(--ink);
 }
 .world-pin {

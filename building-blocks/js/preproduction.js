@@ -48,15 +48,15 @@
   // through the 5 scene--01..scene--05 CSS presets automatically via
   // content-loader's modulo modifier.
   // ============================================================
-  const VH_PER_SCENE = 250;
+  const VH_PER_SCENE = 500;
   const scaleSectionToSceneCount = () => {
     if (!section) return;
     const count = document.querySelectorAll('.scene').length;
     if (!count) return;
-    // Never shorter than the 4-scene baseline (1000vh — doubled from
-    // the original 500vh so scroll → animation runs at half speed and
-    // viewers have longer to enjoy each scene).
-    const vh = Math.max(1000, count * VH_PER_SCENE);
+    // 4-scene baseline is 2000vh (500vh × 4). Scroll → animation runs
+    // at one-quarter the original speed so viewers have four times as
+    // long to enjoy each scene.
+    const vh = Math.max(2000, count * VH_PER_SCENE);
     section.style.height = `${vh}vh`;
   };
   if (document.querySelectorAll('.scene').length) scaleSectionToSceneCount();

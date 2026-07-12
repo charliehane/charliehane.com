@@ -2215,17 +2215,19 @@ body {
    Displayed at 400×277 so each frame is 400px wide (background-size
    4000×277). Each frame's blood is anchored at its own top-center to
    the same point in the cell, so every frame lines up perfectly at the
-   'wound line' regardless of drip length. Anchored to top of .portal-blood
-   which itself sits at bottom of .portal-name-wrap — sprite `top: 0` puts
-   the horizontal blood line right at Hane.'s baseline; drips extend down.
-   Animation runs ONCE (steps(9) → forwards) when .is-bleeding is added. */
+   'wound line' regardless of drip length. Raised (top: -80) so the wound
+   line sits IN THE MIDDLE OF 'Hane.' — the name text has a higher
+   z-index so it stays visibly over the blood.
+   Frame advancement is scroll-position-driven (see landing.js). NO CSS
+   animation — every pixel of scroll bumps a new frame; scrolling back
+   up shrinks the blood back down. */
 .portal-blood-sprite {
   position: absolute;
-  top: 0;
+  top: -80px;
   left: 50%;
   transform: translateX(-50%);
   width: 400px;
-  height: 277px;
+  height: 320px;      /* extra room below so tallest drips never crop */
   background-image: url('../../assets/blood-sprite.png');
   background-size: 4000px 277px;
   background-repeat: no-repeat;
@@ -2234,14 +2236,7 @@ body {
   pointer-events: none;
   transition: opacity 0.12s ease;
 }
-.portal-blood.is-bleeding .portal-blood-sprite {
-  opacity: 1;
-  animation: bloodDrip 0.8s steps(9) forwards;
-}
-@keyframes bloodDrip {
-  from { background-position-x: 0; }
-  to   { background-position-x: -3600px; }  /* 9 × 400 = 3600 → lands on frame 9 */
-}
+.portal-blood.is-bleeding .portal-blood-sprite { opacity: 1; }
 /* Legacy blood elements — hidden. The sprite above replaces them. */
 .portal-blood-drip,
 .portal-blood-pool,
@@ -2622,6 +2617,10 @@ body {
   margin: 0;
   transform-origin: center bottom;
   will-change: transform;
+  /* Sits above the blood sprite (z:1) so 'Hane.' stays legible even when
+     the blood line has been raised into the middle of the letters. */
+  position: relative;
+  z-index: 2;
 }
 .portal-foot {
   will-change: transform;

@@ -76,7 +76,20 @@
         blurAmount = Math.min(12, blurAmount + delta * 0.8);
       }
     }
-    if (portalBlood) portalBlood.classList.toggle('is-bleeding', t > 0.5);
+    if (portalBlood) {
+      // is-bleeding controls opacity (fade in via CSS transition when t > 0.5).
+      portalBlood.classList.toggle('is-bleeding', t > 0.5);
+      // Position-mapped sprite frame: scroll drives the drip growth.
+      // t=0.5 → frame 0; t=1.0 → frame 9. Scrolling back up reverses.
+      const sprite = document.getElementById('portalBloodSprite');
+      if (sprite) {
+        const bloodT = Math.max(0, Math.min(1, (t - 0.5) * 2));  // [0..1] across smush zone
+        const FRAMES = 10;
+        const FRAME_W = 400;    // matches .portal-blood-sprite background-size
+        const frameIdx = Math.min(FRAMES - 1, Math.floor(bloodT * FRAMES));
+        sprite.style.backgroundPositionX = `${-frameIdx * FRAME_W}px`;
+      }
+    }
   };
 
   // Continuous decay so the blur smoothly winds down after scroll stops.

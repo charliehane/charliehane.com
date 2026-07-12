@@ -1191,9 +1191,9 @@ body {
   pointer-events: none;
 }
 
-/* 10-frame photo sprite (assets/worm-sprite.png) — 3072x120, arranged
-   as one horizontal row of 10 frames × 307×120. Container width 400 →
-   background-size 4000×156 scales one frame to 400×156. Two animations
+/* 10-frame photo sprite (assets/worm-sprite.png) — 3072x180, arranged
+   as one horizontal row of 10 frames × 307×180. Container width 400 →
+   background-size 4000×234 scales one frame to 400×234. Two animations
    layered: wormCrawl moves the whole container from right→left across
    the sky over 28s, wormCycle steps background-position through the 10
    frames on a fast ~1.2s loop. */
@@ -1202,9 +1202,9 @@ body {
   top: 32%;
   left: 0;
   width: 400px;
-  height: 156px;
+  height: 234px;
   background-image: url('../../assets/worm-sprite.png');
-  background-size: 4000px 156px;
+  background-size: 4000px 234px;
   background-repeat: no-repeat;
   background-position: 0 0;
   animation:

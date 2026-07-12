@@ -262,33 +262,42 @@
 
 
   // ============================================================
-  // CLOUDS in the sky
+  // CLOUDS in the sky — same puffy PNGs as the production page
+  // (assets/scenery/cloud-1/2/3.png) so both pages share a look.
   // ============================================================
   const cloudHost = document.getElementById('digClouds');
-  const FALLBACK_CLOUD_DIG = '<svg viewBox="0 0 220 110" xmlns="http://www.w3.org/2000/svg"><ellipse cx="48" cy="68" rx="42" ry="28" fill="white" opacity="0.95"/><ellipse cx="92" cy="50" rx="48" ry="34" fill="white" opacity="0.95"/><ellipse cx="148" cy="58" rx="50" ry="34" fill="white" opacity="0.95"/><ellipse cx="190" cy="72" rx="34" ry="22" fill="white" opacity="0.95"/><ellipse cx="118" cy="76" rx="60" ry="20" fill="white" opacity="0.95"/></svg>';
   const buildClouds = () => {
     if (!cloudHost) return;
-    const CLOUD_SVG = (window.ART_CACHE && window.ART_CACHE.cloud) || FALLBACK_CLOUD_DIG;
-    const conf = [
-      { top: '4%',  scale: 1.0,  dur: 95,  delay: 0 },
-      { top: '11%', scale: 0.7,  dur: 125, delay: -30 },
-      { top: '6%',  scale: 1.3,  dur: 80,  delay: -65 },
-      { top: '16%', scale: 0.85, dur: 110, delay: -10 },
-      { top: '20%', scale: 0.6,  dur: 140, delay: -88 },
+    const PUFFY_CLOUDS = [
+      'assets/scenery/cloud-1.png',
+      'assets/scenery/cloud-2.png',
+      'assets/scenery/cloud-3.png',
     ];
-    for (const c of conf) {
+    const conf = [
+      { top: '4%',  dur: 95,  delay: 0 },
+      { top: '11%', dur: 125, delay: -30 },
+      { top: '6%',  dur: 80,  delay: -65 },
+      { top: '16%', dur: 110, delay: -10 },
+      { top: '20%', dur: 140, delay: -88 },
+    ];
+    for (let i = 0; i < conf.length; i++) {
+      const c = conf[i];
       const el = document.createElement('div');
-      el.className = 'sky-cloud';
+      // sky-cloud--puffy gives the same 360px wide, natural-aspect
+      // display + <img> child styling that production uses.
+      el.className = 'sky-cloud sky-cloud--puffy';
       el.style.top = c.top;
-      el.style.transform = `scale(${c.scale})`;
       el.style.animationDuration = `${c.dur}s`;
       el.style.animationDelay = `${c.delay}s`;
-      el.innerHTML = CLOUD_SVG;
+      const src = PUFFY_CLOUDS[i % PUFFY_CLOUDS.length];
+      el.innerHTML = `<img src="${src}" alt="" draggable="false">`;
       cloudHost.appendChild(el);
     }
   };
-  if (window.ART_CACHE && window.ART_CACHE.cloud) buildClouds();
-  else document.addEventListener('art:loaded', buildClouds, { once: true });
+  // No art-loader dependency any more (we're using direct PNG paths),
+  // so build immediately — but keep listening for art:loaded too in case
+  // this script runs before the DOM is fully attached.
+  buildClouds();
 
 
   // ============================================================

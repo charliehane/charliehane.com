@@ -2212,7 +2212,7 @@ body {
   position: absolute;
   top: -110px;
   right: 22%;
-  width: 189px;
+  width: 194px;
   height: 340px;
   z-index: 12;
   filter: drop-shadow(0 10px 26px rgba(0,0,0,0.85));
@@ -2253,6 +2253,19 @@ body {
   overflow: visible;
   pointer-events: none;
   z-index: 3;
+}
+
+/* Brown coffin frame layer — sits IN FRONT of the video so the wooden
+   edges visually clip Charlie's silhouette. Same viewBox/positioning
+   as .coffin-shape so it aligns pixel-perfectly. */
+.hell .coffin--charlie .coffin-frame {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  pointer-events: none;
+  overflow: visible;
 }
 
 .hell-fire {

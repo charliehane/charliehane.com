@@ -2206,13 +2206,14 @@ body {
   z-index: 10;
 }
 
-/* Charlie coffin straddles dirt/hell boundary. Now taller (200x340)
-   to accommodate the coffin-struggle video (aspect ~1:2). */
+/* Charlie coffin straddles dirt/hell boundary. Now taller (170x340)
+   to accommodate the coffin-struggle video (aspect ~1:2), and
+   narrower so the walls press against Charlie's outstretched hands. */
 .hell .coffin--charlie {
   position: absolute;
   top: -110px;
   right: 22%;
-  width: 200px;
+  width: 170px;
   height: 340px;
   z-index: 12;
   filter: drop-shadow(0 10px 26px rgba(0,0,0,0.85));
@@ -2238,12 +2239,13 @@ body {
 .hell .coffin--charlie .charlie-fig > svg { overflow: visible; }
 
 /* Video variant: real footage of Charlie struggling in the coffin.
-   Sized to fill most of the coffin box, with feet slightly overflowing
-   the bottom for the same "kicking legs stick out" energy the old SVG
-   had. Alpha preserved via WebM VP9 / HEVC. */
+   Sized so his outstretched hands line up with the coffin walls
+   (width: 100% of the now-narrower 170px coffin), with feet slightly
+   overflowing the bottom for the same "kicking legs stick out" energy
+   the old SVG had. Alpha preserved via WebM VP9 / HEVC. */
 .hell .coffin--charlie .charlie-fig--video {
-  width: 88%;
-  left: 6%;
+  width: 100%;
+  left: 0;
   top: 4%;
   height: auto;
   aspect-ratio: 800 / 1631;

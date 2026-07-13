@@ -153,12 +153,24 @@
         <path d="M68 160 L72 172 L66 172 Z" fill="#3a2510"/>
         <path d="M50 168 L52 178 L48 178 Z" fill="#3a2510"/>
       </svg>
-      <!-- charlie figure — swap by editing assets/charlie-figure.svg.
-           Required structure inside that file:
-             - <g class="charlie-legs" id="charlieLegs"> wrapping
-               <line class="charlie-leg-l"> and <line class="charlie-leg-r">
-             - hands reach to viewBox x=0 and x=80 (touch coffin walls) -->
-      <div class="charlie-fig" id="charlieFig" data-art="charlie-figure" data-art-fit="aspect"></div>
+      <!-- Charlie struggling in the coffin — 3s looping video with alpha.
+           WebM VP9 handles Chrome/Firefox/Edge, HEVC MOV handles Safari.
+           Both were made from the ProRes 4444 master (Charlie In Coffin.mxf)
+           via ffmpeg; see building-blocks/js/postproduction-dig.js for the
+           companion leg-kick JS that got retired when this video landed. -->
+      <video
+        class="charlie-fig charlie-fig--video"
+        id="charlieFig"
+        muted
+        playsinline
+        autoplay
+        loop
+        preload="auto"
+        aria-hidden="true"
+      >
+        <source src="assets/charlie-in-coffin.webm" type="video/webm">
+        <source src="assets/charlie-in-coffin.mov"  type='video/mp4; codecs="hvc1"'>
+      </video>
     </article>
 
     <div class="hell-fire" aria-hidden="true">

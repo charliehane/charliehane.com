@@ -2206,14 +2206,13 @@ body {
   z-index: 10;
 }
 
-/* Charlie coffin straddles dirt/hell boundary. Now taller (170x340)
-   to accommodate the coffin-struggle video (aspect ~1:2), and
-   narrower so the walls press against Charlie's outstretched hands. */
+/* Charlie coffin straddles dirt/hell boundary. Sized so its walls
+   press against Charlie's outstretched hands in the video. */
 .hell .coffin--charlie {
   position: absolute;
   top: -110px;
   right: 22%;
-  width: 170px;
+  width: 182px;
   height: 340px;
   z-index: 12;
   filter: drop-shadow(0 10px 26px rgba(0,0,0,0.85));

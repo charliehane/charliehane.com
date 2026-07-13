@@ -145,16 +145,15 @@
   <section class="hell" id="hell" aria-label="hell">
 
     <article class="coffin coffin--charlie" id="coffinCharlie">
-      <!-- Coffin body BEHIND the video: outer brown silhouette + inner
-           black cavity. The black covers whatever alpha-transparent bits
-           of the video would otherwise show the red hell behind. -->
+      <!-- Coffin body BEHIND the video: full outer silhouette WITH the
+           jagged/broken bottom edge (so the jagged edge appears behind
+           Charlie's legs as they stick out below), and a warm-dark
+           interior cavity that shows behind the alpha-transparent bits
+           of the video. -->
       <svg class="coffin-shape coffin-shape--smashed" viewBox="0 0 100 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M50 0 L92 30 L92 150 L80 150 L74 156 L66 152 L60 158 L50 154 L40 158 L34 152 L26 156 L20 150 L8 150 L8 30 Z"
               fill="#3a2510" stroke="#1a0e08" stroke-width="3"/>
-        <path d="M50 8 L84 36 L84 142 L80 142 L74 148 L66 144 L60 150 L50 146 L40 150 L34 144 L26 148 L20 142 L16 142 L16 36 Z" fill="rgba(8, 4, 2, 0.92)"/>
-        <path d="M28 162 L34 172 L30 174 Z" fill="#3a2510"/>
-        <path d="M68 160 L72 172 L66 172 Z" fill="#3a2510"/>
-        <path d="M50 168 L52 178 L48 178 Z" fill="#3a2510"/>
+        <path d="M50 8 L84 36 L84 142 L80 142 L74 148 L66 144 L60 150 L50 146 L40 150 L34 144 L26 148 L20 142 L16 142 L16 36 Z" fill="#2a1810"/>
       </svg>
       <!-- Charlie struggling in the coffin — 3s looping video with alpha.
            WebM VP9 handles Chrome/Firefox/Edge, HEVC MOV handles Safari.
@@ -175,18 +174,16 @@
         <source src="assets/charlie-in-coffin.mov"  type='video/mp4; codecs="hvc1"'>
       </video>
 
-      <!-- Brown wooden frame that sits IN FRONT of the video, so the
-           coffin's edges visibly overlap Charlie's silhouette. Uses
-           fill-rule: evenodd — one path with outer + inner subpaths —
-           to punch out the interior, leaving only the ring visible. -->
+      <!-- Brown wooden frame IN FRONT of the video: only the TOP + SIDES
+           of the coffin. The jagged bottom is intentionally left off this
+           layer so Charlie's legs stick out past a clean-bottomed frame
+           while the jagged silhouette below stays visible in .coffin-shape
+           (behind the video). -->
       <svg class="coffin-frame" viewBox="0 0 100 200" preserveAspectRatio="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd"
-              d="M50 0 L92 30 L92 150 L80 150 L74 156 L66 152 L60 158 L50 154 L40 158 L34 152 L26 156 L20 150 L8 150 L8 30 Z
-                 M50 8 L84 36 L84 142 L80 142 L74 148 L66 144 L60 150 L50 146 L40 150 L34 144 L26 148 L20 142 L16 142 L16 36 Z"
+              d="M50 0 L92 30 L92 150 L8 150 L8 30 Z
+                 M50 8 L84 36 L84 142 L16 142 L16 36 Z"
               fill="#3a2510" stroke="#1a0e08" stroke-width="3"/>
-        <path d="M28 162 L34 172 L30 174 Z" fill="#3a2510"/>
-        <path d="M68 160 L72 172 L66 172 Z" fill="#3a2510"/>
-        <path d="M50 168 L52 178 L48 178 Z" fill="#3a2510"/>
       </svg>
     </article>
 

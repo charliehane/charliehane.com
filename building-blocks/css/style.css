@@ -2243,9 +2243,9 @@ body {
    overflowing the bottom for the same "kicking legs stick out" energy
    the old SVG had. Alpha preserved via WebM VP9 / HEVC. */
 .hell .coffin--charlie .charlie-fig--video {
-  width: 82%;
-  left: 9%;
-  top: 14%;
+  width: 72%;
+  left: 14%;
+  top: 24%;
   height: auto;
   aspect-ratio: 800 / 1631;
   object-fit: contain;

@@ -2861,15 +2861,14 @@ body {
    upper-left. */
 .portal-hero-wrap {
   position: relative;
-  /* Width is the smallest of: 72% viewport width, or the viewport-height-bound
-     width that keeps the wrap inside 62vh via its natural 500/841 aspect,
-     or the hard cap. Then aspect-ratio derives the height. Using width-only
-     avoids the height+max-width conflict that stretched the wrap vertically
-     on tall/narrow phones. 62vh (not 72vh) leaves guaranteed room below the
-     wrap for the blurb + scroll cue on short viewports like 900px laptops. */
-  width: min(72vw, calc(62vh * 500 / 841), 420px);
+  /* Width is min(72% viewport width, viewport-height-derived width via
+     the natural 500/841 aspect, or the 420px hard cap that matches the
+     original 707px max-height derived width). Then aspect-ratio derives
+     the height. */
+  width: min(72vw, calc(72vh * 500 / 841), 420px);
   aspect-ratio: 500 / 841;
-  margin: 8vh auto 0;
+  /* 18vh top margin — centers the whole logo stack in the viewport. */
+  margin: 18vh auto 0;
 }
 .portal-hero {
   display: block;
@@ -2894,9 +2893,11 @@ body {
    SE" mismatch the old fixed-145px sizing caused). Frame stepping uses
    percentage bg-position so nothing depends on pixel-exact sprite size. */
 .portal-hero-wrap .portal-c--sprite {
+  /* 34.5% of wrap = 145px at the 420px desktop cap — the original size
+     Charlie approved. Scales proportionally on smaller viewports. */
   top: 1%;
-  left: -5%;
-  width: 22%;
+  left: -4%;
+  width: 34.5%;
   height: auto;
   aspect-ratio: 1 / 1;
   background-size: 400% 100%;   /* 4 frames side-by-side, each = container width */

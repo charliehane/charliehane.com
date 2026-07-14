@@ -1468,7 +1468,13 @@ body {
   .scene-num { top: 32px; left: 32px; }
   .world-caption { bottom: 44px; }
   .big-link { grid-template-columns: 50px 1fr 40px; gap: 16px; padding: 24px 0; }
-  .portal-cue { left: 24px; }
+  /* On narrow viewports the centered blurb overlaps the bottom-left cue.
+     Center the cue horizontally (via left+right+auto margin so the cueBob
+     transform on the base rule keeps working) and drop it to the very
+     bottom so it sits below the blurb instead of alongside it. */
+  .portal-cue { left: 0; right: 0; margin-left: auto; margin-right: auto; width: max-content; bottom: 16px; }
+  .portal-blurb { font-size: clamp(15px, 4vw, 20px); margin-bottom: 48px; max-width: 90vw; text-align: center; }
+  .portal-sticky { padding-bottom: 60px; }
   .brick { width: 64px; height: 64px; font-size: 28px; }
   .brick-popup { width: 220px; padding: 16px; }
   .world-bike { width: 110px; }
@@ -2801,13 +2807,15 @@ body {
    upper-left. */
 .portal-hero-wrap {
   position: relative;
-  height: min(72vh, 707px);
+  /* Width is the smallest of: 72% viewport width, or the viewport-height-bound
+     width that keeps the wrap inside 62vh via its natural 500/841 aspect,
+     or the hard cap. Then aspect-ratio derives the height. Using width-only
+     avoids the height+max-width conflict that stretched the wrap vertically
+     on tall/narrow phones. 62vh (not 72vh) leaves guaranteed room below the
+     wrap for the blurb + scroll cue on short viewports like 900px laptops. */
+  width: min(72vw, calc(62vh * 500 / 841), 420px);
   aspect-ratio: 500 / 841;
-  max-width: 72vw;
-  /* Nudge downward off perceived center — the nav bar + eyebrow above
-     the hero visually outweigh the blurb + cue below, so mathematical
-     center of the sticky reads as too high. */
-  margin: 18vh auto 0;
+  margin: 8vh auto 0;
 }
 .portal-hero {
   display: block;
@@ -2826,13 +2834,19 @@ body {
   background-size: 2000% 100%;
   background-position: 0% 0%;
 }
-/* Position-only override for the legacy .portal-c--sprite so it sits over
-   the foot's upper-left negative space in the new hero. Keep the sprite's
-   native 145×145 sizing intact — the 4-frame @keyframes cStep shifts by
-   fixed -580px and only lines up cleanly at that native size. */
+/* C sprite over the foot's upper-left negative space. Sized and positioned
+   as % of .portal-hero-wrap so it scales proportionally with the foot on
+   every viewport (fixes the "C is 37% of the foot on desktop, 60% on iPhone
+   SE" mismatch the old fixed-145px sizing caused). Frame stepping uses
+   percentage bg-position so nothing depends on pixel-exact sprite size. */
 .portal-hero-wrap .portal-c--sprite {
-  top: 8px;
-  left: -18px;
+  top: 1%;
+  left: -5%;
+  width: 22%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  background-size: 400% 100%;   /* 4 frames side-by-side, each = container width */
+  animation: cStep 0.6s steps(4, jump-none) infinite;
 }
 .portal-foot {
   width: 280px;
@@ -2893,9 +2907,12 @@ body {
   pointer-events: none;
   z-index: 3;            /* on top of the foot */
 }
+/* Uses percentages so it works at any container size — the .portal-hero-wrap
+   override sets bg-size 400% and steps(4, jump-none), giving 4 discrete
+   frames at 0%, 33.33%, 66.67%, 100%. */
 @keyframes cStep {
-  from { background-position: 0 0; }
-  to   { background-position: -580px 0; }
+  from { background-position: 0% 0; }
+  to   { background-position: 100% 0; }
 }
 
 /* Any element using the [data-art] swap pattern: make the inlined SVG fill

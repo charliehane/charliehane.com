@@ -58,11 +58,12 @@
       </div>
     </div>
 
-    <!-- gravestone — swap by editing assets/gravestone.svg -->
-    <div class="dig-gravestone-center" data-art="gravestone" aria-hidden="true"></div>
-
-    <!-- grass strip -->
+    <!-- Grass strip + baked-in R.I.P. gravestone as a single illustration
+         (assets/scenery/grass-strip.png). Replaces the old CSS gradient
+         strip AND the standalone .dig-gravestone-center element. The
+         digging canvas still sits on top for shovel-cursor interactions. -->
     <div class="dig-grass" id="digGrass" aria-hidden="true">
+      <img class="dig-grass-img" src="assets/scenery/grass-strip.png" alt="" draggable="false">
       <canvas class="dig-grass-canvas" id="digGrassCanvas"></canvas>
     </div>
 

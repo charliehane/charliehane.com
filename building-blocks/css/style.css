@@ -2041,29 +2041,21 @@ body {
   left: 0; right: 0;
   height: 32px;
   z-index: 6;
-  background: linear-gradient(180deg, #4a6a3a 0%, #2a4520 100%);
-  border-bottom: 2px solid #1a2f10;
+  /* No background — the .dig-grass-img child provides the visual.
+     Overflow visible so the image can extend upward into the sky
+     (showing the gravestone above the grass line). */
+  overflow: visible;
 }
-.dig-grass::after {
-  content: "";
+.dig-grass-img {
   position: absolute;
-  bottom: 22px;
   left: 0; right: 0;
-  height: 16px;
-  background:
-    radial-gradient(circle at 4%,  #2a4520 0 5px, transparent 6px),
-    radial-gradient(circle at 11%, #2a4520 0 4px, transparent 5px),
-    radial-gradient(circle at 18%, #2a4520 0 6px, transparent 7px),
-    radial-gradient(circle at 26%, #2a4520 0 4px, transparent 5px),
-    radial-gradient(circle at 34%, #2a4520 0 5px, transparent 6px),
-    radial-gradient(circle at 42%, #2a4520 0 6px, transparent 7px),
-    radial-gradient(circle at 50%, #2a4520 0 4px, transparent 5px),
-    radial-gradient(circle at 58%, #2a4520 0 5px, transparent 6px),
-    radial-gradient(circle at 66%, #2a4520 0 6px, transparent 7px),
-    radial-gradient(circle at 74%, #2a4520 0 4px, transparent 5px),
-    radial-gradient(circle at 82%, #2a4520 0 5px, transparent 6px),
-    radial-gradient(circle at 90%, #2a4520 0 6px, transparent 7px),
-    radial-gradient(circle at 96%, #2a4520 0 4px, transparent 5px);
+  bottom: 0;                /* image bottom sits AT the top of underground */
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  z-index: 2;
 }
 .dig-grass-canvas {
   position: absolute;
@@ -2071,7 +2063,7 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 1;
+  z-index: 3;
 }
 
 .dig-underground {

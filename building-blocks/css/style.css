@@ -484,8 +484,11 @@ body {
   border: 0;
   text-transform: uppercase;
   letter-spacing: 0.30em;
-  /* Bigger than before — scales 1.7rem on phones up to ~3rem on big displays */
-  font-size: clamp(1.7rem, 3vw, 3rem);
+  /* Font floor dropped from 1.7rem → 1.05rem so the pill fits inside a
+     430px viewport at iPhone Pro Max. At 1.7rem the "CLICK THE SIGN !"
+     text was ~415px wide and overflowed off-screen; user could only see
+     the left half. Still scales up to 3rem on wide viewports. */
+  font-size: clamp(1.05rem, 3vw, 3rem);
   font-weight: 700;
   padding: 0.4em 0.7em;
   margin-bottom: 0;
@@ -704,6 +707,29 @@ body {
   height: var(--stage-h);
   max-height: 100vh;
   overflow: visible;   /* bike can pop slightly out during the jump */
+}
+
+/* Portrait phones — the 1.89:1 stage becomes a tiny strip (24% of the
+   viewport on iPhone Pro Max, 76% wasted letterbox). Let the stage
+   fill the viewport instead, and switch the videos to object-fit: cover
+   so they crop the sides to fill the taller stage. Bricks, bike, and
+   caption are still sized off --stage-w so they scale coherently with
+   whatever the visible video area is — they no longer cross a
+   letterbox boundary that made everything feel disconnected. */
+@media (orientation: portrait) and (max-width: 760px) {
+  .world-stage {
+    --stage-w: 100vw;
+    --stage-h: 100vh;
+    width: var(--stage-w);
+    height: var(--stage-h);
+  }
+  /* !important because the base .world-bg-video/.world-fg-video rules
+     are declared LATER in the file with equal specificity, so source
+     order beats this media query without the !important. */
+  .world-bg-video,
+  .world-fg-video {
+    object-fit: cover !important;
+  }
 }
 /* Scroll-scrubbed AE background. Sits behind the brick world, the bike, and
    the car. Its currentTime is driven by scroll progress in preproduction.js
@@ -1844,7 +1870,13 @@ body {
   height: 50vh;
   pointer-events: none;
   z-index: -1;
-  overflow: hidden;
+  /* overflow was hidden — but that chopped clouds in half when they were
+     positioned near the container's bottom edge, creating a visible
+     horizontal color band on mobile ("clouds create a line of a
+     differently colored sky"). Drop the clip: the buildings + concrete
+     below are opaque and cover any cloud that drifts into their area
+     anyway. */
+  overflow: visible;
 }
 
 .sky-cloud {

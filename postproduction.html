@@ -41,11 +41,29 @@
 
     <div class="dig-sky" aria-hidden="true"></div>
 
-    <!-- DEEP BACKGROUND — hills with scroll-parallax (slowest movers) -->
+    <!-- DEEP BACKGROUND — layered hills with per-band parallax speed.
+         Further bands move slower (lower data-parallax value) so the
+         viewer perceives depth as they scroll. Each image is one of
+         the extracted hills from assets/scenery/hill-*.png. -->
     <div class="dig-hills" aria-hidden="true">
-      <img class="hill hill-back"  src="assets/scenery/hill-back.png"  alt="" data-parallax="0.15">
-      <img class="hill hill-mid"   src="assets/scenery/hill-mid.png"   alt="" data-parallax="0.25">
-      <img class="hill hill-front" src="assets/scenery/hill-front.png" alt="" data-parallax="0.35">
+      <!-- Far band — smallest, most transparent, slightly blurred -->
+      <img class="hill hill--far" src="assets/scenery/hill-01.png" alt="" data-parallax="0.08" style="left: 5%;  bottom: 38%; width: 22vw;">
+      <img class="hill hill--far" src="assets/scenery/hill-05.png" alt="" data-parallax="0.10" style="left: 30%; bottom: 41%; width: 20vw;">
+      <img class="hill hill--far" src="assets/scenery/hill-07.png" alt="" data-parallax="0.11" style="left: 58%; bottom: 39%; width: 20vw;">
+      <img class="hill hill--far" src="assets/scenery/hill-02.png" alt="" data-parallax="0.09" style="right: 6%; bottom: 40%; width: 22vw;">
+
+      <!-- Mid band — medium, moderately transparent -->
+      <img class="hill hill--mid" src="assets/scenery/hill-11.png" alt="" data-parallax="0.20" style="left: -4%; bottom: 28%; width: 45vw;">
+      <img class="hill hill--mid" src="assets/scenery/hill-09.png" alt="" data-parallax="0.22" style="left: 35%; bottom: 30%; width: 32vw;">
+      <img class="hill hill--mid" src="assets/scenery/hill-13.png" alt="" data-parallax="0.24" style="right: -2%; bottom: 26%; width: 42vw;">
+
+      <!-- Near band — bigger, more opaque -->
+      <img class="hill hill--near" src="assets/scenery/hill-03.png" alt="" data-parallax="0.32" style="left: -12%; bottom: 12%; width: 60vw;">
+      <img class="hill hill--near" src="assets/scenery/hill-08.png" alt="" data-parallax="0.35" style="right: -8%; bottom: 14%; width: 55vw;">
+
+      <!-- Foreground band — biggest double-hills at the bottom -->
+      <img class="hill hill--fg" src="assets/scenery/hill-15.png" alt="" data-parallax="0.48" style="left: -18%; bottom: -6%; width: 80vw;">
+      <img class="hill hill--fg" src="assets/scenery/hill-16.png" alt="" data-parallax="0.54" style="right: -22%; bottom: -10%; width: 85vw;">
     </div>
 
     <div class="dig-clouds" id="digClouds" aria-hidden="true"></div>

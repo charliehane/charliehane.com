@@ -24,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://use.typekit.net/yfy2byi.css">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="building-blocks/css/style.css?v=20260714t1030" />
+  <link rel="stylesheet" href="building-blocks/css/style.css" />
 </head>
 <body class="page-producer page-producer-ride">
 
@@ -102,14 +102,8 @@
         disableRemotePlayback
         aria-hidden="true"
       >
-        <!-- HEVC MOV listed FIRST so iOS Safari picks its native codec
-             immediately. Chrome/Firefox don't advertise hvc1 support so
-             they skip past this and fall to the WebM fallback. Previous
-             order (WebM first) caused iOS Safari to attempt WebM+alpha
-             decode which is unreliable across iOS versions and could
-             render the FG layer blank. -->
-        <source src="https://pub-3feaceb432134076b4773fdc45eba874.r2.dev/bike-scene-fg.mov" type='video/mp4; codecs="hvc1"'>
         <source src="https://pub-3feaceb432134076b4773fdc45eba874.r2.dev/bike-scene-fg.webm" type="video/webm">
+        <source src="https://pub-3feaceb432134076b4773fdc45eba874.r2.dev/bike-scene-fg.mov" type='video/mp4; codecs="hvc1"'>
       </video>
 
       <div class="world-track-clip">
@@ -190,9 +184,9 @@
     <p data-content="site.moreSoon">more soon.</p>
   </footer>
 
-  <script src="building-blocks/js/loading-overlay.js?v=20260714t1030"></script>
-  <script src="building-blocks/js/content-loader.js?v=20260714t1030"></script>
-  <script src="building-blocks/js/art-loader.js?v=20260714t1030"></script>
-  <script src="building-blocks/js/preproduction.js?v=20260714t1030"></script>
+  <script src="building-blocks/js/loading-overlay.js"></script>
+  <script src="building-blocks/js/content-loader.js"></script>
+  <script src="building-blocks/js/art-loader.js"></script>
+  <script src="building-blocks/js/preproduction.js"></script>
 </body>
 </html>

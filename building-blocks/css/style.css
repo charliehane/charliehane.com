@@ -116,12 +116,7 @@ body {
    landing — base
    ============================================================ */
 
-/* overflow-x: clip — not `hidden`. `hidden` upgrades overflow-y to
-   `auto` in browsers, which turns body into its own scroll container
-   and breaks any `position: sticky` descendant on iOS Safari.
-   `clip` doesn't create a scroll container, so sticky + normal page
-   scroll both keep working. */
-.page-landing { cursor: none; overflow-x: clip; }
+.page-landing { cursor: none; overflow-x: hidden; }
 .page-landing a, .page-landing button { cursor: none; }
 
 
@@ -207,14 +202,9 @@ body {
 
 .forest {
   position: relative;
-  height: 4000vh;
+  height: 700vh;
   background: #0a140a;
 }
-/* Snap markers are hidden (display:none) — the scroll-snap CSS
-   approach broke scrolling entirely on iOS. Kept the DOM elements
-   so the "force scroll to pause at each bio" behavior can be
-   re-implemented in JS (landing.js) if needed later. */
-.forest-snap { display: none; }
 .forest-pin {
   position: sticky;
   top: 0;
@@ -494,11 +484,8 @@ body {
   border: 0;
   text-transform: uppercase;
   letter-spacing: 0.30em;
-  /* Font floor dropped from 1.7rem → 1.05rem so the pill fits inside a
-     430px viewport at iPhone Pro Max. At 1.7rem the "CLICK THE SIGN !"
-     text was ~415px wide and overflowed off-screen; user could only see
-     the left half. Still scales up to 3rem on wide viewports. */
-  font-size: clamp(1.05rem, 3vw, 3rem);
+  /* Bigger than before — scales 1.7rem on phones up to ~3rem on big displays */
+  font-size: clamp(1.7rem, 3vw, 3rem);
   font-weight: 700;
   padding: 0.4em 0.7em;
   margin-bottom: 0;
@@ -718,45 +705,6 @@ body {
   max-height: 100vh;
   overflow: visible;   /* bike can pop slightly out during the jump */
 }
-
-/* Portrait phones — keep the 1.89:1 fixed-aspect stage with letterbox
-   above/below (per Charlie's explicit request: "scale entire thing
-   into a 1920 x 1080 aspect ratio video with letterboxing"). The
-   full AE composition is always visible, bike/bricks are proportional
-   to the video (jump mechanic lines up with brick positions instead
-   of feeling off), letterbox bars from .world-pin's black background
-   fill the top + bottom of the viewport.
-
-   Previously we cover-cropped the video to fill the viewport, which
-   showed only the center ~24% of the scene horizontally — the bike
-   looked tiny relative to the zoomed-in trees and the jump→brick
-   collision was way off because bricks were re-scaled with the crop.
-
-   Bike is scaled up on portrait so it reads at a usable size within
-   the small letterboxed stage without breaking the video-proportional
-   collision math. */
-@media (orientation: portrait) and (max-width: 760px) {
-  .page-producer-ride .world-bike--sprite,
-  .page-producer-ride .world-bike-crashed {
-    /* Bump from 16.7% of stage to 26% so the bike reads at a usable
-       size on a phone even though the stage is a small strip. */
-    width: clamp(80px, calc(0.26 * var(--stage-w, 100vw)), 240px);
-  }
-  /* Push the bike lower so its wheels touch the road at the very bottom
-     of the video across all scenes (Charlie: "bike isn't touching the
-     ground in the city sequence"). At 8% the bike floated 18px above
-     the road on the small 227h portrait stage; 2% puts wheels within
-     4px of stage bottom. */
-  .page-producer-ride .world-bike-pos { bottom: 2%; }
-  /* Bike jump was translateY(-44vh) globally — on the small 227h
-     letterboxed portrait stage 44vh (410px on iPhone Pro Max) jumps
-     the bike way ABOVE the bricks so the collision check never fires
-     ("bricks don't respond when clicked"). Scale the jump to the
-     stage height so the peak actually reaches brick height. */
-  .page-producer-ride .world-bike { --bike-jump-h: calc(0.55 * var(--stage-h, 44vh)); }
-  /* Brick base rule (64×64 in @media max-width: 760px) already works
-     on mobile — no override needed here. */
-}
 /* Scroll-scrubbed AE background. Sits behind the brick world, the bike, and
    the car. Its currentTime is driven by scroll progress in preproduction.js
    so the camera 'crabs' through the 4 scenes (forest/mountains/coast/city)
@@ -773,10 +721,7 @@ body {
   object-fit: contain;
   z-index: 0;
   pointer-events: none;
-  /* Deep forest fallback — if the video fails to load or hasn't decoded
-     its first frame yet (some iOS Safari edge cases), user sees a
-     forest-appropriate dark green instead of a random default. */
-  background: #0a140a;
+  background: var(--ink);
 }
 /* FG layer — same size/position as BG, but with alpha-channel video so the
    BG shows through the transparent areas. Sits ON TOP of EVERYTHING — bike,
@@ -997,10 +942,10 @@ body {
   animation: bikeJump 0.75s cubic-bezier(.3,-0.4,.5,1.5) 1;
 }
 @keyframes bikeJump {
-  0%   { transform: translateX(-50%) translateY(0) rotate(0deg); }
-  35%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(calc(-1 * var(--bike-jump-h, 44vh))) rotate(-10deg); }
-  55%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(calc(-1 * var(--bike-jump-h, 44vh))) rotate(10deg); }
-  100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
+  0%   { transform: translateX(-50%) translateY(0)     rotate(0deg); }
+  35%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(-44vh) rotate(-10deg); }
+  55%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(-44vh) rotate(10deg); }
+  100% { transform: translateX(-50%) translateY(0)     rotate(0deg); }
 }
 
 /* outer wrapper handles "drive off right" drift; inner bike handles jump */
@@ -1153,7 +1098,7 @@ body {
   background: var(--cream);
   color: var(--ink);
   cursor: none;
-  overflow-x: clip;   /* not hidden — see .page-landing note above */
+  overflow-x: hidden;
 }
 .page-inner a, .page-inner button { cursor: none; }
 
@@ -1290,7 +1235,7 @@ body {
   background: #0a0604;
   color: var(--cream);
   cursor: none;
-  overflow-x: clip;   /* not hidden — see .page-landing note above */
+  overflow-x: hidden;
 }
 .page-editor-dig a, .page-editor-dig button { cursor: none; }
 
@@ -1543,22 +1488,7 @@ body {
   .scene { flex-basis: 92vw; padding: 32px; }
   .scene-num { top: 32px; left: 32px; }
   .world-caption { bottom: 44px; }
-  /* Post-ride/post-floor/hell .big-link rules are declared LATER in the
-     stylesheet (they take a base grid template of 80/1fr/60 with a 56px
-     bl-label floor), which loses the specificity tiebreak here since
-     they have equal specificity but appear later. Use !important on the
-     mobile-scaled values so the phone layout wins regardless of source
-     order. Without this, long labels like "Postproduction" overflow the
-     grid cell and the ↗ arrow spills off-screen. */
-  .big-link,
-  .post-ride-menu .big-link,
-  .post-floor-menu .big-link { grid-template-columns: 50px 1fr 40px !important; gap: 16px !important; padding: 24px 0 !important; }
-  .bl-label,
-  .post-ride-menu .bl-label,
-  .post-floor-menu .bl-label,
-  .hell .bl-label { font-size: clamp(32px, 9vw, 56px) !important; }
-  .post-ride-menu,
-  .post-floor-menu { padding-left: 24px !important; padding-right: 24px !important; }
+  .big-link { grid-template-columns: 50px 1fr 40px; gap: 16px; padding: 24px 0; }
   /* On narrow viewports the centered blurb overlaps the bottom-left cue.
      Center the cue horizontally (via left+right+auto margin so the cueBob
      transform on the base rule keeps working) and drop it to the very
@@ -1587,28 +1517,23 @@ body {
   .page-header { padding: 120px 24px 40px; }
 }
 
-/* Narrow phones (iPhone 12/13/14 range, ~390-428px). Bumped from 9px →
-   11px on the nav links so they're actually legible + tap-targets are
-   ≥30px tall. Vertical padding widened so tap area grows without needing
-   bigger font. */
+/* Narrow phones (iPhone 12/13/14 range, ~390-428px) — nav shrinks
+   enough so all 3 section links + the home mark fit on one line. */
 @media (max-width: 420px) {
-  .nav { padding: 14px 14px; }
-  .nav-sections { gap: 12px; }
-  .nav-sections a, .nav, .nav-mark { font-size: 11px; letter-spacing: 0.06em; }
-  .nav-sections a { padding: 6px 0; }
+  .nav { padding: 12px 14px; }
+  .nav-sections { gap: 10px; }
+  .nav-sections a, .nav, .nav-mark { font-size: 9px; letter-spacing: 0.08em; }
   .dig-sky-text .page-title { font-size: 44px !important; }
   .dig-sky-text .page-lede { font-size: 13px !important; }
   .sky-cloud--puffy { width: 160px !important; }
 }
 
-/* Extra-narrow phones (iPhone SE, ~375px). Nav text stays legible at
-   10px (up from unreadable 8px) — tighter letterspacing + smaller gap
-   still fit all 3 section links + CH- on one line. */
+/* Extra-narrow phones (iPhone SE, ~375px) — even tighter so nothing
+   overflows the 375px viewport. */
 @media (max-width: 390px) {
-  .nav { padding: 12px 10px; }
-  .nav-sections { gap: 8px; }
-  .nav-sections a, .nav, .nav-mark { font-size: 10px; letter-spacing: 0.04em; }
-  .nav-sections a { padding: 6px 0; }
+  .nav { padding: 10px 10px; }
+  .nav-sections { gap: 6px; }
+  .nav-sections a, .nav, .nav-mark { font-size: 8px; letter-spacing: 0.04em; }
   .big-link { grid-template-columns: 40px 1fr 28px; gap: 10px; }
   .lander-sections, .lander-footer, .works, .page-footer,
   .portal, .page-header { padding-left: 14px !important; padding-right: 14px !important; }
@@ -1880,7 +1805,7 @@ body {
 .page-sky {
   background: linear-gradient(180deg, #cfe6f0 0%, #a8cfe2 50%, #d4e6ee 100%);
   cursor: none;
-  overflow-x: clip;   /* not hidden — see .page-landing note above */
+  overflow-x: hidden;
 }
 .page-sky a, .page-sky button { cursor: none; }
 
@@ -1899,13 +1824,7 @@ body {
   height: 50vh;
   pointer-events: none;
   z-index: -1;
-  /* overflow was hidden — but that chopped clouds in half when they were
-     positioned near the container's bottom edge, creating a visible
-     horizontal color band on mobile ("clouds create a line of a
-     differently colored sky"). Drop the clip: the buildings + concrete
-     below are opaque and cover any cloud that drifts into their area
-     anyway. */
-  overflow: visible;
+  overflow: hidden;
 }
 
 .sky-cloud {
@@ -1971,7 +1890,7 @@ body {
   background-attachment: fixed;
   color: var(--cream);
   cursor: none;
-  overflow-x: clip;   /* not hidden — see .page-landing note above */
+  overflow-x: hidden;
 }
 .page-editor-dig a, .page-editor-dig button { cursor: none; }
 
@@ -2527,55 +2446,6 @@ body {
     padding-top: 0;
   }
 }
-
-/* Mobile portrait — Charlie wanted the menu INSIDE the video area (over
-   the cave floor), same font + size as desktop, not stacked below. Since
-   the natural-aspect video is only ~302px tall on iPhone Pro Max, we
-   instead make the .hell section fill the viewport, absolutely position
-   the video to cover-crop into it (sides trim, height fills), then
-   absolutely position the menu at the bottom so it reads over the lava
-   pit area with the coffin+shadow above still fully visible. */
-@media (max-width: 899px) {
-  .hell {
-    height: 100vh;
-    min-height: 100vh;
-  }
-  .hell-bg-video {
-    position: absolute !important;
-    top: 0;
-    left: 0;
-    width: 100% !important;
-    height: 100% !important;
-    aspect-ratio: unset !important;
-    object-fit: cover !important;
-    /* Anchor the crop so Charlie-in-coffin + his shadow stay in-frame at
-       the top of the visible area (video's top-mid is where he hangs). */
-    object-position: 50% 25%;
-  }
-  /* Menu positioned on the LEFT of the cave (per Charlie's request:
-     "home preproduction and production menu options on the left in
-     the cave itself"). Not centered, not over the lava — over the
-     cave wall on the left half of the visible video. Vertically
-     positioned in the middle of the cave area so Charlie in coffin
-     (top center) and lava (bottom) both remain fully visible. */
-  .hell-menu {
-    position: absolute;
-    top: 40%;
-    left: 4vw;
-    right: auto;
-    margin: 0;
-    padding: 0;
-    max-width: 60vw;
-    width: auto;
-    transform: translateY(-50%);
-  }
-  /* Tight vertical stack of eyebrow + 3 big-links so the whole menu
-     fits within the cave area without spilling onto Charlie or lava. */
-  .hell-eyebrow { margin: 0 0 8px; font-size: 10px; }
-  .hell .big-link { padding: 8px 0; grid-template-columns: 28px 1fr 20px; gap: 8px; }
-  .hell .bl-num { font-size: 10px; }
-  .hell .bl-arrow { font-size: 14px; }
-}
 .hell-eyebrow {
   font-family: var(--mono);
   font-size: 12px;
@@ -2992,17 +2862,14 @@ body {
 .portal-hero-wrap {
   position: relative;
   /* Width is the smallest of: 72% viewport width, or the viewport-height-bound
-     width that keeps the wrap inside 72vh via its natural 500/841 aspect,
-     or the hard cap of 420px (which matches the original 707px max-height
-     derived width). Then aspect-ratio derives the height. Using width-only
+     width that keeps the wrap inside 62vh via its natural 500/841 aspect,
+     or the hard cap. Then aspect-ratio derives the height. Using width-only
      avoids the height+max-width conflict that stretched the wrap vertically
-     on tall/narrow phones — but 72vh keeps the wrap the same size Charlie
-     approved in the original design. */
-  width: min(72vw, calc(72vh * 500 / 841), 420px);
+     on tall/narrow phones. 62vh (not 72vh) leaves guaranteed room below the
+     wrap for the blurb + scroll cue on short viewports like 900px laptops. */
+  width: min(72vw, calc(62vh * 500 / 841), 420px);
   aspect-ratio: 500 / 841;
-  /* Match original 18vh top margin — 8vh was pushing the whole logo
-     stack too high in the viewport. */
-  margin: 18vh auto 0;
+  margin: 8vh auto 0;
 }
 .portal-hero {
   display: block;
@@ -3027,13 +2894,9 @@ body {
    SE" mismatch the old fixed-145px sizing caused). Frame stepping uses
    percentage bg-position so nothing depends on pixel-exact sprite size. */
 .portal-hero-wrap .portal-c--sprite {
-  /* Matches the original design: at the 420px wrap max, the C was 145px
-     (34.5% of wrap width). 34.5% preserves that on every viewport size
-     — so the C stays visually the same relative to the foot regardless
-     of whether the wrap is 270px on iPhone SE or 420px on desktop. */
   top: 1%;
-  left: -4%;
-  width: 34.5%;
+  left: -5%;
+  width: 22%;
   height: auto;
   aspect-ratio: 1 / 1;
   background-size: 400% 100%;   /* 4 frames side-by-side, each = container width */

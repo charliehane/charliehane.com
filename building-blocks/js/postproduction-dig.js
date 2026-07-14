@@ -569,23 +569,4 @@
     applyParallax();
   }
 
-  // ============================================================
-  // HELL VIDEO — iOS Safari autoplay unlock. Even with autoplay+muted
-  // +playsinline, some iOS Safari versions block <video> autoplay
-  // until the user interacts with the page. If we don't nudge it, the
-  // hell video sits paused at frame 0 (which is Charlie mid-fall,
-  // NOT the coffin frame), so the "me in the coffin above the lava"
-  // beat is missing. Kick play() on any first user interaction.
-  // ============================================================
-  const hellVideo = document.getElementById('hellBgVideo');
-  if (hellVideo) {
-    const tryPlay = () => {
-      const p = hellVideo.play();
-      if (p && p.catch) p.catch(() => { /* still blocked; wait for next interaction */ });
-    };
-    tryPlay();
-    ['touchstart', 'click', 'scroll'].forEach(evt =>
-      document.addEventListener(evt, tryPlay, { once: true, passive: true }));
-  }
-
 })();

@@ -454,26 +454,7 @@
         if (!target) return;
         const r = target.getBoundingClientRect();
         if (!r.width) return;
-        /* Read --bike-jump-h from the bike element — matches whatever the
-           bikeJump keyframes are actually translating by. Defaults to
-           44vh when the var isn't set (desktop). Portrait mobile scales
-           this to 55% of the letterboxed stage height so the collision
-           peak lines up with the (now-reachable) brick position. */
-        const jumpVar = getComputedStyle(bikeEl).getPropertyValue('--bike-jump-h').trim();
-        let jumpPx = window.innerHeight * 0.44;
-        if (jumpVar) {
-          if (jumpVar.endsWith('px')) jumpPx = parseFloat(jumpVar);
-          else if (jumpVar.endsWith('vh')) jumpPx = parseFloat(jumpVar) * window.innerHeight / 100;
-          else {
-            // calc() or unknown — probe by setting a temp element
-            const probe = document.createElement('div');
-            probe.style.cssText = `position:absolute;visibility:hidden;height:${jumpVar}`;
-            document.body.appendChild(probe);
-            jumpPx = probe.getBoundingClientRect().height;
-            probe.remove();
-          }
-        }
-        const peakTop    = bikeRect.top - jumpPx;
+        const peakTop    = bikeRect.top - window.innerHeight * 0.44;
         const peakBottom = peakTop + bikeRect.height;
         const peakCenter = bikeCx + aimX;
         const peakLeft   = peakCenter - bikeRect.width / 2;

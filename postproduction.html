@@ -67,10 +67,10 @@
            is the base; the dug-up state (grass-strip-dug.png with the
            open grave + dirt pile) fades in on top the moment the user
            scrolls past the grass line. JS toggles .is-dug on .dig-grass
-           and CSS handles the opacity transition. -->
+           and CSS handles the opacity transition. No canvas overlay —
+           the shovel cursor only interacts with the underground below. -->
       <img class="dig-grass-img"          src="assets/scenery/grass-strip.png"     alt="" draggable="false">
       <img class="dig-grass-img dig-grass-img--dug" src="assets/scenery/grass-strip-dug.png" alt="" draggable="false">
-      <canvas class="dig-grass-canvas" id="digGrassCanvas"></canvas>
     </div>
 
     <!-- underground -->

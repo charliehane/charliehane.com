@@ -30,54 +30,9 @@
 
 
   // ============================================================
-  // GRASS — gets disturbed/holed when the cursor passes through it
-  // ============================================================
-  const grass = document.getElementById('digGrass');
-  const grassCanvas = document.getElementById('digGrassCanvas');
-  if (grassCanvas && grass) {
-    const gctx = grassCanvas.getContext('2d');
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-    const sizeGrass = () => {
-      const r = grass.getBoundingClientRect();
-      grassCanvas.width  = Math.max(1, r.width  * dpr);
-      grassCanvas.height = Math.max(1, r.height * dpr);
-      gctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    sizeGrass();
-    window.addEventListener('resize', sizeGrass);
-
-    let lastGX = null, lastGY = null;
-    window.addEventListener('mousemove', (e) => {
-      const r = grassCanvas.getBoundingClientRect();
-      const x = e.clientX - r.left;
-      const y = e.clientY - r.top;
-      if (x < 0 || y < 0 || x > r.width || y > r.height) {
-        lastGX = null;
-        return;
-      }
-      if (lastGX === null) { lastGX = x; lastGY = y; return; }
-      // dig out a "hole" in the grass — paint a dark patch with kicked dirt
-      gctx.lineCap = 'round';
-      gctx.lineJoin = 'round';
-      gctx.lineWidth = 36;
-      gctx.strokeStyle = 'rgba(40, 24, 12, 0.95)';
-      gctx.beginPath();
-      gctx.moveTo(lastGX, lastGY);
-      gctx.lineTo(x, y);
-      gctx.stroke();
-      // crumbled dirt dots around it
-      for (let i = 0; i < 4; i++) {
-        const px = x + (Math.random() - 0.5) * 30;
-        const py = y + (Math.random() - 0.5) * 16;
-        gctx.fillStyle = 'rgba(20, 12, 6, 0.85)';
-        gctx.beginPath();
-        gctx.arc(px, py, 1.5 + Math.random() * 2.5, 0, Math.PI * 2);
-        gctx.fill();
-      }
-      lastGX = x; lastGY = y;
-    }, { passive: true });
-  }
+  // GRASS canvas removed — the surface is no longer a diggable zone
+  // (Charlie didn't want an interactive dig-strip above the underground).
+  // The shovel cursor only interacts with .dig-underground below.
 
 
   // ============================================================

@@ -116,7 +116,12 @@ body {
    landing — base
    ============================================================ */
 
-.page-landing { cursor: none; overflow-x: hidden; }
+/* overflow-x: clip — not `hidden`. `hidden` upgrades overflow-y to
+   `auto` in browsers, which turns body into its own scroll container
+   and breaks any `position: sticky` descendant on iOS Safari.
+   `clip` doesn't create a scroll container, so sticky + normal page
+   scroll both keep working. */
+.page-landing { cursor: none; overflow-x: clip; }
 .page-landing a, .page-landing button { cursor: none; }
 
 
@@ -1148,7 +1153,7 @@ body {
   background: var(--cream);
   color: var(--ink);
   cursor: none;
-  overflow-x: hidden;
+  overflow-x: clip;   /* not hidden — see .page-landing note above */
 }
 .page-inner a, .page-inner button { cursor: none; }
 
@@ -1285,7 +1290,7 @@ body {
   background: #0a0604;
   color: var(--cream);
   cursor: none;
-  overflow-x: hidden;
+  overflow-x: clip;   /* not hidden — see .page-landing note above */
 }
 .page-editor-dig a, .page-editor-dig button { cursor: none; }
 
@@ -1875,7 +1880,7 @@ body {
 .page-sky {
   background: linear-gradient(180deg, #cfe6f0 0%, #a8cfe2 50%, #d4e6ee 100%);
   cursor: none;
-  overflow-x: hidden;
+  overflow-x: clip;   /* not hidden — see .page-landing note above */
 }
 .page-sky a, .page-sky button { cursor: none; }
 
@@ -1966,7 +1971,7 @@ body {
   background-attachment: fixed;
   color: var(--cream);
   cursor: none;
-  overflow-x: hidden;
+  overflow-x: clip;   /* not hidden — see .page-landing note above */
 }
 .page-editor-dig a, .page-editor-dig button { cursor: none; }
 

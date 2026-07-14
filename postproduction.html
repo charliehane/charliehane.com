@@ -41,32 +41,8 @@
 
     <div class="dig-sky" aria-hidden="true"></div>
 
-    <!-- DEEP BACKGROUND — layered hills with per-band parallax speed.
-         Further bands move slower (lower data-parallax value) so the
-         viewer perceives depth as they scroll. Each image is one of
-         the extracted hills from assets/scenery/hill-*.png. -->
-    <div class="dig-hills" aria-hidden="true">
-      <!-- Far band — small distant hills; bottom values low enough that
-           the tops sit at ~horizon level, no blue gap below them -->
-      <img class="hill hill--far" src="assets/scenery/hill-01.png" alt="" data-parallax="0.08" style="left: -6%;  bottom: 18%; width: 40vw;">
-      <img class="hill hill--far" src="assets/scenery/hill-05.png" alt="" data-parallax="0.10" style="left: 22%;  bottom: 20%; width: 38vw;">
-      <img class="hill hill--far" src="assets/scenery/hill-07.png" alt="" data-parallax="0.11" style="left: 48%;  bottom: 19%; width: 38vw;">
-      <img class="hill hill--far" src="assets/scenery/hill-02.png" alt="" data-parallax="0.09" style="right: -8%; bottom: 18%; width: 40vw;">
+    <!-- Hills removed per Charlie. Sky + grass alone form the horizon. -->
 
-      <!-- Mid band — medium hills, each sitting deeper on the horizon -->
-      <img class="hill hill--mid" src="assets/scenery/hill-11.png" alt="" data-parallax="0.20" style="left: -12%; bottom: 8%; width: 72vw;">
-      <img class="hill hill--mid" src="assets/scenery/hill-09.png" alt="" data-parallax="0.22" style="left: 30%;  bottom: 10%; width: 55vw;">
-      <img class="hill hill--mid" src="assets/scenery/hill-13.png" alt="" data-parallax="0.24" style="right: -10%; bottom: 8%; width: 68vw;">
-
-      <!-- Near band — bottom is AT the grass line (no gap) -->
-      <img class="hill hill--near" src="assets/scenery/hill-03.png" alt="" data-parallax="0.32" style="left: -20%; bottom: 0%; width: 95vw;">
-      <img class="hill hill--near" src="assets/scenery/hill-08.png" alt="" data-parallax="0.35" style="right: -18%; bottom: 0%; width: 90vw;">
-
-      <!-- Foreground band — extend BELOW grass line (clipped by
-           overflow: hidden on .dig-hills) so no seam is possible -->
-      <img class="hill hill--fg" src="assets/scenery/hill-14.png" alt="" data-parallax="0.48" style="left: -25%; bottom: -10%; width: 130vw;">
-      <img class="hill hill--fg" src="assets/scenery/hill-12.png" alt="" data-parallax="0.54" style="right: -30%; bottom: -12%; width: 140vw;">
-    </div>
 
     <div class="dig-clouds" id="digClouds" aria-hidden="true"></div>
 

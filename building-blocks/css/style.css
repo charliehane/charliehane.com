@@ -2268,12 +2268,16 @@ body {
 
 .hell {
   position: relative;
-  /* Height grows with viewport width so the hell video (aspect ~1.42:1)
-     always fits without cropping the bottom. Floor at 110vh so short
-     viewports still have room for the menu below the cavern roof. */
-  height: max(110vh, calc(100vw / 1.42));
-  /* Solid black under the video — no cropping, but if the container
-     ever gets wider than the video aspect, the sides show black. */
+  /* Section grows naturally to fit its content (video + menu). We drop
+     the fixed viewport-height math so the video is never forced to a
+     cropped size on portrait phones.
+
+     min-height guarantees the section is always tall enough to fully
+     contain the video, even when the menu's negative-margin overlap
+     (on wide viewports) shrinks the auto-computed content height
+     below the video's natural height. Without this the overflow:hidden
+     would clip the bottom of the video on desktop. */
+  min-height: calc(100vw / 1.426);
   background: #000;
   overflow: hidden;
   color: #f3ebe0;
@@ -2281,14 +2285,18 @@ body {
 }
 
 /* Charlie In Hell — one 4-second looping video that IS the whole hell
-   scene now (coffin, flames, smoke, falling — all baked in). Fills the
-   section behind the menu. */
+   scene now (coffin, flames, smoke, falling — all baked in). Renders in
+   normal flow at the top of .hell, at its native 1600/1122 aspect
+   (~1.426:1), so the ENTIRE video is always visible on every viewport
+   (iPhone SE portrait, iPad, desktop, resized windows). Menu stacks
+   below it in normal flow. */
 .hell-bg-video {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  aspect-ratio: 1600 / 1122;
+  object-fit: contain;
   z-index: 1;
   pointer-events: none;
 }
@@ -2420,12 +2428,23 @@ body {
 .hell-menu {
   position: relative;
   z-index: 5;
-  /* Top padding pushes menu items below the cavern roof line in the
-     Charlie in Hell video (cavern edge sits around ~35% of the .hell
-     height on desktop viewports). */
-  padding: 38vh 8vw 60px;
+  /* Menu now stacks in normal flow below the video (video is no longer
+     absolute). Padding-top just gives the menu room to breathe under
+     the cave floor / footer edge of the video. */
+  padding: 60px 8vw 80px;
   max-width: 1100px;
   margin: 0 auto;
+}
+/* On wide viewports where the video is guaranteed to be tall (100vw/1.426
+   > 500px), pull the menu up so it sits over the video's cave floor,
+   preserving Charlie's "menu is IN hell" aesthetic. Only kicks in when
+   we have enough vertical room for both the video and the overlay to
+   coexist without clobbering the video's Charlie-in-coffin element. */
+@media (min-width: 900px) {
+  .hell-menu {
+    margin-top: calc(-1 * (100vw / 1.426) * 0.55);   /* overlay bottom ~55% of video */
+    padding-top: 0;
+  }
 }
 .hell-eyebrow {
   font-family: var(--mono);

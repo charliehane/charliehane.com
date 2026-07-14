@@ -2022,9 +2022,9 @@ body {
 .dig-grass-img {
   position: absolute;
   left: 0; right: 0;
-  bottom: -40px;            /* extend into underground so image's
-                               transparent bottom fade overlaps the
-                               underground top — no visible seam. */
+  bottom: 0;                /* dark bottom shadow was cropped off both
+                               source images; grass line now sits at
+                               image bottom = underground top, no seam. */
   width: 100%;
   height: auto;
   pointer-events: none;

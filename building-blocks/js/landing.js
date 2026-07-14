@@ -178,9 +178,34 @@
         labelShort: q.labelShort || 'tap to read',
       });
     });
-    // Set video source if provided
+    // Set video source(s) if provided. videoSrc can be:
+    //   - a string (single URL, used as-is on cineVideo.src)
+    //   - an object { webm, mp4 } — added as multiple <source> children
+    //     so browsers pick the best format they support. WebM VP9 renders
+    //     smooth gradients dramatically better than H.264 (no diagonal
+    //     compression banding on the night sky). MP4 is the fallback for
+    //     browsers that don't support WebM.
     if (cineVideo && c.forest.videoSrc) {
-      cineVideo.src = c.forest.videoSrc;
+      const src = c.forest.videoSrc;
+      if (typeof src === 'string') {
+        cineVideo.src = src;
+      } else if (src && typeof src === 'object') {
+        cineVideo.removeAttribute('src');
+        // Clear any existing <source> children before appending fresh ones
+        [...cineVideo.querySelectorAll('source')].forEach(s => s.remove());
+        if (src.webm) {
+          const s = document.createElement('source');
+          s.src = src.webm;
+          s.type = 'video/webm';
+          cineVideo.appendChild(s);
+        }
+        if (src.mp4) {
+          const s = document.createElement('source');
+          s.src = src.mp4;
+          s.type = 'video/mp4';
+          cineVideo.appendChild(s);
+        }
+      }
       cineVideo.load();
     }
     buildHotspots();

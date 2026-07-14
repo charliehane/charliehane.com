@@ -2009,37 +2009,43 @@ body {
 
 .dig-grass {
   position: absolute;
-  top: 75vh;
+  top: 85vh;                /* Push grass line down so ~2/3 of initial
+                               viewport is sky (more sky visible on load) */
   left: 0; right: 0;
   height: 32px;
   z-index: 6;
   /* No background — the .dig-grass-img child provides the visual.
-     Overflow visible so the image can extend upward into the sky
-     (showing the gravestone above the grass line). */
+     Overflow visible so the image can extend upward into the sky AND
+     downward into the underground area (no seam). */
   overflow: visible;
 }
 .dig-grass-img {
   position: absolute;
   left: 0; right: 0;
-  bottom: 0;                /* image bottom sits AT the top of underground */
+  bottom: -40px;            /* extend into underground so image's
+                               transparent bottom fade overlaps the
+                               underground top — no visible seam. */
   width: 100%;
   height: auto;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
   z-index: 2;
+  opacity: 1;
+  transition: opacity 0.6s ease;
 }
-/* Dug-state overlay: hidden until JS adds .is-dug to .dig-grass */
+/* Dug-state overlay: hidden until cursor drops below grass line */
 .dig-grass-img--dug {
   z-index: 3;
   opacity: 0;
-  transition: opacity 0.6s ease;
 }
+/* Cross-fade: intact fades OUT while dug fades IN */
+.dig-grass.is-dug .dig-grass-img:not(.dig-grass-img--dug) { opacity: 0; }
 .dig-grass.is-dug .dig-grass-img--dug { opacity: 1; }
 
 .dig-underground {
   position: absolute;
-  top: calc(75vh + 32px);
+  top: calc(85vh + 32px);   /* moved down with grass line */
   left: 0; right: 0;
   bottom: 0;
   /* Original colorway — medium warm brown at top fading to black. */

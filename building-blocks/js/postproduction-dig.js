@@ -429,20 +429,21 @@
   updateSkyTextVisibility();
 
   // ============================================================
-  // DUG-GRASS SWAP — the moment the grass line scrolls past the top
-  // of the viewport, fade in the dug-up state (grave hole + dirt pile)
-  // over the intact surface. CSS handles the opacity transition; JS
-  // just adds/removes the .is-dug class on .dig-grass.
+  // DUG-GRASS SWAP — when the user's CURSOR crosses below the grass
+  // line into the underground area, fade in the dug-up state (grave
+  // hole + dirt pile) over the intact surface. CSS handles the
+  // opacity transition; JS just toggles the .is-dug class based on
+  // cursor Y vs the grass strip's bottom edge.
   // ============================================================
   const digGrass = document.getElementById('digGrass');
-  const updateGrassDugState = () => {
+  const updateGrassDugState = (mouseY) => {
     if (!digGrass) return;
-    // Trigger once the grass strip's top edge crosses the viewport top.
     const r = digGrass.getBoundingClientRect();
-    digGrass.classList.toggle('is-dug', r.top <= 0);
+    // "Below the line" = cursor's Y is past the grass strip's bottom
+    // edge (i.e., in the underground zone).
+    digGrass.classList.toggle('is-dug', mouseY > r.bottom);
   };
-  window.addEventListener('scroll', updateGrassDugState, { passive: true });
-  updateGrassDugState();
+  window.addEventListener('mousemove', (e) => updateGrassDugState(e.clientY), { passive: true });
 
   // ---- Charlie kicks legs (hands grip the walls — no arm animation) ----
   // The charlie figure SVG is loaded asynchronously by art-loader (it lives

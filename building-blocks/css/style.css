@@ -2206,11 +2206,12 @@ body {
 
 .hell {
   position: relative;
-  height: 110vh;
-  /* Solid black under the video so any letterbox gap around the video's
-     aspect ratio blends into darkness rather than showing the old red
-     gradient. No top border — the video's upper edge is the visual
-     boundary between the menu area and the postproduction ground above. */
+  /* Height grows with viewport width so the hell video (aspect ~1.42:1)
+     always fits without cropping the bottom. Floor at 110vh so short
+     viewports still have room for the menu below the cavern roof. */
+  height: max(110vh, calc(100vw / 1.42));
+  /* Solid black under the video — no cropping, but if the container
+     ever gets wider than the video aspect, the sides show black. */
   background: #000;
   overflow: hidden;
   color: #f3ebe0;

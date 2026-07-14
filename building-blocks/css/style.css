@@ -202,7 +202,13 @@ body {
 
 .forest {
   position: relative;
-  height: 700vh;
+  /* Bumped 700vh → 1400vh so mobile users have room to actually READ each
+     bio without accidentally scrolling past. Bios span [0.06, 0.38],
+     [0.38, 0.64], [0.64, 1.0] of section scroll length — at 700vh on an
+     iPhone Pro Max (~932h) each bio only got ~6 viewports of scroll,
+     which flicks past in under a second. 1400vh doubles that so each bio
+     window is ~4 seconds of natural mobile scroll. */
+  height: 1400vh;
   background: #0a140a;
 }
 .forest-pin {
@@ -747,7 +753,10 @@ body {
   object-fit: contain;
   z-index: 0;
   pointer-events: none;
-  background: var(--ink);
+  /* Deep forest fallback — if the video fails to load or hasn't decoded
+     its first frame yet (some iOS Safari edge cases), user sees a
+     forest-appropriate dark green instead of a random default. */
+  background: #0a140a;
 }
 /* FG layer — same size/position as BG, but with alpha-channel video so the
    BG shows through the transparent areas. Sits ON TOP of EVERYTHING — bike,
@@ -2497,6 +2506,45 @@ body {
     margin-top: calc(-1 * (100vw / 1.426) * 0.55);   /* overlay bottom ~55% of video */
     padding-top: 0;
   }
+}
+
+/* Mobile portrait — Charlie wanted the menu INSIDE the video area (over
+   the cave floor), same font + size as desktop, not stacked below. Since
+   the natural-aspect video is only ~302px tall on iPhone Pro Max, we
+   instead make the .hell section fill the viewport, absolutely position
+   the video to cover-crop into it (sides trim, height fills), then
+   absolutely position the menu at the bottom so it reads over the lava
+   pit area with the coffin+shadow above still fully visible. */
+@media (max-width: 899px) {
+  .hell {
+    height: 100vh;
+    min-height: 100vh;
+  }
+  .hell-bg-video {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: unset !important;
+    object-fit: cover !important;
+    /* Anchor the crop so Charlie-in-coffin + his shadow stay in-frame at
+       the top of the visible area (video's top-mid is where he hangs). */
+    object-position: 50% 25%;
+  }
+  .hell-menu {
+    position: absolute;
+    bottom: 12px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    padding: 0 6vw 12px;
+    max-width: none;
+  }
+  /* Tighten menu spacing on portrait so all 3 links + eyebrow fit inside
+     the visible video area without covering the coffin/shadow. */
+  .hell-eyebrow { margin: 0 0 12px; }
+  .hell .big-link { padding: 12px 0; }
 }
 .hell-eyebrow {
   font-family: var(--mono);

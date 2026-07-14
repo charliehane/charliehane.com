@@ -202,13 +202,13 @@ body {
 
 .forest {
   position: relative;
-  /* Bumped 700vh → 1400vh so mobile users have room to actually READ each
-     bio without accidentally scrolling past. Bios span [0.06, 0.38],
-     [0.38, 0.64], [0.64, 1.0] of section scroll length — at 700vh on an
-     iPhone Pro Max (~932h) each bio only got ~6 viewports of scroll,
-     which flicks past in under a second. 1400vh doubles that so each bio
-     window is ~4 seconds of natural mobile scroll. */
-  height: 1400vh;
+  /* Bumped 1400vh → 2400vh — Charlie's still flicking past bios on his
+     iPhone even at 1400vh. iOS momentum scroll is much faster than
+     desktop; each bio needs ~8-10 viewport heights of scroll to survive
+     a single hard swipe. 2400vh gives each bio ~8 viewport heights and
+     the whole forest ~24 viewport heights of scrub — feels like a
+     deliberate journey rather than a page you can escape by accident. */
+  height: 2400vh;
   background: #0a140a;
 }
 .forest-pin {
@@ -715,26 +715,34 @@ body {
   overflow: visible;   /* bike can pop slightly out during the jump */
 }
 
-/* Portrait phones — the 1.89:1 stage becomes a tiny strip (24% of the
-   viewport on iPhone Pro Max, 76% wasted letterbox). Let the stage
-   fill the viewport instead, and switch the videos to object-fit: cover
-   so they crop the sides to fill the taller stage. Bricks, bike, and
-   caption are still sized off --stage-w so they scale coherently with
-   whatever the visible video area is — they no longer cross a
-   letterbox boundary that made everything feel disconnected. */
+/* Portrait phones — keep the 1.89:1 fixed-aspect stage with letterbox
+   above/below (per Charlie's explicit request: "scale entire thing
+   into a 1920 x 1080 aspect ratio video with letterboxing"). The
+   full AE composition is always visible, bike/bricks are proportional
+   to the video (jump mechanic lines up with brick positions instead
+   of feeling off), letterbox bars from .world-pin's black background
+   fill the top + bottom of the viewport.
+
+   Previously we cover-cropped the video to fill the viewport, which
+   showed only the center ~24% of the scene horizontally — the bike
+   looked tiny relative to the zoomed-in trees and the jump→brick
+   collision was way off because bricks were re-scaled with the crop.
+
+   Bike is scaled up on portrait so it reads at a usable size within
+   the small letterboxed stage without breaking the video-proportional
+   collision math. */
 @media (orientation: portrait) and (max-width: 760px) {
-  .world-stage {
-    --stage-w: 100vw;
-    --stage-h: 100vh;
-    width: var(--stage-w);
-    height: var(--stage-h);
+  .page-producer-ride .world-bike--sprite,
+  .page-producer-ride .world-bike-crashed {
+    /* Bump from 16.7% of stage to 26% so the bike reads at a usable
+       size on a phone even though the stage is a small strip. */
+    width: clamp(80px, calc(0.26 * var(--stage-w, 100vw)), 240px);
   }
-  /* !important because the base .world-bg-video/.world-fg-video rules
-     are declared LATER in the file with equal specificity, so source
-     order beats this media query without the !important. */
-  .world-bg-video,
-  .world-fg-video {
-    object-fit: cover !important;
+  .brick {
+    /* Same idea for the ? brick — larger tap target on the small stage. */
+    width: 88px;
+    height: 88px;
+    font-size: 40px;
   }
 }
 /* Scroll-scrubbed AE background. Sits behind the brick world, the bike, and

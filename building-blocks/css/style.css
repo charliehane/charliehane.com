@@ -2197,13 +2197,27 @@ body {
 .hell {
   position: relative;
   height: 110vh;
-  background: radial-gradient(ellipse at 50% 0%, #c41818 0%, #6a0606 25%, #2a0a08 60%, #0a0202 100%),
-              linear-gradient(180deg, #c41818 0%, #5a0606 30%, #1a0a04 100%);
-  background-blend-mode: screen, normal;
-  overflow: visible;
+  /* Solid black under the video so any letterbox gap around the video's
+     aspect ratio blends into darkness rather than showing the old red
+     gradient. */
+  background: #000;
+  overflow: hidden;
   border-top: 4px solid #1a0a04;
   color: #f3ebe0;
   z-index: 10;
+}
+
+/* Charlie In Hell — one 4-second looping video that IS the whole hell
+   scene now (coffin, flames, smoke, falling — all baked in). Fills the
+   section behind the menu. */
+.hell-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  pointer-events: none;
 }
 
 /* Charlie coffin straddles dirt/hell boundary. Sized so its walls

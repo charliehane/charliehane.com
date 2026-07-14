@@ -50,29 +50,9 @@
 
     <div class="dig-clouds" id="digClouds" aria-hidden="true"></div>
 
-    <!-- FOREST — three depth-bands of trees flanking the gravestone.
-         Parallax speed varies by depth: lower = further away. -->
-    <div class="dig-forest" aria-hidden="true">
-      <!-- distant band (slowest, smallest, dimmed) -->
-      <img class="bg-tree bg-tree--far-left"    src="assets/scenery/tree-tall-1.png" alt="" data-parallax="0.35">
-      <img class="bg-tree bg-tree--far-l2"      src="assets/scenery/tree-tall-2.png" alt="" data-parallax="0.38">
-      <img class="bg-tree bg-tree--far-r2       bg-tree--mirror" src="assets/scenery/tree-tall-1.png" alt="" data-parallax="0.38">
-      <img class="bg-tree bg-tree--far-deep-l"  src="assets/scenery/tree-short.png"  alt="" data-parallax="0.30">
-      <img class="bg-tree bg-tree--far-deep-r   bg-tree--mirror" src="assets/scenery/tree-short.png"  alt="" data-parallax="0.30">
+    <!-- FOREST layer removed per Charlie — no more parallax trees behind
+         the gravestone. Grass strip alone forms the horizon now. -->
 
-      <!-- mid band -->
-      <img class="bg-tree bg-tree--mid-left"    src="assets/scenery/tree-short.png"  alt="" data-parallax="0.50">
-      <img class="bg-tree bg-tree--mid-right    bg-tree--mirror" src="assets/scenery/tree-short.png"  alt="" data-parallax="0.50">
-      <img class="bg-tree bg-tree--mid-l2"      src="assets/scenery/tree-tall-2.png" alt="" data-parallax="0.52">
-      <img class="bg-tree bg-tree--mid-r2       bg-tree--mirror" src="assets/scenery/tree-tall-1.png" alt="" data-parallax="0.52">
-
-      <!-- near band (largest, fully opaque) -->
-      <img class="bg-tree bg-tree--near-left"   src="assets/scenery/tree-tall-2.png" alt="" data-parallax="0.65">
-      <img class="bg-tree bg-tree--near-right   bg-tree--mirror" src="assets/scenery/tree-tall-1.png" alt="" data-parallax="0.65">
-
-      <!-- fallen tree as foreground decoration -->
-      <img class="bg-tree bg-tree--fallen"      src="assets/scenery/tree-fallen.png" alt="" data-parallax="0.75">
-    </div>
 
     <div class="dig-sky-text-wrap">
       <div class="dig-sky-text">
@@ -84,11 +64,6 @@
 
     <!-- gravestone — swap by editing assets/gravestone.svg -->
     <div class="dig-gravestone-center" data-art="gravestone" aria-hidden="true"></div>
-
-    <!-- tree on the right — swap by editing assets/tree.svg -->
-    <div class="dig-tree-bike" aria-hidden="true">
-      <div class="dig-tree" data-art="tree"></div>
-    </div>
 
     <!-- grass strip -->
     <div class="dig-grass" id="digGrass" aria-hidden="true">

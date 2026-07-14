@@ -1490,8 +1490,8 @@ body {
   .page-header { padding: 120px 24px 40px; }
 }
 
-/* Very narrow phones (iPhone SE-ish) — shrink nav more so all 4 items
-   (home link + 3 section links) fit on one line. */
+/* Narrow phones (iPhone 12/13/14 range, ~390-428px) — nav shrinks
+   enough so all 3 section links + the home mark fit on one line. */
 @media (max-width: 420px) {
   .nav { padding: 12px 14px; }
   .nav-sections { gap: 10px; }
@@ -1499,6 +1499,27 @@ body {
   .dig-sky-text .page-title { font-size: 44px !important; }
   .dig-sky-text .page-lede { font-size: 13px !important; }
   .sky-cloud--puffy { width: 160px !important; }
+}
+
+/* Extra-narrow phones (iPhone SE, ~375px) — even tighter so nothing
+   overflows the 375px viewport. */
+@media (max-width: 390px) {
+  .nav { padding: 10px 10px; }
+  .nav-sections { gap: 6px; }
+  .nav-sections a, .nav, .nav-mark { font-size: 8px; letter-spacing: 0.04em; }
+  .big-link { grid-template-columns: 40px 1fr 28px; gap: 10px; }
+  .lander-sections, .lander-footer, .works, .page-footer,
+  .portal, .page-header { padding-left: 14px !important; padding-right: 14px !important; }
+  .dig-sky-text .page-title { font-size: 36px !important; }
+  .page-title { font-size: 40px !important; }
+}
+
+/* Universal horizontal-overflow guard for phones — hides any last-mile
+   overflow (browser subpixel rounding, min-width quirks on fixed nav,
+   etc.) that our per-element rules can't fully squeeze out. Safe because
+   nothing on the page needs horizontal scroll below tablet. */
+@media (max-width: 760px) {
+  html, body { overflow-x: hidden; }
 }
 
 

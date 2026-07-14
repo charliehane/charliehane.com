@@ -2357,7 +2357,10 @@ body {
 .hell-menu {
   position: relative;
   z-index: 5;
-  padding: 60px 8vw;
+  /* Top padding pushes menu items below the cavern roof line in the
+     Charlie in Hell video (cavern edge sits around ~35% of the .hell
+     height on desktop viewports). */
+  padding: 38vh 8vw 60px;
   max-width: 1100px;
   margin: 0 auto;
 }

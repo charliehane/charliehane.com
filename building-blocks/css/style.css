@@ -1488,7 +1488,22 @@ body {
   .scene { flex-basis: 92vw; padding: 32px; }
   .scene-num { top: 32px; left: 32px; }
   .world-caption { bottom: 44px; }
-  .big-link { grid-template-columns: 50px 1fr 40px; gap: 16px; padding: 24px 0; }
+  /* Post-ride/post-floor/hell .big-link rules are declared LATER in the
+     stylesheet (they take a base grid template of 80/1fr/60 with a 56px
+     bl-label floor), which loses the specificity tiebreak here since
+     they have equal specificity but appear later. Use !important on the
+     mobile-scaled values so the phone layout wins regardless of source
+     order. Without this, long labels like "Postproduction" overflow the
+     grid cell and the ↗ arrow spills off-screen. */
+  .big-link,
+  .post-ride-menu .big-link,
+  .post-floor-menu .big-link { grid-template-columns: 50px 1fr 40px !important; gap: 16px !important; padding: 24px 0 !important; }
+  .bl-label,
+  .post-ride-menu .bl-label,
+  .post-floor-menu .bl-label,
+  .hell .bl-label { font-size: clamp(32px, 9vw, 56px) !important; }
+  .post-ride-menu,
+  .post-floor-menu { padding-left: 24px !important; padding-right: 24px !important; }
   /* On narrow viewports the centered blurb overlaps the bottom-left cue.
      Center the cue horizontally (via left+right+auto margin so the cueBob
      transform on the base rule keeps working) and drop it to the very
@@ -1517,23 +1532,28 @@ body {
   .page-header { padding: 120px 24px 40px; }
 }
 
-/* Narrow phones (iPhone 12/13/14 range, ~390-428px) — nav shrinks
-   enough so all 3 section links + the home mark fit on one line. */
+/* Narrow phones (iPhone 12/13/14 range, ~390-428px). Bumped from 9px →
+   11px on the nav links so they're actually legible + tap-targets are
+   ≥30px tall. Vertical padding widened so tap area grows without needing
+   bigger font. */
 @media (max-width: 420px) {
-  .nav { padding: 12px 14px; }
-  .nav-sections { gap: 10px; }
-  .nav-sections a, .nav, .nav-mark { font-size: 9px; letter-spacing: 0.08em; }
+  .nav { padding: 14px 14px; }
+  .nav-sections { gap: 12px; }
+  .nav-sections a, .nav, .nav-mark { font-size: 11px; letter-spacing: 0.06em; }
+  .nav-sections a { padding: 6px 0; }
   .dig-sky-text .page-title { font-size: 44px !important; }
   .dig-sky-text .page-lede { font-size: 13px !important; }
   .sky-cloud--puffy { width: 160px !important; }
 }
 
-/* Extra-narrow phones (iPhone SE, ~375px) — even tighter so nothing
-   overflows the 375px viewport. */
+/* Extra-narrow phones (iPhone SE, ~375px). Nav text stays legible at
+   10px (up from unreadable 8px) — tighter letterspacing + smaller gap
+   still fit all 3 section links + CH- on one line. */
 @media (max-width: 390px) {
-  .nav { padding: 10px 10px; }
-  .nav-sections { gap: 6px; }
-  .nav-sections a, .nav, .nav-mark { font-size: 8px; letter-spacing: 0.04em; }
+  .nav { padding: 12px 10px; }
+  .nav-sections { gap: 8px; }
+  .nav-sections a, .nav, .nav-mark { font-size: 10px; letter-spacing: 0.04em; }
+  .nav-sections a { padding: 6px 0; }
   .big-link { grid-template-columns: 40px 1fr 28px; gap: 10px; }
   .lander-sections, .lander-footer, .works, .page-footer,
   .portal, .page-header { padding-left: 14px !important; padding-right: 14px !important; }

@@ -202,13 +202,13 @@ body {
 
 .forest {
   position: relative;
-  /* Bumped 1400vh → 2400vh — Charlie's still flicking past bios on his
-     iPhone even at 1400vh. iOS momentum scroll is much faster than
-     desktop; each bio needs ~8-10 viewport heights of scroll to survive
-     a single hard swipe. 2400vh gives each bio ~8 viewport heights and
-     the whole forest ~24 viewport heights of scrub — feels like a
-     deliberate journey rather than a page you can escape by accident. */
-  height: 2400vh;
+  /* Bumped to 4000vh — 2400vh still let Charlie flick past bios on iOS
+     Safari momentum scroll. At 4000vh (40 viewport heights) each of
+     the 3 bios gets ~13 viewport heights of scroll room, which even
+     a very hard swipe can't clear in one gesture. The trade-off is the
+     forest is now a long deliberate journey to scroll through — but
+     that's the design intent (each bio should demand pause + read). */
+  height: 4000vh;
   background: #0a140a;
 }
 .forest-pin {
@@ -738,12 +738,20 @@ body {
        size on a phone even though the stage is a small strip. */
     width: clamp(80px, calc(0.26 * var(--stage-w, 100vw)), 240px);
   }
-  .brick {
-    /* Same idea for the ? brick — larger tap target on the small stage. */
-    width: 88px;
-    height: 88px;
-    font-size: 40px;
-  }
+  /* Push the bike lower so its wheels touch the road at the very bottom
+     of the video across all scenes (Charlie: "bike isn't touching the
+     ground in the city sequence"). At 8% the bike floated 18px above
+     the road on the small 227h portrait stage; 2% puts wheels within
+     4px of stage bottom. */
+  .page-producer-ride .world-bike-pos { bottom: 2%; }
+  /* Bike jump was translateY(-44vh) globally — on the small 227h
+     letterboxed portrait stage 44vh (410px on iPhone Pro Max) jumps
+     the bike way ABOVE the bricks so the collision check never fires
+     ("bricks don't respond when clicked"). Scale the jump to the
+     stage height so the peak actually reaches brick height. */
+  .page-producer-ride .world-bike { --bike-jump-h: calc(0.55 * var(--stage-h, 44vh)); }
+  /* Brick base rule (64×64 in @media max-width: 760px) already works
+     on mobile — no override needed here. */
 }
 /* Scroll-scrubbed AE background. Sits behind the brick world, the bike, and
    the car. Its currentTime is driven by scroll progress in preproduction.js
@@ -985,10 +993,10 @@ body {
   animation: bikeJump 0.75s cubic-bezier(.3,-0.4,.5,1.5) 1;
 }
 @keyframes bikeJump {
-  0%   { transform: translateX(-50%) translateY(0)     rotate(0deg); }
-  35%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(-44vh) rotate(-10deg); }
-  55%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(-44vh) rotate(10deg); }
-  100% { transform: translateX(-50%) translateY(0)     rotate(0deg); }
+  0%   { transform: translateX(-50%) translateY(0) rotate(0deg); }
+  35%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(calc(-1 * var(--bike-jump-h, 44vh))) rotate(-10deg); }
+  55%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(calc(-1 * var(--bike-jump-h, 44vh))) rotate(10deg); }
+  100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
 }
 
 /* outer wrapper handles "drive off right" drift; inner bike handles jump */
@@ -2540,19 +2548,29 @@ body {
        the top of the visible area (video's top-mid is where he hangs). */
     object-position: 50% 25%;
   }
+  /* Menu positioned on the LEFT of the cave (per Charlie's request:
+     "home preproduction and production menu options on the left in
+     the cave itself"). Not centered, not over the lava — over the
+     cave wall on the left half of the visible video. Vertically
+     positioned in the middle of the cave area so Charlie in coffin
+     (top center) and lava (bottom) both remain fully visible. */
   .hell-menu {
     position: absolute;
-    bottom: 12px;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-    padding: 0 6vw 12px;
-    max-width: none;
+    top: 40%;
+    left: 4vw;
+    right: auto;
+    margin: 0;
+    padding: 0;
+    max-width: 60vw;
+    width: auto;
+    transform: translateY(-50%);
   }
-  /* Tighten menu spacing on portrait so all 3 links + eyebrow fit inside
-     the visible video area without covering the coffin/shadow. */
-  .hell-eyebrow { margin: 0 0 12px; }
-  .hell .big-link { padding: 12px 0; }
+  /* Tight vertical stack of eyebrow + 3 big-links so the whole menu
+     fits within the cave area without spilling onto Charlie or lava. */
+  .hell-eyebrow { margin: 0 0 8px; font-size: 10px; }
+  .hell .big-link { padding: 8px 0; grid-template-columns: 28px 1fr 20px; gap: 8px; }
+  .hell .bl-num { font-size: 10px; }
+  .hell .bl-arrow { font-size: 14px; }
 }
 .hell-eyebrow {
   font-family: var(--mono);

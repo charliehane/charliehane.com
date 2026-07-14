@@ -46,3 +46,7 @@ Animations/
 .vscode/
 .idea/
 *.swp
+
+# Unused legacy logo staging files
+/assets/logo-hero.gif
+/assets/logo-hero.mp4

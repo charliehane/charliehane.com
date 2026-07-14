@@ -29,6 +29,7 @@
 
 
   const section    = document.getElementById('worldSection');
+  const stage      = document.getElementById('worldStage');
   const track      = document.getElementById('worldTrack');
   const bar        = document.getElementById('worldProgressBar');
   const bikePos    = document.getElementById('worldBikePos');
@@ -36,6 +37,16 @@
   const launchedEl = document.getElementById('launchedFigure');
   const bgVideo    = document.getElementById('worldBgVideo');
   const fgVideo    = document.getElementById('worldFgVideo');
+
+  /* All positional math uses the STAGE box (a fixed 1.89:1 window centered
+     in the viewport with black letterbox above/below on portrait phones)
+     rather than raw window dimensions. Otherwise the bike + launched figure
+     drift out of alignment with the AE video on non-16:9 windows. */
+  const getStageBox = () => {
+    if (!stage) return { w: window.innerWidth, h: window.innerHeight, left: 0, top: 0 };
+    const r = stage.getBoundingClientRect();
+    return { w: r.width, h: r.height, left: r.left, top: r.top };
+  };
 
   // ============================================================
   // AUTO-SCALE — .world-section height is fixed in CSS at 500vh for
@@ -158,7 +169,11 @@
 
   const measure = () => {
     if (!section || !track) return;
-    maxX = Math.max(0, track.scrollWidth - window.innerWidth);
+    // Track pans within the STAGE box (not the viewport). The stage width
+    // is what defines a "scene" of horizontal travel, since scenes are
+    // sized as calc(0.78 * --stage-w).
+    const sw = getStageBox().w;
+    maxX = Math.max(0, track.scrollWidth - sw);
     scrollableH = section.offsetHeight - window.innerHeight;
     // No procedural car to align against any more, so translate the
     // horizontal track all the way to maxX by crashProgress. The visual
@@ -205,8 +220,14 @@
     scrub(bgVideo, bgVideoDuration);
     scrub(fgVideo, fgVideoDuration);
 
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
+    const stageBox = getStageBox();
+    // Legacy names kept — but they now reference the STAGE, not the
+    // window. Everything derived from these (launched-figure arc, exit
+    // trajectories) stays inside the visible stage on portrait phones.
+    const vw = stageBox.w;
+    const vh = stageBox.h;
+    const stageLeft = stageBox.left;
+    const stageTop  = stageBox.top;
 
     // pre-crash: track translates from 0 → trackXAtCrash (car centered).
     // post-crash: track stays at trackXAtCrash so bike & car remain visible centered.
@@ -272,10 +293,12 @@
         // rider's torso/head was before getting launched. Subtle nudges
         // from the previous spot (was +30/0.75): a touch left + a touch
         // lower so the figure pops out exactly over the seat.
-        const startX = vw * 0.5 + 15;  // slight right of center, nudged left
-        const startY = vh * 0.77;      // above the bike, nudged slightly lower
-        const targetX = vw + 200;       // offscreen right
-        const targetY = -180;           // offscreen top
+        // Coords are viewport-relative (launched-figure is position:fixed),
+        // so add the stage's offset from the viewport top-left.
+        const startX = stageLeft + vw * 0.5 + 15;  // slight right of center
+        const startY = stageTop  + vh * 0.77;      // above the bike
+        const targetX = window.innerWidth + 200;   // offscreen right (full viewport)
+        const targetY = -180;                       // offscreen top
         const ease = Math.pow(t, 0.85);
         const lx = startX + (targetX - startX) * ease;
         const ly = startY + (targetY - startY) * ease - Math.sin(ease * Math.PI) * 80;
@@ -319,10 +342,14 @@
   // ============================================================
   // BIKE GIF SPRITE — frame index advances based on scroll velocity.
   // Faster scroll = faster pedaling. No scroll = bike freezes on a frame.
-  // 14 frames horizontally; each frame is 240px wide in the sprite.
+  // 14 frames horizontally. Sprite is rendered at background-size: 1400% 100%
+  // (each frame = container width), so frame stepping is a percentage:
+  //   frame N (0-indexed) → bg-position-x = 100N/(14-1) %
+  // This lets the bike element's actual width scale with --stage-w without
+  // needing to know a pixel value here.
   // ============================================================
   const BIKE_FRAMES = 14;
-  const BIKE_FRAME_W = 240;
+  const BIKE_STEP_PCT = 100 / (BIKE_FRAMES - 1);   // 7.6923%
   const SCROLL_PER_FRAME = 60;   // tune: smaller = faster pedaling per scroll
   let bikeFrameAccum = 0;
   let lastBikeScroll = window.scrollY;
@@ -334,7 +361,7 @@
     if (dy === 0) return;
     bikeFrameAccum += dy;
     const frameIdx = Math.floor(bikeFrameAccum / SCROLL_PER_FRAME) % BIKE_FRAMES;
-    bikeEl.style.backgroundPositionX = `${-frameIdx * BIKE_FRAME_W}px`;
+    bikeEl.style.backgroundPositionX = `${frameIdx * BIKE_STEP_PCT}%`;
   };
   // hook into the existing scroll handler via a separate raf-throttled listener
   let bikeTicking = false;

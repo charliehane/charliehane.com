@@ -686,7 +686,24 @@ body {
   height: 100vh;
   display: flex;
   align-items: center;
-  overflow: visible;
+  justify-content: center;
+  overflow: hidden;
+  background: #000;   /* letterbox — fills the space around .world-stage */
+}
+/* Fixed-aspect stage that locks the AE video + bricks + bike together. Sized
+   to fit inside the viewport at the video's native 1.89:1 aspect. Letterbox
+   bars (from .world-pin's black background) fill above/below on portrait
+   phones, or on either side on ultra-wide desktops. Everything inside the
+   stage sizes off --stage-w so scenes/bike/caption never drift out of sync
+   with the video underneath, no matter the window shape. */
+.world-stage {
+  --stage-w: min(100vw, calc(100vh * 1.89));
+  --stage-h: calc(var(--stage-w) / 1.89);
+  position: relative;
+  width: var(--stage-w);
+  height: var(--stage-h);
+  max-height: 100vh;
+  overflow: visible;   /* bike can pop slightly out during the jump */
 }
 /* Scroll-scrubbed AE background. Sits behind the brick world, the bike, and
    the car. Its currentTime is driven by scroll progress in preproduction.js
@@ -744,7 +761,11 @@ body {
   will-change: transform;
 }
 .scene {
-  flex: 0 0 78vw;
+  /* Scene basis is a fraction of the STAGE (not the viewport) so scene
+     positions always line up with the AE video underneath, regardless of
+     letterboxing. Falls back to 78vw when --stage-w isn't defined (safe
+     default for pages without the stage wrapper). */
+  flex: 0 0 calc(0.78 * var(--stage-w, 78vw));
   height: 100%;
   position: relative;
   display: flex;
@@ -1523,9 +1544,16 @@ body {
 /* Universal horizontal-overflow guard for phones — hides any last-mile
    overflow (browser subpixel rounding, min-width quirks on fixed nav,
    etc.) that our per-element rules can't fully squeeze out. Safe because
-   nothing on the page needs horizontal scroll below tablet. */
+   nothing on the page needs horizontal scroll below tablet.
+
+   IMPORTANT: `clip`, not `hidden`. Setting `overflow-x: hidden` on
+   html/body silently forces overflow-y to `auto`, which breaks any
+   `position: sticky` descendant (the sticky's containing block becomes
+   body's own scroll container, and body itself doesn't scroll).
+   `clip` prevents scrolling on that axis without introducing a scroll
+   container, so sticky still works against the window. */
 @media (max-width: 760px) {
-  html, body { overflow-x: hidden; }
+  html, body { overflow-x: clip; }
 }
 
 
@@ -1535,8 +1563,10 @@ body {
 
 .page-producer-ride { background: var(--ink); }
 .page-producer-ride .world-section { height: 2000vh; }
-.page-producer-ride .scene { flex: 0 0 100vw; }
-.page-producer-ride .scene--night { flex-basis: 200vw; }
+/* Scene widths are stage-relative (via --stage-w) so scenes stay locked
+   to the AE video underneath regardless of viewport aspect. */
+.page-producer-ride .scene { flex: 0 0 var(--stage-w, 100vw); }
+.page-producer-ride .scene--night { flex-basis: calc(2 * var(--stage-w, 100vw)); }
 .page-producer-ride .scene--night .brick { left: 25%; }
 .page-producer-ride .scene--night .brick-popup { left: 8%; top: 14%; }
 .scene-car {
@@ -1580,16 +1610,20 @@ body {
   transition: none;
 }
 
-/* GIF-driven bike: 14-frame horizontal sprite. Frame width 240, total 3360.
-   Display width 240px keeps frames pixel-perfect. JS sets background-position
-   based on accumulated scroll velocity so faster scroll = faster pedaling. */
+/* GIF-driven bike: 14-frame horizontal sprite (240×135 per frame, 14 frames
+   side-by-side = 3360×135 native). Sized as a fraction of --stage-w so the
+   bike stays proportionally the same over the AE video on every viewport.
+   background-size: 1400% 100% (14 frames scaled to container width each);
+   frame stepping switched to percentage bg-position — preproduction.js
+   computes 100*frame/13 for each frame. */
 .page-producer-ride .world-bike--sprite {
-  width: 240px;
-  height: 135px;
+  width: clamp(70px, calc(0.167 * var(--stage-w, 100vw)), 240px);
+  aspect-ratio: 240 / 135;
+  height: auto;
   background-image: url('../../assets/bike-sprite.png');
   background-repeat: no-repeat;
-  background-size: 3360px 135px;
-  background-position: 0 0;
+  background-size: 1400% 100%;
+  background-position: 0% 0;
   filter: drop-shadow(0 8px 16px rgba(0,0,0,0.3));
   /* HARD CUT to crashed-bike — no fade. Per Charlie: the swap should
      happen in a single frame, hidden by the launched-figure starting to
@@ -1598,11 +1632,12 @@ body {
 }
 /* Post-crash bike — single PNG of the lone rider on a busted bike,
    takes over the world-bike position + rotation when the launched
-   figure flies off. Same source aspect (1.78:1) as the sprite so it
-   sits in the exact same footprint. */
+   figure flies off. Same size + aspect as the sprite so it sits in
+   the exact same footprint. */
 .page-producer-ride .world-bike-crashed {
-  width: 240px;
-  height: 135px;
+  width: clamp(70px, calc(0.167 * var(--stage-w, 100vw)), 240px);
+  aspect-ratio: 240 / 135;
+  height: auto;
   background-image: url('../../assets/bike-crashed.png');
   background-repeat: no-repeat;
   background-size: contain;

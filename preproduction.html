@@ -57,6 +57,17 @@
   <section class="world-section" id="worldSection">
     <div class="world-pin">
 
+      <!-- Fixed-aspect stage. Locks the entire bike-ride composition (BG
+           video, FG video, bricks, bike) into a 1.89:1 window matching
+           the AE render, then centers it inside .world-pin. Above/below
+           the stage is black letterbox — so the three layers always
+           align regardless of viewport aspect ratio (iPhone portrait,
+           iPad, desktop, or a resized window). The stage's width
+           becomes the reference dimension (--stage-w) that scene widths
+           and bike sizes are derived from, so nothing scales
+           independently anymore. -->
+      <div class="world-stage" id="worldStage">
+
       <!-- Scroll-scrubbed background video — Charlie's AE bike journey. The
            video's currentTime is driven by scroll progress in preproduction.js.
            Lives behind .world-track-clip so the bricks/bike/car render on top. -->
@@ -149,6 +160,7 @@
           <div class="launched-figure-sprite" id="launchedFigureSprite"></div>
         </div>
       </div>
+      </div><!-- /.world-stage -->
     </div>
   </section>
 

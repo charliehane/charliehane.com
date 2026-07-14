@@ -2209,10 +2209,10 @@ body {
   height: 110vh;
   /* Solid black under the video so any letterbox gap around the video's
      aspect ratio blends into darkness rather than showing the old red
-     gradient. */
+     gradient. No top border — the video's upper edge is the visual
+     boundary between the menu area and the postproduction ground above. */
   background: #000;
   overflow: hidden;
-  border-top: 4px solid #1a0a04;
   color: #f3ebe0;
   z-index: 10;
 }

@@ -16,6 +16,21 @@ Animations/
 # renders we re-encode into assets/ before committing
 *.aep_AME/
 
+# Master video sources (ProRes/MXF exports from AE, ~200MB–1GB each).
+# We re-encode these into web-ready MP4/WebM/MOV files under assets/
+# before committing. Never ship the masters — they exceed both GitHub's
+# 100MB per-file limit and Cloudflare Pages' 25MB per-file limit.
+*.mxf
+*.mxf.xmp
+*.mov
+*.MOV
+*.prores
+# Root-level animated GIFs / MP4s that live at the WEBSITE root as
+# staging (they get re-encoded into assets/ before shipping)
+/Foot Smush.gif
+/Logo Gif Transparent.gif
+/Logo Gif Yellow BG.gif
+
 # Staging area at WEBSITE root for files headed to R2 (full-quality videos
 # too big for Cloudflare Pages' 25MB limit). The leading slash anchors to
 # this exact path so root-level staging files are ignored without affecting

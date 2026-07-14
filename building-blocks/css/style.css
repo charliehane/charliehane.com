@@ -1240,48 +1240,20 @@ body {
   background: linear-gradient(180deg, #c97e54 0%, #d4a878 60%, #e2c89a 100%);
 }
 
-.dig-grass {
-  position: absolute;
-  top: 11%; left: 0; right: 0;
-  height: 18px;
-  background: linear-gradient(180deg, #4a6a3a 0%, #2a4520 100%);
-  z-index: 3;
-  border-bottom: 2px solid #1a2f10;
-}
-.dig-grass::after {
-  content: "";
-  position: absolute;
-  bottom: 14px;
-  left: 0; right: 0;
-  height: 14px;
-  background:
-    radial-gradient(circle at 4%,  #2a4520 0 5px, transparent 6px),
-    radial-gradient(circle at 11%, #2a4520 0 4px, transparent 5px),
-    radial-gradient(circle at 18%, #2a4520 0 6px, transparent 7px),
-    radial-gradient(circle at 26%, #2a4520 0 4px, transparent 5px),
-    radial-gradient(circle at 34%, #2a4520 0 5px, transparent 6px),
-    radial-gradient(circle at 42%, #2a4520 0 6px, transparent 7px),
-    radial-gradient(circle at 50%, #2a4520 0 4px, transparent 5px),
-    radial-gradient(circle at 58%, #2a4520 0 5px, transparent 6px),
-    radial-gradient(circle at 66%, #2a4520 0 6px, transparent 7px),
-    radial-gradient(circle at 74%, #2a4520 0 4px, transparent 5px),
-    radial-gradient(circle at 82%, #2a4520 0 5px, transparent 6px),
-    radial-gradient(circle at 90%, #2a4520 0 6px, transparent 7px),
-    radial-gradient(circle at 96%, #2a4520 0 4px, transparent 5px);
-}
+/* Legacy .dig-grass green-gradient + dot-pattern + border-bottom rules
+   removed — grass is now an <img> and there's nothing to render here. */
 
 .dig-underground {
   position: absolute;
   top: calc(11% + 18px);
   left: 0; right: 0;
   bottom: 0;
+  /* Starts dark — no more medium-brown transition zone above the darker
+     underground. Grass image bottom flows directly into darkness. */
   background: linear-gradient(180deg,
-    #6a4a2a 0%,
-    #5a3a20 12%,
-    #4a3018 28%,
-    #3a2516 44%,
-    #2a1810 60%,
-    #1a0e08 78%,
+    #2a1810 0%,
+    #1a0e08 45%,
+    #0a0503 80%,
     #050302 100%
   );
   overflow: hidden;
@@ -2078,13 +2050,12 @@ body {
   top: calc(75vh + 32px);
   left: 0; right: 0;
   bottom: 0;
+  /* Starts dark — no medium-brown zone at top. Grass image bottom
+     flows straight into darkness with no visible seam. */
   background: linear-gradient(180deg,
-    #6a4a2a 0%,
-    #5a3a20 12%,
-    #4a3018 28%,
-    #3a2516 44%,
-    #2a1810 60%,
-    #1a0e08 78%,
+    #2a1810 0%,
+    #1a0e08 45%,
+    #0a0503 80%,
     #050302 100%
   );
   overflow: hidden;

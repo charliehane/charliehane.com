@@ -114,8 +114,10 @@
 
       <template id="coffinTpl">
         <article class="coffin" data-style-from="position">
-          <!-- coffin shape — swap by editing assets/coffin.svg -->
-          <div class="coffin-shape" data-art="coffin"></div>
+          <!-- Plush velvet-lined wooden coffin — swap the image at
+               assets/coffin.png to change the look of every coffin
+               on the page at once. -->
+          <img class="coffin-shape" src="assets/coffin.png" alt="" draggable="false">
           <div class="coffin-content">
             <p class="coffin-tag"    data-field="tag"></p>
             <h3 class="coffin-title" data-field="title"></h3>
@@ -124,9 +126,9 @@
         </article>
       </template>
 
-      <!-- skeleton coffin — coffin shell from assets/coffin.svg, skeleton from assets/skeleton.svg -->
+      <!-- skeleton coffin — coffin shell from assets/coffin.png, skeleton from assets/skeleton.svg -->
       <article class="coffin coffin--skeleton" id="coffinSkeleton" style="top: 62%; right: 12%; --rot: -10deg;">
-        <div class="coffin-shape" data-art="coffin"></div>
+        <img class="coffin-shape" src="assets/coffin.png" alt="" draggable="false">
         <div class="coffin-skeleton" data-art="skeleton"></div>
       </article>
 

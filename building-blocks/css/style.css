@@ -2100,14 +2100,24 @@ body {
   height: 100%;
   position: absolute;
   inset: 0;
+  /* PNG has a hex silhouette on transparent margins — object-fit keeps
+     the coffin proportional even if the container aspect drifts. */
+  object-fit: contain;
+  object-position: center;
   filter: drop-shadow(0 10px 22px rgba(0,0,0,0.7));
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 }
 .coffin-content {
   position: absolute;
-  top: 28%;
-  left: 14%;
-  right: 14%;
-  bottom: 28%;
+  top: 26%;
+  /* Tighter left/right padding matches the plush interior of the new
+     velvet coffin image (coffin.png) — the wooden frame eats more of
+     the visible area than the old flat SVG did. */
+  left: 20%;
+  right: 20%;
+  bottom: 26%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -2131,8 +2141,8 @@ body {
   font-family: var(--serif);
   font-weight: 380;
   font-style: italic;
-  font-size: 17px;
-  line-height: 1.05;
+  font-size: 13px;
+  line-height: 1.1;
   margin: 0 0 6px;
   color: #f3ebe0;
   letter-spacing: -0.01em;

@@ -20,7 +20,10 @@
 
   "forest": {
     "_comment": "scrollIn/scrollOut are 0..1 across the forest section's scroll length, matching when the sign is visible in the AE render. hotspot.{x,y,w,h} are percent-of-viewport rects positioning the invisible click target over where the sign lands in frame. video is optional — when set, the modal embeds it.",
-    "videoSrc": "assets/tiny-world.mp4",
+    "videoSrc": {
+      "webm": "assets/tiny-world.webm",
+      "mp4":  "assets/tiny-world.mp4"
+    },
     "bios": [
       {
         "kind": "bio",

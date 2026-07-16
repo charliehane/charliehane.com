@@ -1801,6 +1801,70 @@ body {
   to   { background-position: -800px 0; }
 }
 
+/* ============================================================
+   PRODUCTION PAGE — portrait iPhone falling-character overlay
+   ============================================================
+   On portrait phones the desktop stick-cursor (mouse-driven) becomes a
+   scroll-driven falling character on the right side of the page. The
+   works content scales to ~80% width so the character has its own
+   column. Character phases (all driven by JS in production.js):
+     1. Falls from top-right offscreen into vertical center of viewport
+     2. Sticks at vertical center while user scrolls through works
+     3. Splats onto the concrete when the pre-menu grey line reaches
+        its head position. */
+
+@media (orientation: portrait) and (max-width: 500px) {
+  /* Shrink the works + header so the right ~18vw is free for the character */
+  .page-director .page-header {
+    max-width: 82vw;
+    padding-right: 4vw;
+  }
+  .page-director .works {
+    max-width: 82vw;
+    padding-right: 4vw;
+  }
+  .page-director .work-thumb,
+  .page-director .work-meta {
+    max-width: 100%;
+  }
+  /* Hide the desktop stick-cursor — the falling character replaces it */
+  .page-director .stick-cursor { display: none; }
+}
+
+/* The falling character itself is fixed to the viewport and moved by JS
+   scroll listener. Only visible on portrait ≤500px. */
+.director-fall-character {
+  position: fixed;
+  top: -25vh;
+  right: 3vw;
+  width: 80px;
+  height: 110px;
+  z-index: 90;
+  pointer-events: none;
+  display: none;   /* toggled on by media query below */
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.35));
+  will-change: transform, top;
+}
+.director-fall-character .director-fall-sprite {
+  width: 100%;
+  height: 100%;
+  background-image: url('../../assets/you-sprite.png');
+  background-size: 800px 110px;   /* 10 frames × 80px, matches stick-cursor */
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  animation: spriteRotate 0.9s steps(10) infinite;
+}
+/* The 5th frame of the sprite (roughly upside-down) becomes the "landed"
+   pose for the splat state. Freeze the animation and snap to that frame. */
+.director-fall-character.is-splatted .director-fall-sprite {
+  animation: none;
+  background-position: -320px 0;   /* frame 5 (0-indexed 4): 4 × 80 */
+  transform: rotate(180deg);
+}
+@media (orientation: portrait) and (max-width: 500px) {
+  .director-fall-character { display: block; }
+}
+
 
 /* ============================================================
    SHOVEL CURSOR (editor page)

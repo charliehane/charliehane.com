@@ -366,4 +366,90 @@
     }
   }
 
+
+  // ============================================================
+  // FALLING CHARACTER — portrait iPhone only
+  // ------------------------------------------------------------
+  // Replaces the desktop stick-cursor with a scroll-driven falling
+  // character on the right side of the page. Three phases:
+  //   1. Falls from offscreen top-right → viewport vertical center
+  //      as the user scrolls the first FALL_IN_PX (~0.8 viewport)
+  //   2. Sticks at viewport vertical center while user scrolls
+  //      through the works section
+  //   3. When the top of .director-concrete enters the viewport at
+  //      the character's center-Y position, snaps to a splat pose
+  //      on the concrete (frozen sprite, rotated 180°)
+  // The character is created on-demand only when the portrait media
+  // query matches, so desktop is unaffected.
+  // ============================================================
+  const isPortraitPhone = () =>
+    window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches;
+
+  if (isPortraitPhone()) {
+    // Build the character node
+    const fallEl = document.createElement('div');
+    fallEl.className = 'director-fall-character';
+    fallEl.setAttribute('aria-hidden', 'true');
+    fallEl.innerHTML = '<div class="director-fall-sprite"></div>';
+    document.body.appendChild(fallEl);
+
+    const concreteEl = document.getElementById('directorConcrete');
+    let charH = fallEl.offsetHeight || 110;
+    const measure = () => { charH = fallEl.offsetHeight || 110; };
+    window.addEventListener('resize', measure);
+    measure();
+
+    // How many pixels of scroll it takes for the character to fall
+    // fully from offscreen into center. Roughly 80% of a viewport
+    // height so it reads as a single deliberate scroll gesture.
+    const fallInPx = () => Math.max(300, window.innerHeight * 0.8);
+
+    let ticking = false;
+    const updateFall = () => {
+      ticking = false;
+      const vh = window.innerHeight;
+      const scrollY = window.scrollY;
+      const fallLen = fallInPx();
+
+      // Concrete top in current viewport coords. When it descends
+      // to the character's head Y, that's the splat moment.
+      const concreteRect = concreteEl && concreteEl.getBoundingClientRect();
+      const centerY = vh / 2 - charH / 2;   // "middle of screen" top for char
+
+      if (concreteRect && concreteRect.top < centerY + charH * 0.4) {
+        // Phase 3 — splat. Anchor the character to the concrete top
+        // via page-absolute positioning so it stays with the concrete
+        // as the user keeps scrolling past.
+        const concreteTopAbs = concreteEl.offsetTop;
+        fallEl.style.position = 'absolute';
+        fallEl.style.top = `${concreteTopAbs - charH * 0.6}px`;
+        fallEl.classList.add('is-splatted');
+      } else if (scrollY < fallLen) {
+        // Phase 1 — coming in from offscreen top-right
+        const p = scrollY / fallLen;                   // 0 → 1
+        const startTop = -charH - 20;                  // offscreen top
+        const endTop = centerY;                         // vertical center
+        const top = startTop + (endTop - startTop) * p;
+        fallEl.style.position = 'fixed';
+        fallEl.style.top = `${top}px`;
+        fallEl.classList.remove('is-splatted');
+      } else {
+        // Phase 2 — hovering at vertical center of viewport
+        fallEl.style.position = 'fixed';
+        fallEl.style.top = `${centerY}px`;
+        fallEl.classList.remove('is-splatted');
+      }
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(updateFall);
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    updateFall();
+  }
+
 })();

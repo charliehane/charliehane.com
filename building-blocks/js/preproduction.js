@@ -53,7 +53,7 @@
   // version from local disk cache — force-quit doesn't clear that. Bump
   // this version each time we upload a new BG/FG to R2 so the URL
   // differs and Safari refetches.
-  const R2_V = 'v=3';
+  const R2_V = 'v=4';
   const isPortraitPhone = () =>
     window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches;
   const setBgSrc = () => {

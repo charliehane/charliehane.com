@@ -2859,6 +2859,37 @@ body.director-fall-locked {
 .post-ride-menu .big-link:hover .bl-arrow,
 .post-floor-menu .big-link:hover .bl-arrow { transform: translate(8px, -8px); }
 
+/* Mobile portrait: the base .bl-label size (clamp floor 56px) makes
+   "Postproduction" overflow the right edge of the viewport in the
+   post-ride and post-floor "OFF THE BIKE / OTHER GROUND" menus.
+   Shrink the label + tighten the grid columns so the longest label
+   fits inside a 375px iPhone SE viewport with breathing room. */
+@media (max-width: 600px) {
+  .post-ride-menu, .post-floor-menu {
+    padding: 80px 20px 60px;
+  }
+  .post-ride-menu .big-link,
+  .post-floor-menu .big-link {
+    grid-template-columns: 40px 1fr 30px;
+    gap: 12px;
+    padding: 22px 0;
+  }
+  .post-ride-menu .bl-label,
+  .post-floor-menu .bl-label {
+    /* At 30px font in Refrigerator Deluxe Heavy, "Postproduction"
+       (14 chars) is ~250px wide. On a 375 SE viewport with 20px
+       side padding + 40+12+12+30 = 94px grid overhead, label
+       column gets ~221px. clamp() lets it scale up to 44px on
+       larger phones where more width is available. */
+    font-size: clamp(24px, 7vw, 44px);
+    letter-spacing: -0.02em;
+  }
+  .post-ride-menu .bl-num,
+  .post-floor-menu .bl-num { font-size: 11px; }
+  .post-ride-menu .bl-arrow,
+  .post-floor-menu .bl-arrow { font-size: 18px; }
+}
+
 /* Empty stretch of sky between the last work and the concrete strip,
    so buildings only ever appear AFTER the works content. */
 .director-sky-buffer {

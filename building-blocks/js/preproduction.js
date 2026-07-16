@@ -65,17 +65,17 @@
     const portrait = isPortraitPhone();
     [...fgVideo.querySelectorAll('source')].forEach(s => s.remove());
     if (portrait) {
-      // iOS Safari picks HEVC MOV natively (hardware alpha decode).
-      // Chrome/Firefox mobile users fall through to WebM (soft decode
-      // but still functional).
-      const mov = document.createElement('source');
-      mov.src  = `${R2}/bike-scene-fg-portrait.mov`;
-      mov.type = 'video/mp4; codecs="hvc1"';
-      fgVideo.appendChild(mov);
-      const webm = document.createElement('source');
-      webm.src  = `${R2}/bike-scene-fg-portrait.webm`;
-      webm.type = 'video/webm';
-      fgVideo.appendChild(webm);
+      // Portrait iPhone: alpha-hack. hevc_videotoolbox's alpha through
+      // iOS Safari is unreliable (hard black bounding boxes around the
+      // seagull/wave/car in-scene). We use a 2×-tall plain H.264 file
+      // instead — top half = premultiplied RGB, bottom half = grayscale
+      // alpha — and recompose it live in a WebGL canvas below. Zero
+      // HEVC-alpha involvement, perfect crisp edges on every element.
+      const mp4 = document.createElement('source');
+      mp4.src  = `${R2}/bike-scene-fg-portrait-alpha.mp4`;
+      mp4.type = 'video/mp4';
+      fgVideo.appendChild(mp4);
+      setupFgAlphaCanvas();
     } else {
       const webm = document.createElement('source');
       webm.src  = `${R2}/bike-scene-fg.webm`;
@@ -89,6 +89,127 @@
     fgVideo.removeAttribute('src');
     fgVideo.load();
   };
+
+  // ============================================================
+  // PORTRAIT-PHONE FG ALPHA COMPOSITOR (WebGL)
+  // ------------------------------------------------------------
+  // The stacked-alpha FG video is a plain H.264 stream 2× the display
+  // height: top half is the premultiplied color, bottom half is the
+  // alpha as grayscale luma. We hide the raw <video> and paint a
+  // canvas next to it that samples both halves and outputs a proper
+  // RGBA image. The scroll-scrub loop still drives currentTime on the
+  // video element — the canvas just re-renders whenever a new decoded
+  // frame is available (requestVideoFrameCallback, or rAF fallback).
+  // ============================================================
+  let fgAlphaWired = false;
+  function setupFgAlphaCanvas() {
+    if (fgAlphaWired || !fgVideo) return;
+    fgAlphaWired = true;
+
+    const canvas = document.createElement('canvas');
+    canvas.className = 'world-fg-canvas';
+    canvas.setAttribute('aria-hidden', 'true');
+    Object.assign(canvas.style, {
+      position: 'absolute',
+      inset: '0',
+      width: '100%',
+      height: '100%',
+      zIndex: '10',
+      pointerEvents: 'none',
+      background: 'transparent',
+    });
+    // Native res of the FG source's top half; CSS scales it into place.
+    canvas.width = 1080;
+    canvas.height = 1920;
+    fgVideo.parentNode.insertBefore(canvas, fgVideo);
+    // Keep the video in the DOM (so it decodes + honours currentTime),
+    // but visually gone. `visibility: hidden` doesn't stop decoding on
+    // Safari — verified.
+    fgVideo.style.visibility = 'hidden';
+
+    const gl = canvas.getContext('webgl', {
+      alpha: true,
+      premultipliedAlpha: true,
+      antialias: false,
+      preserveDrawingBuffer: false,
+    });
+    if (!gl) { fgVideo.style.visibility = ''; return; } // graceful fallback
+
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+
+    const vs = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vs,
+      'attribute vec2 a_pos; varying vec2 v_uv;' +
+      'void main(){ v_uv = a_pos * 0.5 + 0.5; gl_Position = vec4(a_pos, 0.0, 1.0); }');
+    gl.compileShader(vs);
+
+    // Half-pixel inset on the vertical sample avoids linear-filter
+    // blending across the RGB↔alpha boundary in the middle of the tex.
+    const fs = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fs,
+      'precision mediump float;' +
+      'uniform sampler2D u_video; varying vec2 v_uv;' +
+      'const float PX = 1.0 / 3840.0;' +
+      'void main(){' +
+      '  vec2 rgb_uv   = vec2(v_uv.x, 0.5 + PX * 0.5 + v_uv.y * (0.5 - PX));' +
+      '  vec2 alpha_uv = vec2(v_uv.x,       PX * 0.5 + v_uv.y * (0.5 - PX));' +
+      '  vec3 rgb = texture2D(u_video, rgb_uv).rgb;' +
+      '  float a  = texture2D(u_video, alpha_uv).r;' +
+      '  gl_FragColor = vec4(rgb, a);' +   // rgb is already premultiplied
+      '}');
+    gl.compileShader(fs);
+
+    const prog = gl.createProgram();
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      -1, -1,  1, -1, -1, 1, 1, 1,
+    ]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'a_pos');
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+    const tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.clearColor(0, 0, 0, 0);
+
+    const drawFrame = () => {
+      if (fgVideo.readyState < 2 || fgVideo.videoWidth === 0) return;
+      try {
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, fgVideo);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      } catch (e) { /* transient decode state — skip this frame */ }
+    };
+
+    if ('requestVideoFrameCallback' in HTMLVideoElement.prototype) {
+      const onFrame = () => {
+        drawFrame();
+        fgVideo.requestVideoFrameCallback(onFrame);
+      };
+      fgVideo.requestVideoFrameCallback(onFrame);
+    } else {
+      const rafLoop = () => {
+        drawFrame();
+        requestAnimationFrame(rafLoop);
+      };
+      requestAnimationFrame(rafLoop);
+    }
+  }
+
   setBgSrc();
   setFgSrc();
 

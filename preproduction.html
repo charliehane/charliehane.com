@@ -73,6 +73,10 @@
            Lives behind .world-track-clip so the bricks/bike/car render on top. -->
       <!-- BG layer — hosted on R2 because at 87MB it exceeds Pages' 25MB cap.
            Plays scroll-driven scrub at native 1440p all-intra. -->
+      <!-- No <source> elements — preproduction.js picks the correct URL at
+           load time (portrait iPhone vs desktop) via matchMedia. This
+           avoids iOS Safari's unreliable media-query source picking and
+           its habit of buffering the wrong file before JS gets to swap it. -->
       <video
         class="world-bg-video"
         id="worldBgVideo"
@@ -82,17 +86,7 @@
         preload="auto"
         disableRemotePlayback
         aria-hidden="true"
-      >
-        <!-- Portrait iPhone: 1080x1920 vertical re-composition. Browsers
-             pick the first <source> whose media query matches; portrait
-             ≤500px gets the vertical file, everyone else falls through
-             to the horizontal desktop file. -->
-        <source src="https://pub-3feaceb432134076b4773fdc45eba874.r2.dev/bike-scene-bg-portrait.mp4"
-                media="(orientation: portrait) and (max-width: 500px)"
-                type="video/mp4">
-        <source src="https://pub-3feaceb432134076b4773fdc45eba874.r2.dev/bike-scene-bg.mp4"
-                type="video/mp4">
-      </video>
+      ></video>
 
       <!-- FG layer — closer/sparser scenery with alpha so the BG shows
            through the gaps. Two source formats needed because no single
@@ -101,6 +95,10 @@
               • MP4/HEVC+alpha → Safari, iOS
            The browser picks the first <source> it can decode. Both files
            are scrubbed in lockstep with the BG via preproduction.js. -->
+      <!-- No <source> elements — preproduction.js picks the correct URL at
+           load time and, on portrait iPhone, sets up a WebGL canvas that
+           recomposes the stacked-alpha video (see "PORTRAIT-PHONE FG
+           ALPHA COMPOSITOR" block in preproduction.js). -->
       <video
         class="world-fg-video"
         id="worldFgVideo"
@@ -110,21 +108,7 @@
         preload="auto"
         disableRemotePlayback
         aria-hidden="true"
-      >
-        <!-- Portrait iPhone: 1080x1920 vertical FG with alpha. HEVC MOV
-             first so iOS Safari picks it (native codec); WebM VP9 with
-             alpha second for Chrome / Firefox / Edge. Both media-query
-             gated to portrait ≤500px so only phones see them. -->
-        <source src="https://pub-3feaceb432134076b4773fdc45eba874.r2.dev/bike-scene-fg-portrait.mov"
-                media="(orientation: portrait) and (max-width: 500px)"
-                type='video/mp4; codecs="hvc1"'>
-        <source src="https://pub-3feaceb432134076b4773fdc45eba874.r2.dev/bike-scene-fg-portrait.webm"
-                media="(orientation: portrait) and (max-width: 500px)"
-                type="video/webm">
-        <!-- Desktop / tablet / landscape fallback (existing files) -->
-        <source src="https://pub-3feaceb432134076b4773fdc45eba874.r2.dev/bike-scene-fg.webm" type="video/webm">
-        <source src="https://pub-3feaceb432134076b4773fdc45eba874.r2.dev/bike-scene-fg.mov" type='video/mp4; codecs="hvc1"'>
-      </video>
+      ></video>
 
       <div class="world-track-clip">
       <div class="world-track" id="worldTrack"

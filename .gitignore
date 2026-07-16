@@ -38,6 +38,9 @@ Animations/
 /bike-scene-bg.mp4
 /bike-scene-fg.mov
 /bike-scene-fg.webm
+/bike-scene-bg-portrait.mp4
+/bike-scene-fg-portrait.mov
+/bike-scene-fg-portrait.webm
 
 # Claude Code local config (preview server, etc.) — machine-specific
 .claude/

@@ -727,6 +727,20 @@ body {
   max-height: 100vh;
   overflow: visible;   /* bike can pop slightly out during the jump */
 }
+
+/* Portrait iPhone: the stage matches the vertical 9:16 video's aspect
+   (1080/1920 = 0.5625), sized to the viewport. Fills the phone screen
+   completely — no letterbox — since the video is purpose-built for
+   this shape. */
+@media (orientation: portrait) and (max-width: 500px) {
+  .world-stage {
+    --stage-w: min(100vw, calc(100vh * 0.5625));
+    --stage-h: calc(var(--stage-w) / 0.5625);
+    width: var(--stage-w);
+    height: var(--stage-h);
+    max-height: 100vh;
+  }
+}
 /* Scroll-scrubbed AE background. Sits behind the brick world, the bike, and
    the car. Its currentTime is driven by scroll progress in preproduction.js
    so the camera 'crabs' through the 4 scenes (forest/mountains/coast/city)

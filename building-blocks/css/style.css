@@ -116,7 +116,12 @@ body {
    landing — base
    ============================================================ */
 
-.page-landing { cursor: none; overflow-x: hidden; }
+/* overflow-x: clip — NOT hidden. `hidden` upgrades overflow-y to `auto`
+   on iOS Safari, turning body into its own scroll container and
+   breaking `position: sticky` on .forest-pin (user scrolls right past
+   the pinned forest cinema). `clip` prevents horizontal overflow
+   without creating a scroll container, so sticky keeps working. */
+.page-landing { cursor: none; overflow-x: clip; }
 .page-landing a, .page-landing button { cursor: none; }
 
 

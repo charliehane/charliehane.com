@@ -392,8 +392,11 @@
     const fallEl = document.createElement('div');
     fallEl.className = 'director-fall-character';
     fallEl.setAttribute('aria-hidden', 'true');
+    // data-lottie="wind-streak" — lottie-loader.js scans on page-load
+    // and swaps the fallback SVG for the real Lottie animation from
+    // lotties/wind-streak.json (same effect the desktop stick-cursor uses).
     fallEl.innerHTML = `
-      <div class="director-fall-wind">
+      <div class="director-fall-wind" data-lottie="wind-streak">
         <svg viewBox="0 0 80 70" xmlns="http://www.w3.org/2000/svg">
           <g stroke="#1a1614" stroke-linecap="round" fill="none">
             <line class="wind-line wind-line--1" x1="30" y1="6"  x2="50" y2="6"  stroke-width="2.2"/>
@@ -417,23 +420,26 @@
 
     // ─────────── Phase 1: scroll-lock while character falls in ───────────
     // Freeze the page and consume wheel + touch input to animate the
-    // character. Threshold sized so ONE normal iOS swipe carries the
-    // character all the way to vertical center — Charlie's spec.
-    // A typical single touchmove swipe travels 200-500px in Y delta;
-    // ~0.28 viewport (≈260px on iPhone Pro Max, 187px on iPhone SE)
-    // sits comfortably below that, so one deliberate swipe lands him.
+    // character. Very forgiving threshold + sqrt easing so even the
+    // shortest iOS flick lands the character in one gesture. Sqrt
+    // amplification means visual progress reaches ~70% at 50% of the
+    // delta threshold — a quick flick doesn't feel like it "underruns".
     let phaseLocked = true;
     let fallDelta = 0;
-    const fallThreshold = () => Math.max(180, window.innerHeight * 0.28);
+    const fallThreshold = () => Math.max(90, window.innerHeight * 0.13);
 
     const applyPhase1 = () => {
-      const p = Math.min(1, fallDelta / fallThreshold());
+      // sqrt easing — short flicks reach ~70% visual progress at 50%
+      // of the delta threshold, so the character feels responsive
+      // instead of "dragging" behind the finger.
+      const raw = Math.min(1, fallDelta / fallThreshold());
+      const p = Math.sqrt(raw);
       const centerY = window.innerHeight / 2 - charH / 2;
       const startTop = -charH - 20;
       const endTop = centerY;
       fallEl.style.position = 'fixed';
       fallEl.style.top = `${startTop + (endTop - startTop) * p}px`;
-      if (p >= 1) releaseLock();
+      if (raw >= 1) releaseLock();
     };
     applyPhase1();
     document.body.classList.add('director-fall-locked');

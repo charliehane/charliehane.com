@@ -1860,19 +1860,23 @@ body {
   background-position: 0 0;
   animation: spriteRotate 0.9s steps(10) infinite;
 }
-/* Wind streaks trail behind the falling character. Because the parent is
-   rotated 180°, positioning the wind at bottom:100% (in DOM) makes it
-   appear ABOVE the sprite after rotation — where trailing wind belongs
-   for a head-down falling body. */
+/* Wind streaks — matches the desktop stick-cursor's .stick-wind-lottie
+   exactly: 80×70 at top:100% (below the sprite in DOM). Because the
+   parent .director-fall-character is rotated 180°, this ends up appearing
+   ABOVE the head-down sprite on screen (trailing wind for a downward
+   fall). z-index: 2 so the streaks render ON TOP of the sprite where
+   they overlap. */
 .director-fall-character .director-fall-wind {
   position: absolute;
-  bottom: 100%;
+  top: 100%;
   left: 0;
   width: 100%;
   height: 70px;
   overflow: visible;
   pointer-events: none;
+  z-index: 2;
 }
+.director-fall-character .director-fall-sprite { z-index: 1; position: relative; }
 .director-fall-character .director-fall-wind svg {
   width: 100%;
   height: 100%;

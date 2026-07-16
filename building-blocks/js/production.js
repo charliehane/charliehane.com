@@ -417,11 +417,14 @@
 
     // ─────────── Phase 1: scroll-lock while character falls in ───────────
     // Freeze the page and consume wheel + touch input to animate the
-    // character. Threshold roughly one full viewport height of "virtual
-    // scroll" to feel like a deliberate single gesture.
+    // character. Threshold sized so ONE normal iOS swipe carries the
+    // character all the way to vertical center — Charlie's spec.
+    // A typical single touchmove swipe travels 200-500px in Y delta;
+    // ~0.28 viewport (≈260px on iPhone Pro Max, 187px on iPhone SE)
+    // sits comfortably below that, so one deliberate swipe lands him.
     let phaseLocked = true;
     let fallDelta = 0;
-    const fallThreshold = () => Math.max(400, window.innerHeight * 0.9);
+    const fallThreshold = () => Math.max(180, window.innerHeight * 0.28);
 
     const applyPhase1 = () => {
       const p = Math.min(1, fallDelta / fallThreshold());

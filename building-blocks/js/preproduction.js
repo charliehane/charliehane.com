@@ -51,13 +51,8 @@
     window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches;
   const setBgSrc = () => {
     if (!bgVideo) return;
-    // Portrait iPhone: use the pre-composited flat video (BG + FG
-    // baked into a single H.264 MP4). Halves the data + decoder work
-    // vs the dual-video setup, eliminates all alpha edge artifacts,
-    // and locks scene transitions frame-perfect. Desktop keeps the
-    // horizontal dual-video setup for the FG parallax richness.
     const url = isPortraitPhone()
-      ? `${R2}/bike-scene-portrait-flat.mp4`
+      ? `${R2}/bike-scene-bg-portrait.mp4`
       : `${R2}/bike-scene-bg.mp4`;
     if (bgVideo.currentSrc !== url) {
       [...bgVideo.querySelectorAll('source')].forEach(s => s.remove());
@@ -70,22 +65,27 @@
     const portrait = isPortraitPhone();
     [...fgVideo.querySelectorAll('source')].forEach(s => s.remove());
     if (portrait) {
-      // No FG on portrait — the flat composite handled by setBgSrc()
-      // already has FG baked in. Leave fgVideo element in DOM but
-      // with no src; the scrub() function no-ops on 0-duration
-      // videos so this is harmless.
-      fgVideo.removeAttribute('src');
-      return;
+      // iOS Safari picks HEVC MOV natively (hardware alpha decode).
+      // Chrome/Firefox mobile users fall through to WebM (soft decode
+      // but still functional).
+      const mov = document.createElement('source');
+      mov.src  = `${R2}/bike-scene-fg-portrait.mov`;
+      mov.type = 'video/mp4; codecs="hvc1"';
+      fgVideo.appendChild(mov);
+      const webm = document.createElement('source');
+      webm.src  = `${R2}/bike-scene-fg-portrait.webm`;
+      webm.type = 'video/webm';
+      fgVideo.appendChild(webm);
+    } else {
+      const webm = document.createElement('source');
+      webm.src  = `${R2}/bike-scene-fg.webm`;
+      webm.type = 'video/webm';
+      fgVideo.appendChild(webm);
+      const mov = document.createElement('source');
+      mov.src  = `${R2}/bike-scene-fg.mov`;
+      mov.type = 'video/mp4; codecs="hvc1"';
+      fgVideo.appendChild(mov);
     }
-    // Desktop: existing dual-video FG (webm + HEVC mov)
-    const webm = document.createElement('source');
-    webm.src  = `${R2}/bike-scene-fg.webm`;
-    webm.type = 'video/webm';
-    fgVideo.appendChild(webm);
-    const mov = document.createElement('source');
-    mov.src  = `${R2}/bike-scene-fg.mov`;
-    mov.type = 'video/mp4; codecs="hvc1"';
-    fgVideo.appendChild(mov);
     fgVideo.removeAttribute('src');
     fgVideo.load();
   };

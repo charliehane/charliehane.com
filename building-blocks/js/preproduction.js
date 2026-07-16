@@ -71,8 +71,12 @@
       // instead — top half = premultiplied RGB, bottom half = grayscale
       // alpha — and recompose it live in a WebGL canvas below. Zero
       // HEVC-alpha involvement, perfect crisp edges on every element.
+      // Served same-origin via Cloudflare Pages (9 MB fits under the 25 MB
+      // per-file cap). Same-origin means no CORS dance is needed to sample
+      // this video into a WebGL texture — texImage2D would throw a
+      // SecurityError on a cross-origin video without R2 CORS headers.
       const mp4 = document.createElement('source');
-      mp4.src  = `${R2}/bike-scene-fg-portrait-alpha.mp4`;
+      mp4.src  = 'assets/bike-scene-fg-portrait-alpha.mp4';
       mp4.type = 'video/mp4';
       fgVideo.appendChild(mp4);
       setupFgAlphaCanvas();

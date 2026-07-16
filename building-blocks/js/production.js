@@ -372,75 +372,161 @@
   // ------------------------------------------------------------
   // Replaces the desktop stick-cursor with a scroll-driven falling
   // character on the right side of the page. Three phases:
-  //   1. Falls from offscreen top-right → viewport vertical center
-  //      as the user scrolls the first FALL_IN_PX (~0.8 viewport)
-  //   2. Sticks at viewport vertical center while user scrolls
-  //      through the works section
-  //   3. When the top of .director-concrete enters the viewport at
-  //      the character's center-Y position, snaps to a splat pose
-  //      on the concrete (frozen sprite, rotated 180°)
-  // The character is created on-demand only when the portrait media
-  // query matches, so desktop is unaffected.
+  //   1. LOCKED SCROLL — page is frozen (body.director-fall-locked
+  //      disables scrolling). We capture wheel + touchmove deltas
+  //      manually and use them to bring the character from
+  //      offscreen-top down to viewport vertical center.
+  //   2. Character sticks at viewport vertical center while user
+  //      scrolls the page normally through the works section.
+  //   3. When the top of .director-concrete reaches the character's
+  //      head Y position, we trigger the existing .smushed-body SVG
+  //      on the concrete (same asset the desktop cursor uses) and
+  //      hide the falling sprite.
   // ============================================================
   const isPortraitPhone = () =>
     window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches;
 
   if (isPortraitPhone()) {
-    // Build the character node
+    // Build the character node — sprite + trailing wind streaks (same
+    // inline SVG the desktop stick-cursor uses so the aesthetic matches).
     const fallEl = document.createElement('div');
     fallEl.className = 'director-fall-character';
     fallEl.setAttribute('aria-hidden', 'true');
-    fallEl.innerHTML = '<div class="director-fall-sprite"></div>';
+    fallEl.innerHTML = `
+      <div class="director-fall-wind">
+        <svg viewBox="0 0 80 70" xmlns="http://www.w3.org/2000/svg">
+          <g stroke="#1a1614" stroke-linecap="round" fill="none">
+            <line class="wind-line wind-line--1" x1="30" y1="6"  x2="50" y2="6"  stroke-width="2.2"/>
+            <line class="wind-line wind-line--2" x1="26" y1="18" x2="54" y2="18" stroke-width="2"/>
+            <line class="wind-line wind-line--3" x1="30" y1="30" x2="50" y2="30" stroke-width="1.8"/>
+            <line class="wind-line wind-line--4" x1="26" y1="42" x2="54" y2="42" stroke-width="2"/>
+            <line class="wind-line wind-line--5" x1="30" y1="54" x2="50" y2="54" stroke-width="2.2"/>
+          </g>
+        </svg>
+      </div>
+      <div class="director-fall-sprite"></div>
+    `;
     document.body.appendChild(fallEl);
 
     const concreteEl = document.getElementById('directorConcrete');
+    const smushedEl  = document.getElementById('smushedBody');
     let charH = fallEl.offsetHeight || 110;
     const measure = () => { charH = fallEl.offsetHeight || 110; };
     window.addEventListener('resize', measure);
     measure();
 
-    // How many pixels of scroll it takes for the character to fall
-    // fully from offscreen into center. Roughly 80% of a viewport
-    // height so it reads as a single deliberate scroll gesture.
-    const fallInPx = () => Math.max(300, window.innerHeight * 0.8);
+    // ─────────── Phase 1: scroll-lock while character falls in ───────────
+    // Freeze the page and consume wheel + touch input to animate the
+    // character. Threshold roughly one full viewport height of "virtual
+    // scroll" to feel like a deliberate single gesture.
+    let phaseLocked = true;
+    let fallDelta = 0;
+    const fallThreshold = () => Math.max(400, window.innerHeight * 0.9);
 
+    const applyPhase1 = () => {
+      const p = Math.min(1, fallDelta / fallThreshold());
+      const centerY = window.innerHeight / 2 - charH / 2;
+      const startTop = -charH - 20;
+      const endTop = centerY;
+      fallEl.style.position = 'fixed';
+      fallEl.style.top = `${startTop + (endTop - startTop) * p}px`;
+      if (p >= 1) releaseLock();
+    };
+    applyPhase1();
+    document.body.classList.add('director-fall-locked');
+
+    const onWheel = (e) => {
+      if (!phaseLocked) return;
+      e.preventDefault();
+      fallDelta += Math.max(0, e.deltaY);
+      applyPhase1();
+    };
+    let touchStartY = null;
+    const onTouchStart = (e) => {
+      if (!phaseLocked) return;
+      touchStartY = e.touches[0].clientY;
+    };
+    const onTouchMove = (e) => {
+      if (!phaseLocked || touchStartY === null) return;
+      e.preventDefault();
+      const y = e.touches[0].clientY;
+      const dy = touchStartY - y;             // swipe up = positive
+      if (dy > 0) fallDelta += dy;
+      touchStartY = y;
+      applyPhase1();
+    };
+    const onKey = (e) => {
+      if (!phaseLocked) return;
+      const advance =
+        e.key === 'ArrowDown' ? window.innerHeight * 0.1 :
+        e.key === 'PageDown'  ? window.innerHeight * 0.4 :
+        e.key === ' '         ? window.innerHeight * 0.4 : 0;
+      if (advance > 0) {
+        e.preventDefault();
+        fallDelta += advance;
+        applyPhase1();
+      }
+    };
+    window.addEventListener('wheel',      onWheel,     { passive: false });
+    window.addEventListener('touchstart', onTouchStart, { passive: true  });
+    window.addEventListener('touchmove',  onTouchMove,  { passive: false });
+    window.addEventListener('keydown',    onKey);
+
+    const releaseLock = () => {
+      if (!phaseLocked) return;
+      phaseLocked = false;
+      document.body.classList.remove('director-fall-locked');
+      window.removeEventListener('wheel',      onWheel);
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove',  onTouchMove);
+      window.removeEventListener('keydown',    onKey);
+      updateFall();
+    };
+
+    // ─────────── Phase 2 + 3: normal scroll listener ───────────
+    let splatted = false;
     let ticking = false;
     const updateFall = () => {
       ticking = false;
+      if (phaseLocked) return;   // Phase 1 handles its own updates
+
       const vh = window.innerHeight;
-      const scrollY = window.scrollY;
-      const fallLen = fallInPx();
-
-      // Concrete top in current viewport coords. When it descends
-      // to the character's head Y, that's the splat moment.
+      const centerY = vh / 2 - charH / 2;
       const concreteRect = concreteEl && concreteEl.getBoundingClientRect();
-      const centerY = vh / 2 - charH / 2;   // "middle of screen" top for char
 
-      if (concreteRect && concreteRect.top < centerY + charH * 0.4) {
-        // Phase 3 — splat. Anchor the character to the concrete top
-        // via page-absolute positioning so it stays with the concrete
-        // as the user keeps scrolling past.
-        const concreteTopAbs = concreteEl.offsetTop;
-        fallEl.style.position = 'absolute';
-        fallEl.style.top = `${concreteTopAbs - charH * 0.6}px`;
-        fallEl.classList.add('is-splatted');
-      } else if (scrollY < fallLen) {
-        // Phase 1 — coming in from offscreen top-right
-        const p = scrollY / fallLen;                   // 0 → 1
-        const startTop = -charH - 20;                  // offscreen top
-        const endTop = centerY;                         // vertical center
-        const top = startTop + (endTop - startTop) * p;
-        fallEl.style.position = 'fixed';
-        fallEl.style.top = `${top}px`;
-        fallEl.classList.remove('is-splatted');
+      // Phase 3 trigger: concrete top has descended to character's
+      // head y-position (slightly below vertical center).
+      if (concreteRect && concreteRect.top <= centerY + charH * 0.4) {
+        if (!splatted) {
+          splatted = true;
+          fallEl.classList.add('is-splatted');
+          // Move the existing smushed-body SVG onto the concrete at
+          // roughly the character's X (right side of the viewport).
+          if (concreteEl && smushedEl) {
+            const rect = concreteEl.getBoundingClientRect();
+            // localX inside .director-concrete, matching the character's
+            // right-side column (~85% across the viewport)
+            const localX = (window.innerWidth * 0.85) - rect.left;
+            smushedEl.style.position = 'absolute';
+            smushedEl.style.left = `${localX}px`;
+            smushedEl.style.bottom = '100%';   // sit ON TOP of concrete
+            smushedEl.style.top = 'auto';
+            smushedEl.style.transform = 'translate(-50%, 0)';
+            concreteEl.appendChild(smushedEl);
+            smushedEl.classList.add('is-shown');
+          }
+        }
       } else {
-        // Phase 2 — hovering at vertical center of viewport
+        // Phase 2 — hovering at vertical center
         fallEl.style.position = 'fixed';
         fallEl.style.top = `${centerY}px`;
-        fallEl.classList.remove('is-splatted');
+        if (splatted) {
+          splatted = false;
+          fallEl.classList.remove('is-splatted');
+          if (smushedEl) smushedEl.classList.remove('is-shown');
+        }
       }
     };
-
     const onScroll = () => {
       if (!ticking) {
         ticking = true;
@@ -449,7 +535,6 @@
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
-    updateFall();
   }
 
 })();

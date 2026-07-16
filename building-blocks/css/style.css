@@ -1831,8 +1831,10 @@ body {
   .page-director .stick-cursor { display: none; }
 }
 
-/* The falling character itself is fixed to the viewport and moved by JS
-   scroll listener. Only visible on portrait ≤500px. */
+/* Falling character — fixed to viewport, moved by JS scroll driver.
+   Rotated 180° so the character reads head-down (falling), matching
+   the desktop stick-cursor's default orientation. Only visible on
+   portrait ≤500px. */
 .director-fall-character {
   position: fixed;
   top: -25vh;
@@ -1844,6 +1846,8 @@ body {
   display: none;   /* toggled on by media query below */
   filter: drop-shadow(0 6px 14px rgba(0,0,0,0.35));
   will-change: transform, top;
+  transform: rotate(180deg);   /* head-down */
+  transform-origin: center center;
 }
 .director-fall-character .director-fall-sprite {
   width: 100%;
@@ -1854,15 +1858,49 @@ body {
   background-position: 0 0;
   animation: spriteRotate 0.9s steps(10) infinite;
 }
-/* The 5th frame of the sprite (roughly upside-down) becomes the "landed"
-   pose for the splat state. Freeze the animation and snap to that frame. */
-.director-fall-character.is-splatted .director-fall-sprite {
-  animation: none;
-  background-position: -320px 0;   /* frame 5 (0-indexed 4): 4 × 80 */
-  transform: rotate(180deg);
+/* Wind streaks trail behind the falling character. Because the parent is
+   rotated 180°, positioning the wind at bottom:100% (in DOM) makes it
+   appear ABOVE the sprite after rotation — where trailing wind belongs
+   for a head-down falling body. */
+.director-fall-character .director-fall-wind {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  overflow: visible;
+  pointer-events: none;
 }
+.director-fall-character .director-fall-wind svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.director-fall-character .director-fall-wind .wind-line {
+  animation: windPulse 0.45s linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.director-fall-character .director-fall-wind .wind-line--1 { animation-delay: 0s; }
+.director-fall-character .director-fall-wind .wind-line--2 { animation-delay: 0.10s; }
+.director-fall-character .director-fall-wind .wind-line--3 { animation-delay: 0.20s; }
+.director-fall-character .director-fall-wind .wind-line--4 { animation-delay: 0.30s; }
+.director-fall-character .director-fall-wind .wind-line--5 { animation-delay: 0.40s; }
+/* When the character splats onto the concrete we hide it entirely and
+   let the existing .smushed-body SVG take over (positioned by JS). */
+.director-fall-character.is-splatted { display: none; }
+/* Reveal on portrait phones */
 @media (orientation: portrait) and (max-width: 500px) {
   .director-fall-character { display: block; }
+}
+
+/* Body class applied while the intro scroll-lock is active. Prevents
+   the page from scrolling at all while the character is falling in.
+   Removed once the character reaches the vertical center. */
+body.director-fall-locked {
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
 }
 
 

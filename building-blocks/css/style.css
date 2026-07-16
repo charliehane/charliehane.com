@@ -470,10 +470,27 @@ body {
    window, clicking a quote sign opens that quote (the discrete hotspot
    wins in its rect) while clicking anywhere else opens the bio. */
 .sign-hotspot--bio {
+  display: flex;
   align-items: flex-end;
   justify-content: flex-end;
   padding: 0 5vw 4vh 0;
   z-index: 1;
+}
+/* iPhone portrait: center the CLICK THE SIGN pill horizontally (was
+   bottom-right, which clipped the wide pill off the left edge of the
+   viewport) and lift it well above the bottom so Safari's URL bar
+   doesn't hide it. Smaller font-size so it fits comfortably in the
+   narrow viewport with room to breathe. */
+@media (orientation: portrait) and (max-width: 500px) {
+  .sign-hotspot--bio {
+    justify-content: center;
+    padding: 0 5vw 22vh 5vw;
+  }
+  .sign-hotspot--bio .sign-hotspot-pill {
+    font-size: clamp(1.05rem, 4.5vw, 1.4rem);
+    letter-spacing: 0.16em;
+    text-align: center;
+  }
 }
 /* Quote hotspots sit above the bio's fullscreen click area so their
    discrete click rects win during overlap. */

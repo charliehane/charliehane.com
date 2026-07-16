@@ -134,6 +134,15 @@
       preload="auto"
       aria-hidden="true"
     >
+      <!-- Portrait iPhone gets a purpose-built 1080x1920 vertical
+           re-composition of the hell scene (Charlie in coffin at top,
+           cave in middle, lava at bottom). Browsers pick the first
+           <source> whose media query matches, so this ordering serves
+           the portrait file only to portrait phones ≤500px wide;
+           everyone else falls through to the desktop WebM/MOV. -->
+      <source src="assets/charlie-in-hell-portrait.mp4"
+              media="(orientation: portrait) and (max-width: 500px)"
+              type="video/mp4">
       <source src="assets/charlie-in-hell.webm" type="video/webm">
       <source src="assets/charlie-in-hell.mov"  type='video/mp4; codecs="hvc1"'>
     </video>

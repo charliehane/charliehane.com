@@ -2468,6 +2468,48 @@ body {
     padding-top: 0;
   }
 }
+
+/* Portrait iPhone: use the 1080x1920 portrait video that already carries
+   the correct composition. Video fills the entire viewport (cover-cropping
+   any tiny excess on ultra-wide portrait phones like Pro Max) and the
+   menu overlays it, vertically centered. */
+@media (orientation: portrait) and (max-width: 500px) {
+  .hell {
+    height: 100vh;
+    min-height: 100vh;
+  }
+  .hell-bg-video {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: unset !important;   /* clear the hardcoded 1600/1122 */
+    object-fit: cover !important;
+  }
+  .hell-menu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 0 6vw;
+    margin: 0;
+    max-width: none;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 10;
+  }
+  /* Tighten the menu spacing so all links + eyebrow read cleanly
+     centered in the visible video area without overlapping Charlie
+     in the coffin at the top or the lava at the bottom. */
+  .hell-eyebrow { margin: 0 0 12px; text-align: center; }
+  .hell .big-link {
+    padding: 10px 0;
+    grid-template-columns: 28px 1fr 20px;
+    gap: 10px;
+  }
+  .hell .bl-num { font-size: 10px; }
+  .hell .bl-arrow { font-size: 14px; }
+}
 .hell-eyebrow {
   font-family: var(--mono);
   font-size: 12px;

@@ -38,6 +38,60 @@
   const bgVideo    = document.getElementById('worldBgVideo');
   const fgVideo    = document.getElementById('worldFgVideo');
 
+  // ============================================================
+  // EXPLICIT SOURCE SELECTION FOR PORTRAIT iPHONE
+  // ------------------------------------------------------------
+  // <source media="..."> inside <video> is unreliable on iOS Safari
+  // (Charlie reports "sometimes horizontal, sometimes vertical" on
+  // successive reloads). Reset both videos' sources here based on
+  // the actual current viewport so the choice is deterministic.
+  // ============================================================
+  const R2 = 'https://pub-3feaceb432134076b4773fdc45eba874.r2.dev';
+  const isPortraitPhone = () =>
+    window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches;
+  const setBgSrc = () => {
+    if (!bgVideo) return;
+    const url = isPortraitPhone()
+      ? `${R2}/bike-scene-bg-portrait.mp4`
+      : `${R2}/bike-scene-bg.mp4`;
+    if (bgVideo.currentSrc !== url) {
+      // Clear <source> children (they may have picked wrong) + set src
+      [...bgVideo.querySelectorAll('source')].forEach(s => s.remove());
+      bgVideo.src = url;
+      bgVideo.load();
+    }
+  };
+  const setFgSrc = () => {
+    if (!fgVideo) return;
+    const portrait = isPortraitPhone();
+    // Rebuild <source> children fresh so browser picks based on THIS
+    // viewport, not whatever was in the initial HTML render.
+    [...fgVideo.querySelectorAll('source')].forEach(s => s.remove());
+    if (portrait) {
+      const mov = document.createElement('source');
+      mov.src  = `${R2}/bike-scene-fg-portrait.mov`;
+      mov.type = 'video/mp4; codecs="hvc1"';
+      fgVideo.appendChild(mov);
+      const webm = document.createElement('source');
+      webm.src  = `${R2}/bike-scene-fg-portrait.webm`;
+      webm.type = 'video/webm';
+      fgVideo.appendChild(webm);
+    } else {
+      const webm = document.createElement('source');
+      webm.src  = `${R2}/bike-scene-fg.webm`;
+      webm.type = 'video/webm';
+      fgVideo.appendChild(webm);
+      const mov = document.createElement('source');
+      mov.src  = `${R2}/bike-scene-fg.mov`;
+      mov.type = 'video/mp4; codecs="hvc1"';
+      fgVideo.appendChild(mov);
+    }
+    fgVideo.removeAttribute('src');
+    fgVideo.load();
+  };
+  setBgSrc();
+  setFgSrc();
+
   /* All positional math uses the STAGE box (a fixed 1.89:1 window centered
      in the viewport with black letterbox above/below on portrait phones)
      rather than raw window dimensions. Otherwise the bike + launched figure

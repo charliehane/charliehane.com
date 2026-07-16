@@ -178,33 +178,25 @@
         labelShort: q.labelShort || 'tap to read',
       });
     });
-    // Set video source(s) if provided. videoSrc can be:
-    //   - a string (single URL, used as-is on cineVideo.src)
-    //   - an object { webm, mp4 } — added as multiple <source> children
-    //     so browsers pick the best format they support. WebM VP9 renders
-    //     smooth gradients dramatically better than H.264 (no diagonal
-    //     compression banding on the night sky). MP4 is the fallback for
-    //     browsers that don't support WebM.
+    // Set video source(s). videoSrc can be:
+    //   - a string (single URL)
+    //   - an object { desktop, portrait, webm, mp4 } — the JS picks the
+    //     right URL based on the current viewport. Portrait phones get
+    //     the portrait crop; everyone else gets the desktop version.
     if (cineVideo && c.forest.videoSrc) {
       const src = c.forest.videoSrc;
       if (typeof src === 'string') {
         cineVideo.src = src;
       } else if (src && typeof src === 'object') {
-        cineVideo.removeAttribute('src');
-        // Clear any existing <source> children before appending fresh ones
-        [...cineVideo.querySelectorAll('source')].forEach(s => s.remove());
-        if (src.webm) {
-          const s = document.createElement('source');
-          s.src = src.webm;
-          s.type = 'video/webm';
-          cineVideo.appendChild(s);
-        }
-        if (src.mp4) {
-          const s = document.createElement('source');
-          s.src = src.mp4;
-          s.type = 'video/mp4';
-          cineVideo.appendChild(s);
-        }
+        const isPortraitPhone = window.matchMedia(
+          '(orientation: portrait) and (max-width: 900px)'
+        ).matches;
+        // Prefer explicit portrait file on portrait phones. Fall back to
+        // desktop/mp4 keys otherwise.
+        const url = (isPortraitPhone && src.portrait)
+          ? src.portrait
+          : (src.desktop || src.mp4 || src.webm || '');
+        if (url) cineVideo.src = url;
       }
       cineVideo.load();
     }

@@ -426,20 +426,21 @@
     // delta threshold — a quick flick doesn't feel like it "underruns".
     let phaseLocked = true;
     let fallDelta = 0;
-    const fallThreshold = () => Math.max(90, window.innerHeight * 0.13);
+    // Slightly bumped so the linear-progress fall isn't over the
+    // second Charlie starts swiping. Still ~one comfortable swipe.
+    const fallThreshold = () => Math.max(200, window.innerHeight * 0.25);
 
     const applyPhase1 = () => {
-      // sqrt easing — short flicks reach ~70% visual progress at 50%
-      // of the delta threshold, so the character feels responsive
-      // instead of "dragging" behind the finger.
-      const raw = Math.min(1, fallDelta / fallThreshold());
-      const p = Math.sqrt(raw);
+      // Linear progress — Charlie: 'come down slower with that first
+      // swipe, he comes in really fast'. Removed the sqrt easing that
+      // was making short flicks land him at center instantly.
+      const p = Math.min(1, fallDelta / fallThreshold());
       const centerY = window.innerHeight / 2 - charH / 2;
       const startTop = -charH - 20;
       const endTop = centerY;
       fallEl.style.position = 'fixed';
       fallEl.style.top = `${startTop + (endTop - startTop) * p}px`;
-      if (raw >= 1) releaseLock();
+      if (p >= 1) releaseLock();
     };
     applyPhase1();
     document.body.classList.add('director-fall-locked');

@@ -1890,6 +1890,14 @@ body {
   pointer-events: none;
   z-index: 2;
 }
+/* When the Lottie animation loads (lottie-loader.js sets
+   data-lottie-loaded="1" on the placeholder), flip it 180° so the
+   streaks flow the right direction on the head-down character.
+   Mirrors the same rule the desktop .stick-cursor uses. */
+.director-fall-character .director-fall-wind[data-lottie-loaded="1"] {
+  transform: rotate(180deg);
+  transform-origin: center;
+}
 .director-fall-character .director-fall-sprite { z-index: 1; position: relative; }
 .director-fall-character .director-fall-wind svg {
   width: 100%;

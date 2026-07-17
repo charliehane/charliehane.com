@@ -528,9 +528,11 @@
     // delta threshold — a quick flick doesn't feel like it "underruns".
     let phaseLocked = true;
     let fallDelta = 0;
-    // Slightly bumped so the linear-progress fall isn't over the
-    // second Charlie starts swiping. Still ~one comfortable swipe.
-    const fallThreshold = () => Math.max(200, window.innerHeight * 0.25);
+    // Charlie: 'i would love if it could take one swipe to get him down'.
+    // Any natural finger flick is ~150-400px — 100 completes on a
+    // gentle-to-normal swipe without feeling accidental. Momentum tail
+    // (runMomentum) then carries the residual energy into page scroll.
+    const fallThreshold = () => Math.max(100, window.innerHeight * 0.14);
 
     const applyPhase1 = () => {
       // Linear progress — Charlie: 'come down slower with that first
@@ -580,14 +582,19 @@
     };
 
     const runMomentum = () => {
-      // Tuned for real finger flicks (much lower velocities than my
-      // synthetic tests). 2.5% loss per 16ms frame = long enough tail
-      // to actually feel; low MIN_V so gentle flicks still glide.
+      // Tuned for real finger flicks. 2.5% loss per 16ms frame during
+      // Phase 1 = long enough tail to actually feel; low MIN_V so gentle
+      // flicks still glide.
       const FRICTION_PER_FRAME = 0.975;
       const MIN_V = 0.005;
+      // At the Phase 1 → scroll handoff we cut velocity way down so
+      // Charlie's requested 'hair of scroll' really is a hair, not a
+      // full glide down the page. Applied once, on the frame Phase 1
+      // ends (or immediately if Phase 1 was already done at touchend).
+      let handoffApplied = false;
       let lastT = performance.now();
       const tick = () => {
-        if (!phaseLocked || Math.abs(velocity) < MIN_V) {
+        if (Math.abs(velocity) < MIN_V) {
           momentumRAF = 0;
           velocity = 0;
           return;
@@ -596,7 +603,18 @@
         const dt = now - lastT;
         lastT = now;
         velocity *= Math.pow(FRICTION_PER_FRAME, dt / 16);
-        advancePhase1(velocity * dt);
+        const dy = velocity * dt;
+        if (phaseLocked) {
+          advancePhase1(dy);
+        } else {
+          if (!handoffApplied) {
+            velocity *= 0.3;
+            handoffApplied = true;
+          }
+          // window.scrollBy fires a scroll event, which drives the sky
+          // comp drift too (via __applySkyDelta in the scroll listener).
+          window.scrollBy(0, dy);
+        }
         momentumRAF = requestAnimationFrame(tick);
       };
       momentumRAF = requestAnimationFrame(tick);
@@ -626,12 +644,18 @@
       lastTouchT  = now;
     };
     const onTouchEnd = () => {
-      if (!phaseLocked) return;
       touchStartY = null;
       // Boost the release velocity a touch — matches the 'kick' feel of
       // iOS native scroll momentum, and gives short/gentle finger flicks
       // enough energy to actually glide instead of stopping cold.
       velocity *= 1.4;
+      // Kick off momentum regardless of phase — if Phase 1 is still
+      // locked, runMomentum's tick uses advancePhase1; if Phase 1
+      // completed mid-swipe (strong flick), the tick auto-routes to
+      // window.scrollBy so the SAME swipe that landed the character
+      // also nudges the page a hair further. Without this, iOS's
+      // captured-gesture behavior means the post-Phase-1 touchmoves
+      // never trigger native scroll either, so no tail at all.
       if (velocity > 0.005) runMomentum();
     };
     const onKey = (e) => {
@@ -656,14 +680,22 @@
     const releaseLock = () => {
       if (!phaseLocked) return;
       phaseLocked = false;
-      stopMomentum();
+      // DON'T call stopMomentum here — we WANT the momentum RAF to keep
+      // running and transfer residual velocity into window.scrollBy so
+      // a hard swipe lands the character AND nudges the page a hair
+      // further. runMomentum's tick auto-switches its target now that
+      // phaseLocked is false.
       document.body.classList.remove('director-fall-locked');
       window.removeEventListener('wheel',      onWheel);
       window.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('touchmove',  onTouchMove);
-      window.removeEventListener('touchend',   onTouchEnd);
-      window.removeEventListener('touchcancel',onTouchEnd);
       window.removeEventListener('keydown',    onKey);
+      // Keep touchend/touchcancel attached: the finger that just
+      // completed Phase 1 is likely still on the screen, and lifting
+      // it should kick off runMomentum with the leftover velocity so
+      // the same swipe nudges the page a hair further. After momentum
+      // decays there's nothing left to trigger (velocity → 0), so
+      // subsequent gestures firing touchend cost effectively nothing.
       updateFall();
     };
 

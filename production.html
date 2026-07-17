@@ -29,8 +29,11 @@
 <body class="page-director page-sky">
 
   <div class="sky-bg" aria-hidden="true"></div>
-  <div class="sky-clouds" id="skyClouds" aria-hidden="true"></div>
-  <div class="sky-birds"  id="skyBirds"  aria-hidden="true"></div>
+  <!-- One sky comp populated by production.js: N vertically-tiled copies
+       (N doubles as page grows), each holding 3 speed bands so the
+       drift-on-scroll only writes N * 3 transforms per frame instead
+       of one per sprite. -->
+  <div class="sky" id="sky" aria-hidden="true"></div>
 
   <nav class="nav">
     <a href="index.html" class="nav-home" data-content="navLabels.home">← home</a>

@@ -1982,6 +1982,29 @@ body.director-fall-locked {
   overflow: hidden;
 }
 
+/* Production-page sky comp — replaces the old .sky-clouds / .sky-birds
+   fixed containers. Absolute-positioned and page-tall so cloud content
+   extends the full scroll length; JS distributes 3 speed bands ×
+   14 clouds + 8 birds across each tile. */
+.sky {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+.sky-tile {
+  position: absolute;
+  left: 0; right: 0;
+  transform-origin: top left;
+}
+.sky-band {
+  position: absolute;
+  inset: 0;
+  will-change: transform;   /* one layer per band (3 total, not 22) */
+}
+
 .sky-cloud {
   position: absolute;
   left: -260px;

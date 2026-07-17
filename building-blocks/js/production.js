@@ -127,106 +127,195 @@
   // SKY DRESSING — clouds + birds throughout, scroll-driven
   // ============================================================
 
-  const cloudHost = document.getElementById('skyClouds');
-  const birdHost  = document.getElementById('skyBirds');
+  // ------------------------------------------------------------
+  // Sky as ONE composition (tiled + speed-banded).
+  //
+  // Original: 22 sprites, each with an inline scroll-driven transform
+  // per event. iPhone stuttered because that's ~22 style writes per
+  // scroll event × many events per frame during a fast swipe.
+  //
+  // New: sprites live inside 3 SPEED BAND containers (slow / medium /
+  // fast). Each band gets ONE transform per scroll frame instead of
+  // per-sprite. Parallax variety preserved (3 speeds instead of 22
+  // random speeds), but transform work drops from 22-per-scroll to
+  // 3-per-scroll-per-tile. rAF-throttled so many scroll events fold
+  // into one update.
+  //
+  // As the page grows with more works, the whole sky comp scales up.
+  // When it would hit 2x scale, we double the tile count and reset
+  // scale to 1x, tiling the same layout vertically. The invariant:
+  // (# tiles) * (base height) * (scale) == page height, with scale
+  // always ∈ [1, 2]. This means cloud DENSITY stays roughly constant
+  // as Charlie adds films, without needing a runaway sprite count.
+  // ------------------------------------------------------------
 
-  // SVG strings come from window.ART_CACHE (loaded by art-loader.js from
-  // assets/cloud.svg and assets/bird.svg). Hardcoded fallbacks used if the
-  // asset folder is missing or hasn't loaded yet.
-  const FALLBACK_CLOUD = '<svg viewBox="0 0 220 110" xmlns="http://www.w3.org/2000/svg"><ellipse cx="48" cy="68" rx="42" ry="28" fill="white"/><ellipse cx="92" cy="50" rx="48" ry="34" fill="white"/><ellipse cx="148" cy="58" rx="50" ry="34" fill="white"/><ellipse cx="190" cy="72" rx="34" ry="22" fill="white"/><ellipse cx="118" cy="76" rx="60" ry="20" fill="white"/></svg>';
+  const skyHost = document.getElementById('sky');
+
   const FALLBACK_BIRD  = '<svg viewBox="0 0 60 28" xmlns="http://www.w3.org/2000/svg"><path d="M2 18 Q14 4 28 16 Q42 4 58 18" stroke="#1a1614" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>';
+  const PUFFY_CLOUDS = [
+    'assets/scenery/cloud-1.png',
+    'assets/scenery/cloud-2.png',
+    'assets/scenery/cloud-3.png',
+  ];
 
-  const clouds = [];
-  const birds  = [];
+  // Speed bands. Numbers are "pixels of horizontal drift per pixel of
+  // vertical scroll" — tuned to match the previous random 0.3-1.0 clouds
+  // and 1.2-2.7 birds. Same order as visual back-to-front.
+  const BANDS = [
+    { name: 'slow',   speed: 0.35 },
+    { name: 'medium', speed: 0.75 },
+    { name: 'fast',   speed: 1.60 },
+  ];
 
-  const buildSky = () => {
-    const CLOUD_SVG = (window.ART_CACHE && window.ART_CACHE.cloud) || FALLBACK_CLOUD;
-    const BIRD_SVG  = (window.ART_CACHE && window.ART_CACHE.bird)  || FALLBACK_BIRD;
+  // How many clouds + birds go in each band per tile. Totals across
+  // bands: 14 clouds + 8 birds — same as before.
+  const BAND_CONTENTS = {
+    slow:   { clouds: 5, birds: 1 },
+    medium: { clouds: 6, birds: 3 },
+    fast:   { clouds: 3, birds: 4 },
+  };
 
-    // Production-page clouds use the puffy PNGs from assets/scenery/cloud-1-3.
-    // Each cloud div picks one of the 3 sources at random for variety.
-    const PUFFY_CLOUDS = [
-      'assets/scenery/cloud-1.png',
-      'assets/scenery/cloud-2.png',
-      'assets/scenery/cloud-3.png',
-    ];
-
-    if (cloudHost) {
-    cloudHost.style.position = 'absolute';
-    cloudHost.style.height = '100%';
-    cloudHost.style.top = '0';
-    for (let i = 0; i < 14; i++) {
-      const el = document.createElement('div');
-      el.className = 'sky-cloud sky-cloud--puffy';
-      el.style.position = 'absolute';
-      el.style.top = `${Math.random() * 100}%`;
-      el.style.animation = 'none';
-      el.dataset.x = (Math.random() * window.innerWidth).toString();
-      el.dataset.speed = (0.3 + Math.random() * 0.7).toString();
-      el.dataset.scale = (0.5 + Math.random() * 0.7).toString();
-      el.style.transform = `translateX(${el.dataset.x}px) scale(${el.dataset.scale})`;
-      const src = PUFFY_CLOUDS[i % PUFFY_CLOUDS.length];
-      el.innerHTML = `<img src="${src}" alt="" draggable="false">`;
-      cloudHost.appendChild(el);
-      clouds.push(el);
+  // Deterministic sprite layout, generated once. Every tile renders the
+  // same layout, so tiling gives EXACT copies (as Charlie described:
+  // 'double and tile vertically the comp together').
+  let layoutCache = null;
+  const getLayout = () => {
+    if (layoutCache) return layoutCache;
+    const BIRD_SVG = (window.ART_CACHE && window.ART_CACHE.bird) || FALLBACK_BIRD;
+    layoutCache = { BIRD_SVG, bands: {} };
+    for (const band of BANDS) {
+      const c = BAND_CONTENTS[band.name];
+      const sprites = [];
+      for (let i = 0; i < c.clouds; i++) {
+        sprites.push({
+          type: 'cloud',
+          src: (i + (band.name === 'medium' ? 1 : band.name === 'fast' ? 2 : 0)) % PUFFY_CLOUDS.length,
+          xPct: Math.random() * 100,
+          yPct: Math.random() * 100,
+          scale: 0.5 + Math.random() * 0.7,
+        });
+      }
+      for (let i = 0; i < c.birds; i++) {
+        sprites.push({
+          type: 'bird',
+          xPct: Math.random() * 100,
+          yPct: Math.random() * 100,
+          scale: 0.6 + Math.random() * 0.5,
+        });
+      }
+      layoutCache.bands[band.name] = sprites;
     }
-  }
+    return layoutCache;
+  };
 
-    if (birdHost) {
-    birdHost.style.position = 'absolute';
-    birdHost.style.height = '100%';
-    birdHost.style.top = '0';
-    for (let i = 0; i < 8; i++) {
-      const el = document.createElement('div');
-      el.className = 'sky-bird';
-      el.style.position = 'absolute';
-      el.style.top = `${Math.random() * 100}%`;
-      el.style.animation = 'none';
-      el.dataset.x = (Math.random() * window.innerWidth).toString();
-      el.dataset.speed = (1.2 + Math.random() * 1.5).toString();
-      el.dataset.scale = (0.6 + Math.random() * 0.5).toString();
-      el.style.transform = `translateX(${el.dataset.x}px) scale(${el.dataset.scale})`;
-      el.innerHTML = BIRD_SVG;
-      birdHost.appendChild(el);
-      birds.push(el);
+  // Per-band accumulated horizontal drift. Preserved across rebuilds
+  // (window resize / content:loaded) so the sky doesn't snap when the
+  // page height changes mid-session.
+  const dxByBand = { slow: 0, medium: 0, fast: 0 };
+
+  const buildTile = () => {
+    const layout = getLayout();
+    const tile = document.createElement('div');
+    tile.className = 'sky-tile';
+    for (const band of BANDS) {
+      const bandEl = document.createElement('div');
+      bandEl.className = 'sky-band sky-band--' + band.name;
+      bandEl.dataset.speed = band.speed;
+      bandEl.dataset.band  = band.name;
+      // Apply current drift immediately so new tiles inherit position.
+      bandEl.style.transform = `translate3d(${dxByBand[band.name]}px, 0, 0)`;
+      for (const sprite of layout.bands[band.name]) {
+        const el = document.createElement('div');
+        if (sprite.type === 'cloud') {
+          el.className = 'sky-cloud sky-cloud--puffy';
+          const src = PUFFY_CLOUDS[sprite.src];
+          el.innerHTML = `<img src="${src}" alt="" decoding="async" draggable="false">`;
+        } else {
+          el.className = 'sky-bird';
+          el.innerHTML = layout.BIRD_SVG;
+        }
+        el.style.position = 'absolute';
+        el.style.left     = `${sprite.xPct}%`;
+        el.style.top      = `${sprite.yPct}%`;
+        el.style.transform = `scale(${sprite.scale})`;
+        el.style.animation = 'none';   // opt out of the default cloudDrift keyframe
+        bandEl.appendChild(el);
+      }
+      tile.appendChild(bandEl);
     }
-  }
-  };  // /buildSky
+    return tile;
+  };
 
-  // run buildSky once art is ready (or immediately if already cached)
-  if (window.ART_CACHE && window.ART_CACHE.cloud) buildSky();
-  else document.addEventListener('art:loaded', buildSky, { once: true });
+  // Compute N + S from page height, ensure DOM matches, position + scale
+  // each tile. Runs at load, whenever the content-loader injects works,
+  // and (throttled) on resize.
+  const layoutSky = () => {
+    if (!skyHost) return;
+    const baseH = window.innerHeight;
+    const pageH = Math.max(document.documentElement.scrollHeight, baseH);
+    const ratio = pageH / baseH;
+    const k = Math.max(0, Math.floor(Math.log2(ratio)));
+    const N = Math.pow(2, k);
+    const S = Math.min(2, ratio / N);
 
-  // Off-screen buffers — must be ≥ visible width of each sprite so the
-  // element is FULLY off-screen before it gets teleported to the other side.
-  // Puffy cloud is 360px wide + drop-shadow ≈ 400px total.
-  const CLOUD_OFF = 420;
-  const BIRD_OFF  = 100;
+    // Ensure exactly N tiles in the DOM.
+    while (skyHost.children.length < N) skyHost.appendChild(buildTile());
+    while (skyHost.children.length > N) skyHost.removeChild(skyHost.lastElementChild);
 
-  let lastScroll = window.scrollY;
+    // Each tile is naturally baseH tall; scale(S) makes it visually
+    // baseH*S. Position tiles so they touch visually (no gaps, no
+    // overlap) by using scaled top.
+    const tileVisualH = baseH * S;
+    [...skyHost.children].forEach((tile, i) => {
+      tile.style.top    = `${i * tileVisualH}px`;
+      tile.style.height = `${baseH}px`;
+      tile.style.transform = `scale(${S})`;
+    });
+  };
+
+  // Scroll handler — one rAF, N * 3 transforms (band-level) instead of
+  // 22 (sprite-level). Uses velocity accumulation (matches the previous
+  // feel: scroll direction reverses = clouds drift back the other way).
+  let lastScrollY = window.scrollY;
+  let skyTicking = false;
+  const stepSky = () => {
+    const y = window.scrollY;
+    const dy = y - lastScrollY;
+    lastScrollY = y;
+    for (const band of BANDS) {
+      dxByBand[band.name] -= dy * band.speed;
+    }
+    // Write transforms band-by-band; querySelectorAll returns N * 3 elems.
+    for (const bandEl of skyHost.querySelectorAll('.sky-band')) {
+      const name = bandEl.dataset.band;
+      bandEl.style.transform = `translate3d(${dxByBand[name]}px, 0, 0)`;
+    }
+    skyTicking = false;
+  };
   window.addEventListener('scroll', () => {
-    const dy = window.scrollY - lastScroll;
-    lastScroll = window.scrollY;
-    for (const el of clouds) {
-      let x = parseFloat(el.dataset.x);
-      x -= dy * parseFloat(el.dataset.speed);
-      // Wrap only AFTER the cloud is fully off the viewport, and teleport
-      // it to a position that's also fully off the opposite edge — so it
-      // SLIDES into view rather than popping in mid-screen.
-      if (x < -CLOUD_OFF)              x = window.innerWidth + 20;
-      else if (x > window.innerWidth)  x = -CLOUD_OFF + 20;
-      el.dataset.x = x.toString();
-      el.style.transform = `translateX(${x}px) scale(${el.dataset.scale})`;
-    }
-    for (const el of birds) {
-      let x = parseFloat(el.dataset.x);
-      x -= dy * parseFloat(el.dataset.speed);
-      if (x < -BIRD_OFF)               x = window.innerWidth + 10;
-      else if (x > window.innerWidth)  x = -BIRD_OFF + 10;
-      el.dataset.x = x.toString();
-      el.style.transform = `translateX(${x}px) scale(${el.dataset.scale})`;
-    }
+    if (skyTicking) return;
+    skyTicking = true;
+    requestAnimationFrame(stepSky);
   }, { passive: true });
+
+  // Initial build + re-layout hooks.
+  const initSky = () => {
+    if (!skyHost) return;
+    layoutSky();
+  };
+  if (window.ART_CACHE && window.ART_CACHE.bird) initSky();
+  else document.addEventListener('art:loaded', initSky, { once: true });
+
+  document.addEventListener('content:loaded', () => {
+    // wait a frame for scaleSkyForWorks (above) to update paddings first
+    requestAnimationFrame(layoutSky);
+  });
+
+  let resizeTimer = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(layoutSky, 150);
+  });
 
 
   // ============================================================

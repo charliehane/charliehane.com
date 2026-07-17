@@ -273,29 +273,33 @@
     });
   };
 
-  // Scroll handler — one rAF, N * 3 transforms (band-level) instead of
-  // 22 (sprite-level). Uses velocity accumulation (matches the previous
-  // feel: scroll direction reverses = clouds drift back the other way).
-  let lastScrollY = window.scrollY;
+  // Shared drift helper — updates dxByBand for a delta and schedules
+  // ONE rAF write. Called from both the scroll listener AND the Phase 1
+  // scroll-lock character handlers below, so cloud/bird motion tracks
+  // finger input even when window.scrollY is frozen.
   let skyTicking = false;
-  const stepSky = () => {
-    const y = window.scrollY;
-    const dy = y - lastScrollY;
-    lastScrollY = y;
-    for (const band of BANDS) {
-      dxByBand[band.name] -= dy * band.speed;
-    }
-    // Write transforms band-by-band; querySelectorAll returns N * 3 elems.
+  const writeSkyBands = () => {
     for (const bandEl of skyHost.querySelectorAll('.sky-band')) {
       const name = bandEl.dataset.band;
       bandEl.style.transform = `translate3d(${dxByBand[name]}px, 0, 0)`;
     }
     skyTicking = false;
   };
-  window.addEventListener('scroll', () => {
+  // Expose so Phase 1 can call it.
+  window.__applySkyDelta = (dy) => {
+    if (!skyHost) return;
+    for (const band of BANDS) dxByBand[band.name] -= dy * band.speed;
     if (skyTicking) return;
     skyTicking = true;
-    requestAnimationFrame(stepSky);
+    requestAnimationFrame(writeSkyBands);
+  };
+
+  let lastScrollY = window.scrollY;
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    const dy = y - lastScrollY;
+    lastScrollY = y;
+    window.__applySkyDelta(dy);
   }, { passive: true });
 
   // Initial build + re-layout hooks.
@@ -546,7 +550,13 @@
     const onWheel = (e) => {
       if (!phaseLocked) return;
       e.preventDefault();
-      fallDelta += Math.max(0, e.deltaY);
+      const dy = Math.max(0, e.deltaY);
+      fallDelta += dy;
+      // Also drift the sky comp — Charlie: 'i do not want it to have
+      // the stickiness of the scroll down rule.' The sky should react
+      // to the swipe that lands the character mid-screen, even though
+      // window.scrollY is frozen during Phase 1.
+      if (dy > 0 && window.__applySkyDelta) window.__applySkyDelta(dy);
       applyPhase1();
     };
     let touchStartY = null;
@@ -559,7 +569,10 @@
       e.preventDefault();
       const y = e.touches[0].clientY;
       const dy = touchStartY - y;             // swipe up = positive
-      if (dy > 0) fallDelta += dy;
+      if (dy > 0) {
+        fallDelta += dy;
+        if (window.__applySkyDelta) window.__applySkyDelta(dy);
+      }
       touchStartY = y;
       applyPhase1();
     };

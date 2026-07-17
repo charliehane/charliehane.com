@@ -47,20 +47,21 @@
   // the actual current viewport so the choice is deterministic.
   // ============================================================
   const R2 = 'https://pub-3feaceb432134076b4773fdc45eba874.r2.dev';
-  // Cache-bust the R2 URLs: R2 pub-* subdomains don't set Cache-Control,
-  // so Safari heuristically caches the mp4 for a long time. When we
-  // re-encode with the same filename, iPhones still serve the OLD
-  // version from local disk cache — force-quit doesn't clear that. Bump
-  // this version each time we upload a new BG/FG to R2 so the URL
-  // differs and Safari refetches.
-  const R2_V = 'v=4';
+  // Cache-bust the video URLs: R2's pub-* subdomains don't set
+  // Cache-Control, and Cloudflare Pages caches unhashed assets
+  // aggressively — either way, when we re-encode with the same
+  // filename, iPhones keep serving the OLD version from local disk
+  // cache and force-quit doesn't clear it. Bump this version whenever
+  // we re-encode any BG/FG video (same string applied to both since a
+  // spurious refetch of an unchanged file is harmless).
+  const ASSET_V = 'v=5';
   const isPortraitPhone = () =>
     window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches;
   const setBgSrc = () => {
     if (!bgVideo) return;
     const url = isPortraitPhone()
-      ? `${R2}/bike-scene-bg-portrait.mp4?${R2_V}`
-      : `${R2}/bike-scene-bg.mp4?${R2_V}`;
+      ? `${R2}/bike-scene-bg-portrait.mp4?${ASSET_V}`
+      : `${R2}/bike-scene-bg.mp4?${ASSET_V}`;
     if (bgVideo.currentSrc !== url) {
       [...bgVideo.querySelectorAll('source')].forEach(s => s.remove());
       bgVideo.src = url;
@@ -83,7 +84,7 @@
       // this video into a WebGL texture — texImage2D would throw a
       // SecurityError on a cross-origin video without R2 CORS headers.
       const mp4 = document.createElement('source');
-      mp4.src  = 'assets/bike-scene-fg-portrait-alpha.mp4';
+      mp4.src  = `assets/bike-scene-fg-portrait-alpha.mp4?${ASSET_V}`;
       mp4.type = 'video/mp4';
       fgVideo.appendChild(mp4);
       setupFgAlphaCanvas();

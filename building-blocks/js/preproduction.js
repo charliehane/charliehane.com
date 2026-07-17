@@ -594,16 +594,12 @@
     setTimeout(() => { delete brick.dataset.exploded; }, 5200);
   }
 
-  // Hide + fully clean up a popup: remove .is-shown, cancel timers/
-  // observers, and if we portaled this popup out of its .scene to
+  // Hide + fully clean up a popup: remove .is-shown, cancel any auto-
+  // hide timer, and if we portaled this popup out of its .scene to
   // escape .world-track's transform, put it back where it came from.
   function hidePopup(p) {
     p.classList.remove('is-shown');
     clearTimeout(p._hideTimer);
-    if (p._brickObserver) {
-      p._brickObserver.disconnect();
-      p._brickObserver = null;
-    }
     if (p._portalParent) {
       p._portalParent.appendChild(p);
       p._portalParent = null;
@@ -638,24 +634,15 @@
     void popup.offsetWidth;
     popup.classList.add('is-shown');
 
-    if (isPortraitPhone) {
-      // Charlie: 'stay visible until the user clicks a new box OR the
-      // box they originally clicked on is out of view.' New-click case
-      // is handled at the top of showProjectPopup (kills is-shown on
-      // any existing popup). Out-of-view case: watch the ORIGINAL brick
-      // with an IntersectionObserver and hide the popup when it leaves
-      // the viewport. No time-based auto-hide.
-      const io = new IntersectionObserver((entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) hidePopup(popup);
-        }
-      }, { root: null, threshold: 0 });
-      io.observe(brick);
-      popup._brickObserver = io;
-    } else {
+    if (!isPortraitPhone) {
       // Desktop keeps its existing 4-second auto-hide.
       popup._hideTimer = setTimeout(() => hidePopup(popup), 4000);
     }
+    // iPhone: no auto-dismiss. Charlie: 'have the square up there start
+    // upon the users first hit, and stay with the exact same film until
+    // another block is hit.' The kill-existing loop at the top of
+    // showProjectPopup handles the new-click case; the popup stays
+    // visible in the top-center area indefinitely otherwise.
   }
 
   if (section && bikeEl) {

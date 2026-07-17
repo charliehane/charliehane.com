@@ -3328,4 +3328,17 @@ body.director-fall-locked {
   body.page-editor-dig button {
     cursor: auto !important;
   }
+  /* Kill the iOS long-press callout (copy/paste/lookup menu) + the
+     highlight that appears while pressing. Charlie: 'when you hold
+     down long enough, the iphone thinks you want to select it for
+     copy and paste.' This is a scroll-driven experience — nothing on
+     the page is meant to be read-and-copied like a document, and the
+     callout was interfering with the coffin press-and-hold + brick
+     tap interactions. Desktop still selects normally (this only
+     applies where hover isn't available). */
+  body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
 }

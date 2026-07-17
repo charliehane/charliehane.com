@@ -601,6 +601,10 @@
         if (Math.abs(velocity) < MIN_V) {
           momentumRAF = 0;
           velocity = 0;
+          // If Phase 1 finished (via momentum) AND the user isn't
+          // touching, clean up listeners too — matches the touchend
+          // cleanup so Phase 2 gets native scroll compositing.
+          if (!phaseLocked && touchStartY === null) detachPhase1Listeners();
           return;
         }
         const now = performance.now();
@@ -672,6 +676,18 @@
       // captured-gesture behavior means the post-Phase-1 touchmoves
       // never trigger native scroll either, so no tail at all.
       if (velocity > 0.005) runMomentum();
+      // Phase 1 done and this was the last of the transitional gesture
+      // → detach our non-passive touchmove listener so Phase 2 gestures
+      // use iOS's optimized native scroll compositing. Without this,
+      // every Phase 2 touchmove had to wait for our (early-returning)
+      // handler before iOS could commit the scroll frame, which read
+      // as 'staccato' scroll after the character came in.
+      if (!phaseLocked) detachPhase1Listeners();
+    };
+    const detachPhase1Listeners = () => {
+      window.removeEventListener('touchmove',  onTouchMove);
+      window.removeEventListener('touchend',   onTouchEnd);
+      window.removeEventListener('touchcancel',onTouchEnd);
     };
     const onKey = (e) => {
       if (!phaseLocked) return;

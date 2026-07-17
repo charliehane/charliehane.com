@@ -580,9 +580,11 @@
     };
 
     const runMomentum = () => {
-      // Decay per iOS-ish feel: ~5% loss per 16ms frame, scaled by actual dt.
-      const FRICTION_PER_FRAME = 0.95;
-      const MIN_V = 0.03;   // px/ms — below this feels stopped
+      // Tuned for real finger flicks (much lower velocities than my
+      // synthetic tests). 2.5% loss per 16ms frame = long enough tail
+      // to actually feel; low MIN_V so gentle flicks still glide.
+      const FRICTION_PER_FRAME = 0.975;
+      const MIN_V = 0.005;
       let lastT = performance.now();
       const tick = () => {
         if (!phaseLocked || Math.abs(velocity) < MIN_V) {
@@ -626,7 +628,11 @@
     const onTouchEnd = () => {
       if (!phaseLocked) return;
       touchStartY = null;
-      if (velocity > 0.05) runMomentum();
+      // Boost the release velocity a touch — matches the 'kick' feel of
+      // iOS native scroll momentum, and gives short/gentle finger flicks
+      // enough energy to actually glide instead of stopping cold.
+      velocity *= 1.4;
+      if (velocity > 0.005) runMomentum();
     };
     const onKey = (e) => {
       if (!phaseLocked) return;

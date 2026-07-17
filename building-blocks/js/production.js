@@ -547,34 +547,86 @@
     applyPhase1();
     document.body.classList.add('director-fall-locked');
 
+    // Advance both the character animation and the sky drift by dy.
+    // Called from wheel, touchmove, AND the touchend momentum decay so
+    // all three input paths share the same forward-motion code.
+    const advancePhase1 = (dy) => {
+      if (dy <= 0) return;
+      fallDelta += dy;
+      if (window.__applySkyDelta) window.__applySkyDelta(dy);
+      applyPhase1();
+    };
+
     const onWheel = (e) => {
       if (!phaseLocked) return;
       e.preventDefault();
-      const dy = Math.max(0, e.deltaY);
-      fallDelta += dy;
-      // Also drift the sky comp — Charlie: 'i do not want it to have
-      // the stickiness of the scroll down rule.' The sky should react
-      // to the swipe that lands the character mid-screen, even though
-      // window.scrollY is frozen during Phase 1.
-      if (dy > 0 && window.__applySkyDelta) window.__applySkyDelta(dy);
-      applyPhase1();
+      advancePhase1(Math.max(0, e.deltaY));
     };
+
+    // Momentum: track finger velocity during drag, kick off an
+    // exponential-decay rAF after touchend so lifting your finger
+    // doesn't kill motion instantly. iOS native scroll has this built
+    // in; preventDefault() on touchmove removes it, and Charlie noticed
+    // the resulting 'staccato' feel here vs Phase 2's normal scroll.
     let touchStartY = null;
+    let lastTouchY  = null;
+    let lastTouchT  = 0;
+    let velocity    = 0;   // px per ms (swipe-up positive)
+    let momentumRAF = 0;
+
+    const stopMomentum = () => {
+      if (momentumRAF) { cancelAnimationFrame(momentumRAF); momentumRAF = 0; }
+      velocity = 0;
+    };
+
+    const runMomentum = () => {
+      // Decay per iOS-ish feel: ~5% loss per 16ms frame, scaled by actual dt.
+      const FRICTION_PER_FRAME = 0.95;
+      const MIN_V = 0.03;   // px/ms — below this feels stopped
+      let lastT = performance.now();
+      const tick = () => {
+        if (!phaseLocked || Math.abs(velocity) < MIN_V) {
+          momentumRAF = 0;
+          velocity = 0;
+          return;
+        }
+        const now = performance.now();
+        const dt = now - lastT;
+        lastT = now;
+        velocity *= Math.pow(FRICTION_PER_FRAME, dt / 16);
+        advancePhase1(velocity * dt);
+        momentumRAF = requestAnimationFrame(tick);
+      };
+      momentumRAF = requestAnimationFrame(tick);
+    };
+
     const onTouchStart = (e) => {
       if (!phaseLocked) return;
-      touchStartY = e.touches[0].clientY;
+      stopMomentum();
+      const y = e.touches[0].clientY;
+      touchStartY = y;
+      lastTouchY  = y;
+      lastTouchT  = performance.now();
     };
     const onTouchMove = (e) => {
       if (!phaseLocked || touchStartY === null) return;
       e.preventDefault();
-      const y = e.touches[0].clientY;
-      const dy = touchStartY - y;             // swipe up = positive
-      if (dy > 0) {
-        fallDelta += dy;
-        if (window.__applySkyDelta) window.__applySkyDelta(dy);
-      }
+      const y  = e.touches[0].clientY;
+      const now = performance.now();
+      const dt = Math.max(1, now - lastTouchT);
+      // Instantaneous velocity, EMA-smoothed so bumpy touchmove samples
+      // don't spike the release velocity.
+      const instant = (lastTouchY - y) / dt;
+      velocity = velocity * 0.6 + instant * 0.4;
+      advancePhase1(touchStartY - y);   // frame-to-frame dy (swipe-up positive)
       touchStartY = y;
-      applyPhase1();
+      lastTouchY  = y;
+      lastTouchT  = now;
+    };
+    const onTouchEnd = () => {
+      if (!phaseLocked) return;
+      touchStartY = null;
+      if (velocity > 0.05) runMomentum();
     };
     const onKey = (e) => {
       if (!phaseLocked) return;
@@ -591,15 +643,20 @@
     window.addEventListener('wheel',      onWheel,     { passive: false });
     window.addEventListener('touchstart', onTouchStart, { passive: true  });
     window.addEventListener('touchmove',  onTouchMove,  { passive: false });
+    window.addEventListener('touchend',   onTouchEnd,   { passive: true  });
+    window.addEventListener('touchcancel',onTouchEnd,   { passive: true  });
     window.addEventListener('keydown',    onKey);
 
     const releaseLock = () => {
       if (!phaseLocked) return;
       phaseLocked = false;
+      stopMomentum();
       document.body.classList.remove('director-fall-locked');
       window.removeEventListener('wheel',      onWheel);
       window.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('touchmove',  onTouchMove);
+      window.removeEventListener('touchend',   onTouchEnd);
+      window.removeEventListener('touchcancel',onTouchEnd);
       window.removeEventListener('keydown',    onKey);
       updateFall();
     };

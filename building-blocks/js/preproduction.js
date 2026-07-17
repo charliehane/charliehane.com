@@ -54,7 +54,7 @@
   // cache and force-quit doesn't clear it. Bump this version whenever
   // we re-encode any BG/FG video (same string applied to both since a
   // spurious refetch of an unchanged file is harmless).
-  const ASSET_V = 'v=5';
+  const ASSET_V = 'v=6';
   const isPortraitPhone = () =>
     window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches;
   const setBgSrc = () => {

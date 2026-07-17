@@ -1032,10 +1032,13 @@ body {
      on top of every other layer. */
   z-index: 11;
   white-space: nowrap;
-  /* Light halo so the dark red stays legible against dark AE frames
-     (night forest, deep mountain shadow). On light frames the red is
-     its own contrast. */
-  text-shadow: 0 1px 2px rgba(255,255,255,0.55), 0 0 10px rgba(255,255,255,0.35);
+  /* Solid black pill so the caption stays legible against every scene
+     — sunset waves, city buildings, foggy mountains all had moments
+     where the red text disappeared into the BG. Padding + radius give
+     it a highlighter look rather than a hard rectangle. */
+  background: #000;
+  padding: 6px 14px;
+  border-radius: 4px;
 }
 
 
@@ -1655,7 +1658,7 @@ body {
    frame stepping switched to percentage bg-position — preproduction.js
    computes 100*frame/13 for each frame. */
 .page-producer-ride .world-bike--sprite {
-  width: clamp(174px, calc(0.414 * var(--stage-w, 100vw)), 594px);
+  width: clamp(191px, calc(0.455 * var(--stage-w, 100vw)), 653px);
   aspect-ratio: 240 / 135;
   height: auto;
   background-image: url('../../assets/bike-sprite.png');
@@ -1673,7 +1676,7 @@ body {
    figure flies off. Same size + aspect as the sprite so it sits in
    the exact same footprint. */
 .page-producer-ride .world-bike-crashed {
-  width: clamp(174px, calc(0.414 * var(--stage-w, 100vw)), 594px);
+  width: clamp(191px, calc(0.455 * var(--stage-w, 100vw)), 653px);
   aspect-ratio: 240 / 135;
   height: auto;
   background-image: url('../../assets/bike-crashed.png');

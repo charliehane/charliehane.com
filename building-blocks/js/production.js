@@ -535,15 +535,18 @@
     const fallThreshold = () => Math.max(100, window.innerHeight * 0.14);
 
     const applyPhase1 = () => {
-      // Linear progress — Charlie: 'come down slower with that first
-      // swipe, he comes in really fast'. Removed the sqrt easing that
-      // was making short flicks land him at center instantly.
       const p = Math.min(1, fallDelta / fallThreshold());
+      // Ease-out quad on the STOP: character advances slightly faster
+      // than linear early on, then decelerates smoothly into the
+      // center. Charlie: 'can we bezier the animated charlies center
+      // stop point.' Combined with the momentum tail from touchend,
+      // this reads as a natural 'settle' rather than a hard snap.
+      const eased = 1 - Math.pow(1 - p, 2);
       const centerY = window.innerHeight / 2 - charH / 2;
       const startTop = -charH - 20;
       const endTop = centerY;
       fallEl.style.position = 'fixed';
-      fallEl.style.top = `${startTop + (endTop - startTop) * p}px`;
+      fallEl.style.top = `${startTop + (endTop - startTop) * eased}px`;
       if (p >= 1) releaseLock();
     };
     applyPhase1();

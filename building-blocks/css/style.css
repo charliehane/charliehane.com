@@ -946,7 +946,7 @@ body {
 @media (orientation: portrait) and (max-width: 500px) {
   .brick-popup {
     position: fixed;
-    top: 8% !important;
+    top: 5% !important;
     left: 50% !important;
     right: auto !important;
     max-width: min(88vw, 340px);
@@ -957,14 +957,35 @@ body {
   .brick-popup.is-shown {
     transform: translateX(-50%) translateY(-6px) scale(1);
   }
-  /* Nudge every ? brick up ~8pp on iPhone so they're not competing
-     with the bike + rider vertical band. Per-scene variation preserved
-     (scene-03 was 36%, everyone else 32% — same relative offsets). */
-  .scene--01 .brick { top: 24% !important; }
-  .scene--02 .brick { top: 24% !important; }
-  .scene--03 .brick { top: 28% !important; }
-  .scene--04 .brick { top: 24% !important; }
-  .scene--05 .brick { top: 24% !important; }
+  /* All ? bricks at the SAME top on iPhone (was 24-28% mix). Uniform
+     height matters because the bike-jump peak is a single CSS keyframe
+     height — with per-scene variation, some bricks got hit dead-on
+     and others weren't reached. */
+  .scene--01 .brick,
+  .scene--02 .brick,
+  .scene--03 .brick,
+  .scene--04 .brick,
+  .scene--05 .brick { top: 28% !important; }
+  /* Bike-jump peak retuned so the biker heads (top of the sprite)
+     land EXACTLY at the brick bottom edge — Charlie: 'right now
+     the bikers are kinda going through the box.'
+
+     Measured in a 375x812 preview (portrait iPhone, stage-h = 666.67px
+     b/c the 9:16 stage doesn't fill the 812vh viewport):
+       bike top at rest    = 551.9px from top of viewport
+       brick bottom (28%)  = 321.2px from top
+       travel needed       = 230.7px = 28.4% of 812vh → -28vh
+     The old -44vh overshot the brick by ~86px which is what Charlie
+     was seeing as bikers 'going through the box'. */
+  .page-producer-ride .world-bike.is-jumping {
+    animation: bikeJumpMobile 0.75s cubic-bezier(.3,-0.4,.5,1.5) 1;
+  }
+  @keyframes bikeJumpMobile {
+    0%   { transform: translateX(-50%) translateY(0)     rotate(0deg); }
+    35%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(-29vh) rotate(-10deg); }
+    55%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(-29vh) rotate(10deg); }
+    100% { transform: translateX(-50%) translateY(0)     rotate(0deg); }
+  }
 }
 
 .popup-tag {

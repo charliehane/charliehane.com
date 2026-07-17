@@ -679,7 +679,13 @@
         if (!target) return;
         const r = target.getBoundingClientRect();
         if (!r.width) return;
-        const peakTop    = bikeRect.top - window.innerHeight * 0.44;
+        // Peak height matches the CSS keyframe: -44vh on desktop, -39vh
+        // on portrait iPhone (retuned so biker heads land at brick bottom
+        // — see bikeJumpMobile keyframe in style.css).
+        const jumpVhFrac = window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches
+          ? 0.29
+          : 0.44;
+        const peakTop    = bikeRect.top - window.innerHeight * jumpVhFrac;
         const peakBottom = peakTop + bikeRect.height;
         const peakCenter = bikeCx + aimX;
         const peakLeft   = peakCenter - bikeRect.width / 2;

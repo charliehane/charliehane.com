@@ -528,20 +528,21 @@
     // delta threshold — a quick flick doesn't feel like it "underruns".
     let phaseLocked = true;
     let fallDelta = 0;
-    // Charlie: 'i would love if it could take one swipe to get him down'.
-    // Any natural finger flick is ~150-400px — 100 completes on a
-    // gentle-to-normal swipe without feeling accidental. Momentum tail
-    // (runMomentum) then carries the residual energy into page scroll.
-    const fallThreshold = () => Math.max(100, window.innerHeight * 0.14);
+    // 'One comfortable swipe' — any natural finger flick is ~200-400px
+    // so 160 completes on a normal flick without feeling accidental.
+    // Higher threshold = the character requires more swipe input to
+    // reach the center, which reads as him moving slower during the
+    // reveal. Charlie: 'can he generally move a bit slower when
+    // entering the scene via the swipe'.
+    const fallThreshold = () => Math.max(160, window.innerHeight * 0.20);
 
     const applyPhase1 = () => {
       const p = Math.min(1, fallDelta / fallThreshold());
-      // Ease-out quad on the STOP: character advances slightly faster
-      // than linear early on, then decelerates smoothly into the
-      // center. Charlie: 'can we bezier the animated charlies center
-      // stop point.' Combined with the momentum tail from touchend,
-      // this reads as a natural 'settle' rather than a hard snap.
-      const eased = 1 - Math.pow(1 - p, 2);
+      // Ease-out cubic on the STOP — more pronounced deceleration than
+      // quad. Character advances quickly early on, then really settles
+      // into the center. Charlie asked for 'a little more' bezier on
+      // top of the quad we had before.
+      const eased = 1 - Math.pow(1 - p, 3);
       const centerY = window.innerHeight / 2 - charH / 2;
       const startTop = -charH - 20;
       const endTop = centerY;

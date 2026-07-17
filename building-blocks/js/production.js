@@ -633,7 +633,7 @@
       lastTouchT  = performance.now();
     };
     const onTouchMove = (e) => {
-      if (!phaseLocked || touchStartY === null) return;
+      if (touchStartY === null) return;
       e.preventDefault();
       const y  = e.touches[0].clientY;
       const now = performance.now();
@@ -642,7 +642,18 @@
       // don't spike the release velocity.
       const instant = (lastTouchY - y) / dt;
       velocity = velocity * 0.6 + instant * 0.4;
-      advancePhase1(touchStartY - y);   // frame-to-frame dy (swipe-up positive)
+      const dy = touchStartY - y;
+      if (dy > 0) {
+        if (phaseLocked) {
+          advancePhase1(dy);
+        } else {
+          // Phase 1 already completed on an earlier touchmove but the
+          // finger is still on the screen and moving. Route the dy
+          // straight into page scroll so there's no pause between the
+          // character landing and the page starting to move.
+          window.scrollBy(0, dy);
+        }
+      }
       touchStartY = y;
       lastTouchY  = y;
       lastTouchT  = now;
@@ -692,14 +703,14 @@
       document.body.classList.remove('director-fall-locked');
       window.removeEventListener('wheel',      onWheel);
       window.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchmove',  onTouchMove);
       window.removeEventListener('keydown',    onKey);
-      // Keep touchend/touchcancel attached: the finger that just
-      // completed Phase 1 is likely still on the screen, and lifting
-      // it should kick off runMomentum with the leftover velocity so
-      // the same swipe nudges the page a hair further. After momentum
-      // decays there's nothing left to trigger (velocity → 0), so
-      // subsequent gestures firing touchend cost effectively nothing.
+      // Keep touchmove/touchend/touchcancel attached for the rest of
+      // this gesture. If Phase 1 completed mid-swipe, subsequent
+      // touchmoves in the same gesture drive page scroll (via the
+      // else branch in onTouchMove), so the finger stays connected
+      // to motion — no dead zone. On touchend, touchStartY nulls
+      // out and NEW gestures early-return through touchmove, letting
+      // native scroll handle Phase 2 normally.
       updateFall();
     };
 

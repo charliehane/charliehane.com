@@ -629,8 +629,13 @@
     };
 
     const onTouchStart = (e) => {
-      if (!phaseLocked) return;
+      // Always cancel any in-flight momentum on a new touch, even in
+      // Phase 2. Charlie: after character comes in, first scroll feels
+      // staccato — was our custom momentum's scrollBy compounding with
+      // iOS's native scroll on his next swipe. Scrolling up-then-down
+      // felt fine because momentum had time to decay by then.
       stopMomentum();
+      if (!phaseLocked) return;
       const y = e.touches[0].clientY;
       touchStartY = y;
       lastTouchY  = y;
@@ -718,8 +723,12 @@
       // phaseLocked is false.
       document.body.classList.remove('director-fall-locked');
       window.removeEventListener('wheel',      onWheel);
-      window.removeEventListener('touchstart', onTouchStart);
       window.removeEventListener('keydown',    onKey);
+      // Keep touchstart attached — it's {passive: true} so it doesn't
+      // block iOS's scroll compositor, and we need it to cancel any
+      // in-flight momentum whenever the user starts a new touch.
+      // Without it, momentum's scrollBy compounds with the user's
+      // native scroll and reads as staccato.
       // Keep touchmove/touchend/touchcancel attached for the rest of
       // this gesture. If Phase 1 completed mid-swipe, subsequent
       // touchmoves in the same gesture drive page scroll (via the

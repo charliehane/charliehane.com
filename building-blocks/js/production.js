@@ -512,6 +512,12 @@
       <div class="director-fall-sprite"></div>
     `;
     document.body.appendChild(fallEl);
+    // lottie-loader.js already ran its initial sweep BEFORE this IIFE
+    // created the falling-character element, so the data-lottie
+    // placeholder inside fallEl was never scanned. Re-sweep now so the
+    // hand-drawn wind Lottie replaces the fallback SVG. Charlie's iPhone
+    // was showing the old line-wind streaks because of exactly this race.
+    if (typeof window.loadLotties === 'function') window.loadLotties(fallEl);
 
     const concreteEl = document.getElementById('directorConcrete');
     const smushedEl  = document.getElementById('smushedBody');

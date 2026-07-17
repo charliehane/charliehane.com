@@ -1039,7 +1039,7 @@ body {
 /* outer wrapper handles "drive off right" drift; inner bike handles jump */
 .world-bike-pos {
   position: absolute;
-  bottom: 12%;
+  bottom: 8%;
   left: 50%;
   width: 0;
   height: 0;
@@ -1710,7 +1710,7 @@ body {
    frame stepping switched to percentage bg-position — preproduction.js
    computes 100*frame/13 for each frame. */
 .page-producer-ride .world-bike--sprite {
-  width: clamp(191px, calc(0.455 * var(--stage-w, 100vw)), 653px);
+  width: clamp(70px, calc(0.167 * var(--stage-w, 100vw)), 240px);
   aspect-ratio: 240 / 135;
   height: auto;
   background-image: url('../../assets/bike-sprite.png');
@@ -1728,7 +1728,7 @@ body {
    figure flies off. Same size + aspect as the sprite so it sits in
    the exact same footprint. */
 .page-producer-ride .world-bike-crashed {
-  width: clamp(191px, calc(0.455 * var(--stage-w, 100vw)), 653px);
+  width: clamp(70px, calc(0.167 * var(--stage-w, 100vw)), 240px);
   aspect-ratio: 240 / 135;
   height: auto;
   background-image: url('../../assets/bike-crashed.png');
@@ -1744,6 +1744,23 @@ body {
    moving bike had at crash — no visual jump on the swap. */
 .page-producer-ride .world-bike-pos.is-crashed .world-bike--sprite { opacity: 0; }
 .page-producer-ride .world-bike-pos.is-crashed .world-bike-crashed { opacity: 1; }
+
+/* Bike size + position (iPhone-only). Charlie: 'all of this scaling
+   stuff is messing with the horizontal version of this video.' Desktop
+   base rules above stay at the original 70-240px width @ bottom:8%.
+   These portrait overrides land AFTER the base rules so they win in
+   source order (both selectors have equal specificity):
+     - width clamp ~2.7x bigger (191-653 vs desktop 70-240)
+     - bottom 12% (vs 8%) so the bike sits higher on the 9:16 stage */
+@media (orientation: portrait) and (max-width: 500px) {
+  .page-producer-ride .world-bike--sprite,
+  .page-producer-ride .world-bike-crashed {
+    width: clamp(191px, calc(0.455 * var(--stage-w, 100vw)), 653px);
+  }
+  .world-bike-pos {
+    bottom: 12%;
+  }
+}
 
 /* car drives in from the right and crashes into the bike */
 .world-car {

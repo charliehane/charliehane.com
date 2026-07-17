@@ -987,7 +987,7 @@ body {
 /* outer wrapper handles "drive off right" drift; inner bike handles jump */
 .world-bike-pos {
   position: absolute;
-  bottom: 14%;
+  bottom: 12%;
   left: 50%;
   width: 0;
   height: 0;

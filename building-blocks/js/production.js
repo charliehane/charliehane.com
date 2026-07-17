@@ -408,19 +408,28 @@
     // height. Buildings appear only when the sky-buffer is approaching
     // the viewport — i.e., the user has scrolled past the works content.
     const MAX_SINK = 220;
+    // Portrait iPhone: skip the per-building parallax sink entirely.
+    // Charlie flagged it as a source of the scroll stutter on phone.
+    // Buildings sit anchored to the concrete strip (their default
+    // bottom:0 position); no per-frame transform on each of the 12
+    // building imgs. Desktop keeps the full depth-band parallax.
+    const isPortraitPhone = () =>
+      window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches;
     let ticking = false;
     const updateSkyline = () => {
       const concreteRect = concreteEl.getBoundingClientRect();
       const bottomFromViewport = window.innerHeight - concreteRect.top;
       skylineHost.style.bottom = `${bottomFromViewport}px`;
 
-      const sinkProgress = Math.max(0, Math.min(1,
-        (window.innerHeight - concreteRect.top) / window.innerHeight
-      ));
-      for (const el of buildings) {
-        const ySpeed = parseFloat(el.dataset.ySpeed);
-        const py = sinkProgress * ySpeed * MAX_SINK;
-        el.style.setProperty('--py', `${py}px`);
+      if (!isPortraitPhone()) {
+        const sinkProgress = Math.max(0, Math.min(1,
+          (window.innerHeight - concreteRect.top) / window.innerHeight
+        ));
+        for (const el of buildings) {
+          const ySpeed = parseFloat(el.dataset.ySpeed);
+          const py = sinkProgress * ySpeed * MAX_SINK;
+          el.style.setProperty('--py', `${py}px`);
+        }
       }
 
       ticking = false;

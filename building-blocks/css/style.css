@@ -3365,3 +3365,15 @@ body.director-fall-locked {
     user-select: none;
   }
 }
+
+/* Kill the production-page building parallax on portrait iPhone —
+   Charlie flagged the sinking-buildings animation as a source of
+   the phone-only scroll stutter. --py is what the CSS transform uses
+   to shift each building downward; forcing 0 keeps them anchored
+   bottom-to-concrete. Match the JS gate exactly (portrait + max-width
+   500) so iPad in landscape/portrait still gets the full parallax. */
+@media (orientation: portrait) and (max-width: 500px) {
+  .building {
+    --py: 0 !important;
+  }
+}

@@ -442,18 +442,28 @@
     const skeletonCoffin = document.getElementById('coffinSkeleton');
     if (!skeletonCoffin || !skullL || !skullR) return;
     skeletonCoffin.style.pointerEvents = 'auto';
-    skeletonCoffin.addEventListener('mouseenter', () => {
+    const setRed = () => {
       skullL.setAttribute('fill', '#ff1a14');
       skullR.setAttribute('fill', '#ff1a14');
       skullL.style.filter = 'drop-shadow(0 0 8px rgba(255, 30, 24, 0.95))';
       skullR.style.filter = 'drop-shadow(0 0 8px rgba(255, 30, 24, 0.95))';
-    });
-    skeletonCoffin.addEventListener('mouseleave', () => {
+    };
+    const setDark = () => {
       skullL.setAttribute('fill', '#1a0a08');
       skullR.setAttribute('fill', '#1a0a08');
       skullL.style.filter = 'none';
       skullR.style.filter = 'none';
-    });
+    };
+    // Desktop: hover-driven. Unchanged.
+    skeletonCoffin.addEventListener('mouseenter', setRed);
+    skeletonCoffin.addEventListener('mouseleave', setDark);
+    // iPhone: mouseenter/mouseleave don't fire predictably on touch, so
+    // add explicit press-and-hold handlers. Feels the same as hover — the
+    // eyes glow while your finger is on the coffin and go dark when you
+    // lift it — but doesn't require the ambiguous tap-to-toggle model.
+    skeletonCoffin.addEventListener('touchstart', setRed, { passive: true });
+    skeletonCoffin.addEventListener('touchend', setDark);
+    skeletonCoffin.addEventListener('touchcancel', setDark);
   };
   if (document.getElementById('skullEyeL')) wireSkeletonEyes();
   else document.addEventListener('art:loaded', wireSkeletonEyes, { once: true });

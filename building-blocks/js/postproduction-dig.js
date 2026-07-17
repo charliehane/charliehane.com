@@ -1,6 +1,45 @@
 (() => {
 
   // ============================================================
+  // EXPLICIT SOURCE SELECTION FOR THE HELL BG VIDEO
+  // ------------------------------------------------------------
+  // Same pattern preproduction.js uses. <source media="..."> inside
+  // <video> is unreliable on iOS Safari — it will sometimes pick
+  // the horizontal desktop MOV even on portrait phones. Reset the
+  // <video>'s sources here based on the current viewport so the
+  // choice is deterministic. Portrait phones get the purpose-built
+  // vertical hell comp; everyone else gets the desktop WebM/MOV.
+  // ============================================================
+  {
+    const hellVideo = document.getElementById('hellBgVideo');
+    if (hellVideo) {
+      const isPortraitPhone = () =>
+        window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches;
+      const setHellSrc = () => {
+        [...hellVideo.querySelectorAll('source')].forEach(s => s.remove());
+        if (isPortraitPhone()) {
+          const mp4 = document.createElement('source');
+          mp4.src  = 'assets/charlie-in-hell-portrait.mp4';
+          mp4.type = 'video/mp4';
+          hellVideo.appendChild(mp4);
+        } else {
+          const webm = document.createElement('source');
+          webm.src  = 'assets/charlie-in-hell.webm';
+          webm.type = 'video/webm';
+          hellVideo.appendChild(webm);
+          const mov = document.createElement('source');
+          mov.src  = 'assets/charlie-in-hell.mov';
+          mov.type = 'video/mp4; codecs="hvc1"';
+          hellVideo.appendChild(mov);
+        }
+        hellVideo.removeAttribute('src');
+        hellVideo.load();
+      };
+      setHellSrc();
+    }
+  }
+
+  // ============================================================
   // SHOVEL CURSOR
   // ============================================================
   const shovel = document.createElement('div');

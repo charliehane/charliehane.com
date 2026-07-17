@@ -594,17 +594,66 @@
     setTimeout(() => { delete brick.dataset.exploded; }, 5200);
   }
 
+  // Hide + fully clean up a popup: remove .is-shown, cancel the auto-hide
+  // timer, drop the scroll-dismiss listener, and if we portaled this
+  // popup out of its .scene to escape .world-track's transform, put it
+  // back where it came from.
+  function hidePopup(p) {
+    p.classList.remove('is-shown');
+    clearTimeout(p._hideTimer);
+    if (p._hideOnScroll) {
+      window.removeEventListener('scroll', p._hideOnScroll);
+      p._hideOnScroll = null;
+    }
+    if (p._portalParent) {
+      p._portalParent.appendChild(p);
+      p._portalParent = null;
+    }
+  }
+
   function showProjectPopup(brick) {
     // popup lives inside the same .scene as the brick — works for any number of films
     const scene = brick.closest('.scene');
     const popup = scene && scene.querySelector('.brick-popup');
     if (!popup) return;
-    section.querySelectorAll('.brick-popup.is-shown').forEach(p => p.classList.remove('is-shown'));
+
+    // Kill any currently-shown popup (and clean up its portal / listeners).
+    section.querySelectorAll('.brick-popup.is-shown').forEach(hidePopup);
+    // Also grab popups that we already portaled to <body> (they aren't
+    // matched by the section querySelectorAll above).
+    document.body.querySelectorAll(':scope > .brick-popup.is-shown').forEach(hidePopup);
+
+    const isPortraitPhone =
+      window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches;
+
+    if (isPortraitPhone) {
+      // Portal the popup out of the horizontally-translating .world-track
+      // subtree. .world-track has a `transform` which makes any position:
+      // fixed descendant compute against .world-track instead of the
+      // viewport — the CSS-only 'top:50%;left:50%' would land the popup
+      // WAY off-screen otherwise. Reparenting to <body> escapes the
+      // transformed containing block so `position: fixed` behaves normally.
+      popup._portalParent = popup.parentElement;
+      document.body.appendChild(popup);
+    }
+
     popup.classList.remove('is-shown');
     void popup.offsetWidth;
     popup.classList.add('is-shown');
-    clearTimeout(popup._hideTimer);
-    popup._hideTimer = setTimeout(() => popup.classList.remove('is-shown'), 4000);
+
+    popup._hideTimer = setTimeout(() => hidePopup(popup), 4000);
+
+    if (isPortraitPhone) {
+      // Popup no longer drifts with the scroll (fixed to viewport), so
+      // give it a scroll-past dismiss too. 60% of a viewport of scroll
+      // ≈ enough to move past the scene the brick belongs to.
+      const shownAtY = window.scrollY;
+      const dismissThreshold = window.innerHeight * 0.6;
+      popup._hideOnScroll = () => {
+        if (Math.abs(window.scrollY - shownAtY) >= dismissThreshold) hidePopup(popup);
+      };
+      window.addEventListener('scroll', popup._hideOnScroll, { passive: true });
+    }
   }
 
   if (section && bikeEl) {

@@ -936,6 +936,30 @@ body {
 .scene--04 .brick-popup { top: 12%; left: 28%; }
 .scene--05 .brick-popup { top: 18%; left: 38%; }
 
+/* Portrait iPhone: pin the brick popup to the CENTER of the viewport
+   instead of anchoring it inside the scene. Charlie: 'the text and
+   where the video will go is kind of to the left and sometimes gets
+   cut off very quickly. I'd love to anchor it in the center of the
+   page until the user swipes off of that area.' — the popup sat inside
+   the horizontally-translating .world-track, so it drifted off screen
+   as the user scrolled past the scene it belonged to. Fixed positioning
+   detaches it from the track so it stays readable. */
+@media (orientation: portrait) and (max-width: 500px) {
+  .brick-popup {
+    position: fixed;
+    top: 50% !important;
+    left: 50% !important;
+    right: auto !important;
+    max-width: min(88vw, 340px);
+    width: min(88vw, 340px);
+    transform: translate(-50%, calc(-50% + 0px)) scale(0.94);
+    z-index: 20;
+  }
+  .brick-popup.is-shown {
+    transform: translate(-50%, calc(-50% - 8px)) scale(1);
+  }
+}
+
 .popup-tag {
   font-family: var(--mono);
   font-size: 11px;

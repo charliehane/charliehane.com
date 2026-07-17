@@ -161,12 +161,18 @@
       el.style.position = 'absolute';
       el.style.top = `${Math.random() * 100}%`;
       el.style.animation = 'none';
-      el.dataset.x = (Math.random() * window.innerWidth).toString();
-      el.dataset.speed = (0.3 + Math.random() * 0.7).toString();
-      el.dataset.scale = (0.5 + Math.random() * 0.7).toString();
-      el.style.transform = `translateX(${el.dataset.x}px) scale(${el.dataset.scale})`;
+      // In-memory props (not dataset attrs) — reading dataset on every
+      // scroll event was doing parseFloat 22× per frame on iPhone.
+      el._skyX     = Math.random() * window.innerWidth;
+      el._skySpeed = 0.3 + Math.random() * 0.7;
+      el._skyScale = 0.5 + Math.random() * 0.7;
+      // translate3d(...) + will-change forces compositor promotion so
+      // the transform stays on the GPU. Fixes the iPhone stutter during
+      // fast scrolls that Charlie described as 'glitching'.
+      el.style.willChange = 'transform';
+      el.style.transform = `translate3d(${el._skyX}px, 0, 0) scale(${el._skyScale})`;
       const src = PUFFY_CLOUDS[i % PUFFY_CLOUDS.length];
-      el.innerHTML = `<img src="${src}" alt="" draggable="false">`;
+      el.innerHTML = `<img src="${src}" alt="" draggable="false" decoding="async">`;
       cloudHost.appendChild(el);
       clouds.push(el);
     }
@@ -182,10 +188,11 @@
       el.style.position = 'absolute';
       el.style.top = `${Math.random() * 100}%`;
       el.style.animation = 'none';
-      el.dataset.x = (Math.random() * window.innerWidth).toString();
-      el.dataset.speed = (1.2 + Math.random() * 1.5).toString();
-      el.dataset.scale = (0.6 + Math.random() * 0.5).toString();
-      el.style.transform = `translateX(${el.dataset.x}px) scale(${el.dataset.scale})`;
+      el._skyX     = Math.random() * window.innerWidth;
+      el._skySpeed = 1.2 + Math.random() * 1.5;
+      el._skyScale = 0.6 + Math.random() * 0.5;
+      el.style.willChange = 'transform';
+      el.style.transform = `translate3d(${el._skyX}px, 0, 0) scale(${el._skyScale})`;
       el.innerHTML = BIRD_SVG;
       birdHost.appendChild(el);
       birds.push(el);
@@ -203,29 +210,38 @@
   const CLOUD_OFF = 420;
   const BIRD_OFF  = 100;
 
+  // Scroll handler: rAF-throttled. iOS Safari fires many scroll events
+  // per frame during a fast swipe; the previous version did 22 style
+  // writes per event = ~5x the work per frame the compositor could
+  // actually render, which showed up as stuttering sprite motion.
+  // Now we coalesce all scroll events between frames into ONE update.
   let lastScroll = window.scrollY;
-  window.addEventListener('scroll', () => {
+  let skyTicking = false;
+  const stepSky = () => {
     const dy = window.scrollY - lastScroll;
     lastScroll = window.scrollY;
+    const ww = window.innerWidth;
     for (const el of clouds) {
-      let x = parseFloat(el.dataset.x);
-      x -= dy * parseFloat(el.dataset.speed);
+      el._skyX -= dy * el._skySpeed;
       // Wrap only AFTER the cloud is fully off the viewport, and teleport
       // it to a position that's also fully off the opposite edge — so it
       // SLIDES into view rather than popping in mid-screen.
-      if (x < -CLOUD_OFF)              x = window.innerWidth + 20;
-      else if (x > window.innerWidth)  x = -CLOUD_OFF + 20;
-      el.dataset.x = x.toString();
-      el.style.transform = `translateX(${x}px) scale(${el.dataset.scale})`;
+      if (el._skyX < -CLOUD_OFF)     el._skyX = ww + 20;
+      else if (el._skyX > ww)        el._skyX = -CLOUD_OFF + 20;
+      el.style.transform = `translate3d(${el._skyX}px, 0, 0) scale(${el._skyScale})`;
     }
     for (const el of birds) {
-      let x = parseFloat(el.dataset.x);
-      x -= dy * parseFloat(el.dataset.speed);
-      if (x < -BIRD_OFF)               x = window.innerWidth + 10;
-      else if (x > window.innerWidth)  x = -BIRD_OFF + 10;
-      el.dataset.x = x.toString();
-      el.style.transform = `translateX(${x}px) scale(${el.dataset.scale})`;
+      el._skyX -= dy * el._skySpeed;
+      if (el._skyX < -BIRD_OFF)      el._skyX = ww + 10;
+      else if (el._skyX > ww)        el._skyX = -BIRD_OFF + 10;
+      el.style.transform = `translate3d(${el._skyX}px, 0, 0) scale(${el._skyScale})`;
     }
+    skyTicking = false;
+  };
+  window.addEventListener('scroll', () => {
+    if (skyTicking) return;
+    skyTicking = true;
+    requestAnimationFrame(stepSky);
   }, { passive: true });
 
 

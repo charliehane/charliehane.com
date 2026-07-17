@@ -987,7 +987,7 @@ body {
 /* outer wrapper handles "drive off right" drift; inner bike handles jump */
 .world-bike-pos {
   position: absolute;
-  bottom: 15%;
+  bottom: 14%;
   left: 50%;
   width: 0;
   height: 0;
@@ -1655,7 +1655,7 @@ body {
    frame stepping switched to percentage bg-position — preproduction.js
    computes 100*frame/13 for each frame. */
 .page-producer-ride .world-bike--sprite {
-  width: clamp(198px, calc(0.471 * var(--stage-w, 100vw)), 675px);
+  width: clamp(174px, calc(0.414 * var(--stage-w, 100vw)), 594px);
   aspect-ratio: 240 / 135;
   height: auto;
   background-image: url('../../assets/bike-sprite.png');
@@ -1673,7 +1673,7 @@ body {
    figure flies off. Same size + aspect as the sprite so it sits in
    the exact same footprint. */
 .page-producer-ride .world-bike-crashed {
-  width: clamp(198px, calc(0.471 * var(--stage-w, 100vw)), 675px);
+  width: clamp(174px, calc(0.414 * var(--stage-w, 100vw)), 594px);
   aspect-ratio: 240 / 135;
   height: auto;
   background-image: url('../../assets/bike-crashed.png');

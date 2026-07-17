@@ -3297,3 +3297,35 @@ body.director-fall-locked {
 .portal-blood.is-bleeding span:nth-child(10) { height: 250px; width: 22px; }
 .portal-blood.is-bleeding span:nth-child(11) { height: 140px; width: 14px; }
 .portal-blood.is-bleeding span:nth-child(12) { height: 200px; width: 18px; }
+
+
+/* ============================================================
+   TOUCH DEVICES — kill all fake-cursor overlays
+   ------------------------------------------------------------
+   The 90s arrow (.cursor-90s, created by landing.js /
+   preproduction.js / production.js) and the dig shovel
+   (.shovel-cursor, created by postproduction-dig.js) exist so
+   mouse users see a themed cursor. On finger-driven devices
+   they either flicker to wherever a tap synthesized a fake
+   mousemove, or occlude the actual UI. Hide them, and undo the
+   two `cursor: none` blocks on .page-editor-dig so touch users
+   get the system default back on that page too.
+
+   `hover: none` matches every input that can't hover (iPhone,
+   iPad, Android). More reliable than `max-width` here — we care
+   about input mode, not screen size (an iPad with a magic
+   keyboard + trackpad still hovers). !important because both
+   the JS-created cursor elements and the .page-editor-dig
+   rules apply late in the cascade.
+   ============================================================ */
+@media (hover: none) {
+  .cursor-90s,
+  .shovel-cursor {
+    display: none !important;
+  }
+  body.page-editor-dig,
+  body.page-editor-dig a,
+  body.page-editor-dig button {
+    cursor: auto !important;
+  }
+}

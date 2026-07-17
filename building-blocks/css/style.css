@@ -946,7 +946,7 @@ body {
 @media (orientation: portrait) and (max-width: 500px) {
   .brick-popup {
     position: fixed;
-    top: 12% !important;
+    top: 8% !important;
     left: 50% !important;
     right: auto !important;
     max-width: min(88vw, 340px);
@@ -957,6 +957,14 @@ body {
   .brick-popup.is-shown {
     transform: translateX(-50%) translateY(-6px) scale(1);
   }
+  /* Nudge every ? brick up ~8pp on iPhone so they're not competing
+     with the bike + rider vertical band. Per-scene variation preserved
+     (scene-03 was 36%, everyone else 32% — same relative offsets). */
+  .scene--01 .brick { top: 24% !important; }
+  .scene--02 .brick { top: 24% !important; }
+  .scene--03 .brick { top: 28% !important; }
+  .scene--04 .brick { top: 24% !important; }
+  .scene--05 .brick { top: 24% !important; }
 }
 
 .popup-tag {

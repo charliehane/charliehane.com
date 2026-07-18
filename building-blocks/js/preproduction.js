@@ -683,7 +683,7 @@
         // on portrait iPhone (retuned so biker heads land at brick bottom
         // — see bikeJumpMobile keyframe in style.css).
         const jumpVhFrac = window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches
-          ? 0.29
+          ? 0.33
           : 0.44;
         const peakTop    = bikeRect.top - window.innerHeight * jumpVhFrac;
         const peakBottom = peakTop + bikeRect.height;

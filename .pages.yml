@@ -89,6 +89,20 @@ content:
                 label: Body paragraphs (HTML allowed — use <em>italic</em>)
                 type: string
                 list: true
+              # hotspot MUST be declared here — Pages CMS silently strips
+              # any field not in this schema when Charlie saves through the
+              # form. Without this block, the whole-viewport click target
+              # falls back to a small 20%x25% centered zone and clicking
+              # the sign gets much harder. Advanced/hidden from Charlie
+              # because he never needs to touch it.
+              - name: hotspot
+                label: Click hotspot (advanced — leave alone)
+                type: object
+                fields:
+                  - { name: x, label: X }
+                  - { name: y, label: Y }
+                  - { name: w, label: Width }
+                  - { name: h, label: Height }
 
       # ----------------------------------------------------------
       # PREPRODUCTION — ? brick films (bike ride)

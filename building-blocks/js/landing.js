@@ -143,7 +143,10 @@
   // Read signs from CONTENT once available
   const tryLoadSigns = () => {
     const c = window.__CONTENT__;
-    if (!c || !c.forest || !Array.isArray(c.forest.quotes)) return false;
+    if (!c || !c.forest) return false;
+    // quotes was previously required to be an array; Pages CMS silently
+    // strips empty arrays on save, so we normalize it here instead.
+    if (!Array.isArray(c.forest.quotes)) c.forest.quotes = [];
     // Build signs list. Bio signs (if present) go FIRST so they appear
     // earliest in the scroll. Quote signs follow.
     // Accepts either forest.bios (array of bio entries — preferred) or

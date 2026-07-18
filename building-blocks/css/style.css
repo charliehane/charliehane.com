@@ -1082,7 +1082,7 @@ body {
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #8b0000;          /* dark red — matches the section nav links */
+  color: #fa3941;          /* matches the nav link red */
   opacity: 1;
   margin: 0;
   /* Sit above the FG video (z:10) so the caption is always readable

@@ -930,19 +930,36 @@ body {
   box-shadow: 8px 8px 0 var(--ink);
   opacity: 0;
   pointer-events: none;
-  transform: translateY(0) scale(0.94);
+  /* translate(-50%, 0) centers popup horizontally on its `left` anchor
+     (which the per-scene rules below place at the brick's center X). */
+  transform: translate(-50%, 0) scale(0.94);
+  transform-origin: bottom center;
   transition: opacity 0.35s ease, transform 0.35s cubic-bezier(.3,1.5,.5,1);
   z-index: 5;
 }
 .brick-popup.is-shown {
   opacity: 1;
-  transform: translateY(-30px) scale(1);
+  transform: translate(-50%, -12px) scale(1);
 }
-.scene--01 .brick-popup { top: 18%; left: 38%; }
-.scene--02 .brick-popup { top: 10%; left: 32%; }
-.scene--03 .brick-popup { top: 22%; left: 42%; }
-.scene--04 .brick-popup { top: 12%; left: 28%; }
-.scene--05 .brick-popup { top: 18%; left: 38%; }
+/* Popup sits DIRECTLY ABOVE its ? brick — Charlie: 'on the computer
+   version the playbox on the preproduction page shows up to the left
+   of the ? box, can we have it show up directly ABOVE where the ?
+   was instead?'
+   Per-scene:
+     left   = brick.left% + brick.width/2 (68px brick → 34px offset)
+             so translate(-50%) above centers popup on brick center.
+     bottom = 100% - brick.top% + 12px gap
+             so popup's bottom edge sits ~12px above the brick top. */
+/* Left values match each brick's `left` value from lines 917-921
+   plus 44px (brick half-width, brick is 88x88), so popup center =
+   brick center after translate(-50%). Bottoms match each brick's
+   `top` value minus 100% (converting top→bottom anchor) + 12px gap
+   above the brick top edge. */
+.scene--01 .brick-popup { bottom: calc(68% + 12px); left: calc(60% + 44px); }
+.scene--02 .brick-popup { bottom: calc(68% + 12px); left: calc(56% + 44px); }
+.scene--03 .brick-popup { bottom: calc(64% + 12px); left: calc(64% + 44px); }
+.scene--04 .brick-popup { bottom: calc(68% + 12px); left: calc(52% + 44px); }
+.scene--05 .brick-popup { bottom: calc(68% + 12px); left: calc(60% + 44px); }
 
 /* Portrait iPhone: pin the brick popup HORIZONTALLY centered at the
    TOP of the viewport, so it doesn't cover the bike/scene below.

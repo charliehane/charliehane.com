@@ -680,25 +680,39 @@
         const brickR = target.getBoundingClientRect();
         if (!brickR.width) return;
         // Measure the bike's ACTUAL bounding rect at collision-check
-        // time instead of predicting the peak from bikeRect + a vh
-        // fraction. Two reasons:
-        //   1. iOS Safari's CSS `vh` sizes against the LARGE visual
-        //      viewport (URL bar hidden) while window.innerHeight
-        //      returns the SMALL one, so a JS-side vh calc is off by
-        //      tens of pixels on iPhone — that's why Charlie's bricks
-        //      were failing to break even though the jump visually
-        //      reached the brick.
-        //   2. getBoundingClientRect already accounts for the CSS
-        //      transform (translateY + rotate) at whatever animation
-        //      frame we're on, so no need to reproduce that math.
-        // COLLISION_DELAY (320ms) lands us near mid-animation (peak
-        // window is 35-55% of the 750ms bikeJump/bikeJumpMobile).
-        const bikeR = bikeEl.getBoundingClientRect();
-        const overlapV = bikeR.bottom > brickR.top && bikeR.top < brickR.bottom;
-        const overlapH = bikeR.right > brickR.left && bikeR.left < brickR.right;
-        if (overlapV && overlapH) {
+        // time — getBoundingClientRect accounts for the CSS transform
+        // (translateY + rotate) at whatever animation frame we're on,
+        // so no vh-fraction math needed (which was mismatching between
+        // JS window.innerHeight and CSS vh on iOS Safari).
+        //
+        // Sample the bike TWICE (at ~mid-peak and ~end-of-peak) and
+        // count a hit if EITHER sample overlaps. Charlie reported
+        // 'only #4 worked when i was directly underneath it' — the
+        // animation cubic-bezier(.3,-0.4,.5,1.5) overshoots and
+        // rebounds, so the exact 'peak' position varies mid-animation.
+        // Multi-sample + tolerance = forgiving hit detection without
+        // becoming a fake auto-hit.
+        const V_TOL = 20;
+        const H_TOL = 10;
+        const overlapsBrick = () => {
+          const b = bikeEl.getBoundingClientRect();
+          return b.bottom + V_TOL >= brickR.top
+              && b.top - V_TOL    <= brickR.bottom
+              && b.right + H_TOL  >= brickR.left
+              && b.left - H_TOL   <= brickR.right;
+        };
+        if (overlapsBrick()) {
           explodeBrick(target);
           showProjectPopup(target);
+        } else {
+          // Try again ~1 frame later in case the animation hadn't quite
+          // landed at peak on the first sample.
+          setTimeout(() => {
+            if (target && !target.dataset.exploded && overlapsBrick()) {
+              explodeBrick(target);
+              showProjectPopup(target);
+            }
+          }, 40);
         }
       }, COLLISION_DELAY);
 

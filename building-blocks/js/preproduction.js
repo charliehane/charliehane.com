@@ -57,11 +57,18 @@
   const ASSET_V = 'v=7';
   const isPortraitPhone = () =>
     window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches;
+  // Currently-loading BG/FG URLs — exposed so the loading-screen
+  // readiness check can fetch() them in parallel with the <video>
+  // element's own load (which primes the HTTP cache so the video's
+  // range requests during scroll-scrub hit cache instantly).
+  let bgUrl = null;
+  let fgUrls = [];   // may be multiple (webm + mov fallback pair on desktop)
   const setBgSrc = () => {
     if (!bgVideo) return;
     const url = isPortraitPhone()
       ? `${R2}/bike-scene-bg-portrait.mp4?${ASSET_V}`
       : `${R2}/bike-scene-bg.mp4?${ASSET_V}`;
+    bgUrl = url;
     if (bgVideo.currentSrc !== url) {
       [...bgVideo.querySelectorAll('source')].forEach(s => s.remove());
       bgVideo.src = url;
@@ -71,6 +78,7 @@
   const setFgSrc = () => {
     if (!fgVideo) return;
     const portrait = isPortraitPhone();
+    fgUrls = [];
     [...fgVideo.querySelectorAll('source')].forEach(s => s.remove());
     if (portrait) {
       // Portrait iPhone: alpha-hack. hevc_videotoolbox's alpha through
@@ -87,6 +95,7 @@
       mp4.src  = `assets/bike-scene-fg-portrait-alpha.mp4?${ASSET_V}`;
       mp4.type = 'video/mp4';
       fgVideo.appendChild(mp4);
+      fgUrls = [mp4.src];
       setupFgAlphaCanvas();
     } else {
       const webm = document.createElement('source');
@@ -97,6 +106,11 @@
       mov.src  = `${R2}/bike-scene-fg.mov`;
       mov.type = 'video/mp4; codecs="hvc1"';
       fgVideo.appendChild(mov);
+      // Two-source dance: browser picks whichever it can decode.
+      // We fetch the one it actually settled on (via currentSrc)
+      // rather than both, so we don't waste 20 MB on cellular
+      // downloading the wrong codec.
+      fgUrls = [];
     }
     fgVideo.removeAttribute('src');
     fgVideo.load();
@@ -286,28 +300,99 @@
   primeVideo(bgVideo, d => { bgVideoDuration = d; });
   primeVideo(fgVideo, d => { fgVideoDuration = d; });
 
-  // Hide loading overlay once BOTH videos have enough buffered data
-  // to scrub smoothly (canplaythrough fires when the browser thinks
-  // it can play through without pausing). Wired here (right after
-  // primeVideo) so both handlers are attached before any events fire.
+  // Hide loading overlay once BOTH videos are ready to scrub.
+  //
+  // Split behaviour by device:
+  //
+  //   Desktop: waits for canplaythrough (the browser thinks it can
+  //   play through without pausing). Fast — desktop scrolls smoothly
+  //   from that point already, no need to sit on a loading screen.
+  //
+  //   iPhone (portrait ≤500px): waits for the whole file to be
+  //   buffered. iOS Safari's default preload sits at ~50% and every
+  //   scrub past that point stalls to fetch — brutal on the bike
+  //   ride's back-and-forth scrubbing. We force-fill the buffer with
+  //   a "seek-walk": repeatedly find the largest gap in
+  //   video.buffered, seek into its middle, wait for the browser to
+  //   fetch that chunk, repeat. Each seek is a normal HTTP Range
+  //   request the <video> element makes (no CORS involvement, unlike
+  //   fetch() to R2 which is blocked). When no gap remains the file
+  //   is fully in the play cache and every subsequent swipe scrubs
+  //   zero-lag from the very first frame.
+  //
+  //   Guards: 30s per-video ceiling; 4-strike stall bail-out; the
+  //   loading-overlay's own 30s hard fallback backstops beyond that.
   {
-    let bgReady = false, fgReady = false;
-    const check = () => { if (bgReady && fgReady) hideLoading(); };
-    if (bgVideo) {
-      const onBg = () => { bgReady = true; check(); };
-      bgVideo.addEventListener('canplaythrough', onBg);
-      bgVideo.addEventListener('loadeddata', () => {
-        if (bgVideo.readyState >= 3) onBg();
-      });
-    } else { bgReady = true; }
-    if (fgVideo) {
-      const onFg = () => { fgReady = true; check(); };
-      fgVideo.addEventListener('canplaythrough', onFg);
-      fgVideo.addEventListener('loadeddata', () => {
-        if (fgVideo.readyState >= 3) onFg();
-      });
-    } else { fgReady = true; }
-    check();   // both may already be ready if cached
+    const desktopReady = (v) => new Promise((resolve) => {
+      if (!v) return resolve();
+      if (v.readyState >= 4) return resolve();
+      const done = () => { v.removeEventListener('canplaythrough', done); resolve(); };
+      v.addEventListener('canplaythrough', done);
+      // readyState >= 3 with duration is close enough for desktop
+      if (v.readyState >= 3) done();
+    });
+
+    const seekWalk = (v) => new Promise((resolve) => {
+      if (!v) return resolve();
+
+      const largestGap = () => {
+        if (!v.duration) return null;
+        let cursor = 0, best = null, bestSize = 0;
+        for (let i = 0; i < v.buffered.length; i++) {
+          const s = v.buffered.start(i), e = v.buffered.end(i);
+          if (s > cursor + 0.2) {
+            const size = s - cursor;
+            if (size > bestSize) { bestSize = size; best = [cursor, s]; }
+          }
+          cursor = Math.max(cursor, e);
+        }
+        if (v.duration - cursor > 0.2) {
+          const size = v.duration - cursor;
+          if (size > bestSize) { bestSize = size; best = [cursor, v.duration]; }
+        }
+        return best;
+      };
+      const totalBuffered = () => {
+        let s = 0;
+        for (let i = 0; i < v.buffered.length; i++) {
+          s += v.buffered.end(i) - v.buffered.start(i);
+        }
+        return s;
+      };
+
+      const doneAt = performance.now() + 30_000;
+      let stallCount = 0;
+      const finish = () => {
+        try { v.currentTime = 0; } catch (e) {}
+        resolve();
+      };
+      const step = async () => {
+        while (performance.now() < doneAt) {
+          const gap = largestGap();
+          if (!gap) return finish();
+          const target = Math.min(v.duration - 0.05, (gap[0] + gap[1]) / 2);
+          try { v.currentTime = target; } catch (e) { return finish(); }
+          const before = totalBuffered();
+          await new Promise(r => setTimeout(r, 400));
+          const after = totalBuffered();
+          if (after - before < 0.1) {
+            if (++stallCount > 4) return finish();
+            await new Promise(r => setTimeout(r, 400));
+          } else {
+            stallCount = 0;
+          }
+        }
+        finish();
+      };
+      if (v.readyState >= 1) step();
+      else v.addEventListener('loadedmetadata', step, { once: true });
+    });
+
+    const readinessFn = isPortraitPhone() ? seekWalk : desktopReady;
+    Promise.all([
+      readinessFn(bgVideo),
+      readinessFn(fgVideo),
+    ]).then(hideLoading);
   }
 
   // iOS Safari refuses to render scrubbed-video frames until the user

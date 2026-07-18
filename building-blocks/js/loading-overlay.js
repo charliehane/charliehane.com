@@ -110,10 +110,12 @@
   // overlay stays invisible and gets pulled from the layout entirely.
   showTimer = setTimeout(show, SHOW_DELAY);
 
-  // Hard fallback: hide after 5s regardless so a stalled network
-  // doesn't leave visitors stuck (in that case, the overlay WILL show
-  // because we're past SHOW_DELAY).
-  setTimeout(hide, 5000);
+  // Hard fallback: hide after 30s regardless so a stalled network
+  // doesn't leave visitors stuck forever. Bumped from 5s because
+  // pages that use hideWhenReady with a stricter fully-buffered check
+  // (preproduction.js) can legitimately take longer than 5s on
+  // cellular to download a 60 MB BG + 10 MB FG.
+  setTimeout(hide, 30000);
 
   window.PageLoading = {
     hide,

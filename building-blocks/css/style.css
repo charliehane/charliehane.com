@@ -293,8 +293,11 @@ body {
   margin: 0;
   cursor: pointer;
   opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.35s ease, transform 0.35s ease;
+  /* Kept translateY at 0 on both base and .is-active — Charlie:
+     'it moves slightly for some reason with the users scroll, can
+     you make sure that does not happen?' The 8px slide-up as the
+     sign activated was that movement. Only opacity fades in now. */
+  transition: opacity 0.35s ease;
   pointer-events: none;
   display: flex;
   align-items: flex-end;
@@ -305,7 +308,6 @@ body {
 }
 .sign-hotspot.is-active {
   opacity: 1;
-  transform: translateY(0);
   pointer-events: auto;
 }
 .sign-hotspot:focus { outline: none; }
@@ -557,9 +559,12 @@ body {
   transform: translateY(-2px) scale(1.02);
   animation-play-state: paused;
 }
+/* Text color stays fully opaque throughout the pulse — Charlie:
+   'make sure the RED of it never fades (the glow behind is fine
+   to fade).' Only the text-shadow (the halo/glow around the letters)
+   animates now. */
 @keyframes clickSignPulse {
   0%, 100% {
-    opacity: 0.78;
     text-shadow:
       0 0 1px rgba(255, 235, 180, 0.65),
       0 2px 4px rgba(0, 0, 0, 0.95),
@@ -567,7 +572,6 @@ body {
       0 0 6px rgba(0, 0, 0, 0.7);
   }
   50% {
-    opacity: 1;
     text-shadow:
       0 0 2px rgba(255, 235, 180, 1),
       0 2px 4px rgba(0, 0, 0, 0.95),

@@ -494,7 +494,10 @@ body {
 @media (orientation: portrait) and (max-width: 500px) {
   .sign-hotspot--bio {
     justify-content: center;
-    padding: 0 5vw 22vh 5vw;
+    /* padding-bottom 22vh → 11vh: pill sits about halfway between
+       its old position and the bottom of the viewport (Charlie's
+       ask). Still above Safari's URL bar comfortably. */
+    padding: 0 5vw 11vh 5vw;
   }
   .sign-hotspot--bio .sign-hotspot-pill {
     font-size: clamp(1.05rem, 4.5vw, 1.4rem);
@@ -555,7 +558,10 @@ body {
 }
 .sign-hotspot--bio:hover .sign-hotspot-pill {
   background: rgba(20, 14, 8, 0.55);
-  color: #fff5cd;
+  /* NO color override — Charlie: 'on the computer if I have my
+     cursor on it the red goes away, I need it to stay CONSISTENTLY
+     red.' Previously this rule set color:#fff5cd (cream) on hover
+     which flipped the text back to cream. */
   transform: translateY(-2px) scale(1.02);
   animation-play-state: paused;
 }

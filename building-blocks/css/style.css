@@ -510,7 +510,7 @@ body {
    stack keeps it legible over any video frame. */
 .sign-hotspot--bio .sign-hotspot-pill {
   background: transparent;
-  color: rgba(255, 248, 230, 1);
+  color: #fa3941;   /* matches nav + preproduction caption */
   border: 0;
   text-transform: uppercase;
   letter-spacing: 0.30em;

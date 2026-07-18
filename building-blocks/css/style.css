@@ -1099,6 +1099,87 @@ body {
   display: none;
 }
 
+/* ============================================================
+   VIDEO LIGHTBOX — YouTube plays IN the site, not in a new tab.
+   Injected by building-blocks/js/video-lightbox.js on first open;
+   this stylesheet just holds the visuals. Backdrop click / × /
+   ESC key all close.
+   ============================================================ */
+.video-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.94);
+  z-index: 99999;                   /* above everything, including nav */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.video-lightbox.is-open {
+  display: flex;
+  opacity: 1;
+}
+/* Freeze underlying page scroll while a video is playing. On <html>
+   (not body) so it survives sibling scripts that touch body.overflow
+   for their own effects. */
+html.video-lightbox-open,
+html.video-lightbox-open body {
+  overflow: hidden !important;
+}
+.video-lightbox-frame {
+  position: relative;
+  width: min(1200px, 100%);
+  aspect-ratio: 16 / 9;
+  max-height: calc(100vh - 100px);   /* leave room for the close button + breathing */
+  background: #000;
+  box-shadow: 0 0 60px rgba(250, 57, 65, 0.35);
+}
+.video-lightbox-frame iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: #000;
+}
+.video-lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+  padding: 0;
+  font-family: inherit;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.video-lightbox-close:hover,
+.video-lightbox-close:focus-visible {
+  background: #fa3941;
+  border-color: #fa3941;
+  color: #000;
+  outline: none;
+}
+@media (orientation: portrait) and (max-width: 500px) {
+  .video-lightbox { padding: 12px; }
+  .video-lightbox-close {
+    top: 10px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
 /* ----- bike rider (placeholder) ----- */
 .world-bike {
   position: absolute;

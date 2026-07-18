@@ -347,6 +347,110 @@
     update();
   }
 
+  // ============================================================
+  // BRICK PLACEMENT — auto-avoid transitional deadzones
+  // ------------------------------------------------------------
+  // The AE BG video (bike-scene-bg) has moments where scenes cross-
+  // fade / transition. A ? brick placed such that it's at viewport
+  // center DURING one of those transitions gets occluded by the
+  // transitional imagery. Charlie's rule: for no more than ~25% of
+  // its lifetime should a brick be behind transitional elements.
+  //
+  // Rule implementation: each brick's PEAK-VISIBILITY scroll
+  // progress (the moment it's exactly centered on the viewport)
+  // must land inside a SAFE ZONE — i.e. between two deadzones.
+  // We compute the required `.brick` left% within its scene from
+  // the target progress, current stage width, and scene count.
+  // This makes the placement automatic for any number of films
+  // (Charlie: 'for future films going in, I do not need to
+  // respace every brick').
+  //
+  // DEADZONES: video-time (seconds) ranges where transitions happen.
+  // Given by Charlie from the AE source. Total video = 27s.
+  // ============================================================
+  const DEADZONES = [
+    [0.0,   0.5   ],  // 0-15f: opening blackout / establishing
+    [5.8,   6.5   ],  // 5:24-6:15: mountain → fog transition
+    [11.267, 13.067],  // 11:08-13:02: fog → ocean/lighthouse
+    [17.867, 19.5  ],  // 17:26-19:15: sunset ocean → city
+  ];
+  const VIDEO_DURATION = 27;
+
+  const placeBricks = () => {
+    if (!section) return;
+    const scenes = section.querySelectorAll('.scene');
+    if (!scenes.length) return;
+    const N = scenes.length;
+    const stageEl = document.getElementById('worldStage');
+    if (!stageEl) return;
+    const stageW = stageEl.getBoundingClientRect().width;
+    if (!stageW) return;
+    // Measure EACH scene's width (last scene .scene--night is 2× wide
+    // for the crash animation, so equal-width assumptions fail).
+    const sceneWs = [...scenes].map(s => s.getBoundingClientRect().width / stageW);
+    const totalWFrac = sceneWs.reduce((a, b) => a + b, 0);
+    const maxXFrac = totalWFrac - 1;
+    // Cumulative left edge of each scene in stage-w units
+    const leftEdges = [0];
+    for (let i = 0; i < N; i++) leftEdges.push(leftEdges[i] + sceneWs[i]);
+
+    // Safe zones (in scroll progress 0-1) between the deadzones.
+    const dz = DEADZONES.map(([s, e]) => [s / VIDEO_DURATION, e / VIDEO_DURATION]);
+    const safeZones = [];
+    let prev = 0;
+    for (const [s, e] of dz) {
+      if (s > prev + 0.001) safeZones.push([prev, s]);
+      prev = e;
+    }
+    if (prev < 0.999) safeZones.push([prev, 1]);
+
+    // Assign each scene a target peak-progress inside a safe zone.
+    // If zones ≥ scenes: one per zone. Otherwise: distribute extras
+    // by zone width (proportional slotting).
+    const zoneMid = (z) => (z[0] + z[1]) / 2;
+    const targetPs = [];
+    if (safeZones.length >= N) {
+      for (let i = 0; i < N; i++) targetPs.push(zoneMid(safeZones[i]));
+    } else {
+      const widths = safeZones.map(z => z[1] - z[0]);
+      const total = widths.reduce((a, b) => a + b, 0);
+      let assigned = 0;
+      for (let z = 0; z < safeZones.length; z++) {
+        const isLast = z === safeZones.length - 1;
+        const count = isLast ? N - assigned : Math.max(1, Math.round(N * widths[z] / total));
+        for (let s = 0; s < count; s++) {
+          const t = (s + 0.5) / count;
+          targetPs.push(safeZones[z][0] + t * widths[z]);
+        }
+        assigned += count;
+      }
+    }
+
+    // For each scene, compute the brick.left% (as fraction of THAT
+    // scene's own width) so its peak visibility lands at targetP:
+    //   brick.left = (0.5 + P * maxXFrac - leftEdges[i]) / sceneWs[i]
+    // Clamped to [0, 1] — edge scenes may not be able to reach every P
+    // (first scene can't be centered from the left of the track), so
+    // clamping puts them as close as possible.
+    scenes.forEach((scene, i) => {
+      const targetP = targetPs[i] ?? 0.5;
+      let brickLeft = (0.5 + targetP * maxXFrac - leftEdges[i]) / sceneWs[i];
+      brickLeft = Math.max(0, Math.min(1, brickLeft));
+      scene.style.setProperty('--brick-left-pct', `${(brickLeft * 100).toFixed(2)}%`);
+    });
+  };
+  // Run once now (if scenes already in DOM), and again after
+  // content-loader injects them, and on resize.
+  if (document.querySelectorAll('.scene').length) placeBricks();
+  document.addEventListener('content:loaded', () => {
+    requestAnimationFrame(placeBricks);
+  });
+  let brickResizeTimer = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(brickResizeTimer);
+    brickResizeTimer = setTimeout(placeBricks, 150);
+  });
+
   let maxX = 0, scrollableH = 0;
   // crashProgress lines up with the visual contact moment in the AE
   // crash render. Nudged 4 frames earlier than 0.90 so the JS impact

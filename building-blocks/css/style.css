@@ -939,18 +939,24 @@ body {
   100% { transform: translate(130px,250px) rotate(360deg); opacity: 0; }
 }
 
-/* All bricks anchored at horizontal center of their scene, so a brick
-   is centered on the viewport exactly when its scene is — Charlie:
-   'no more than 1/4th of their lifetime on the screen can the ? boxes
-   be BEHIND these transitional elements — IE effecting the PLACEMENT
-   of the bricks throughout the scene.' Combined with the scroll-linked
-   opacity fade in preproduction.js (fade to 0 at scene-off-center)
-   this keeps bricks visible only during their scene's settled window. */
-.scene--01 .brick { top: 32%; left: 50%; }
-.scene--02 .brick { top: 32%; left: 50%; }
-.scene--03 .brick { top: 36%; left: 50%; }
-.scene--04 .brick { top: 32%; left: 50%; }
-.scene--05 .brick { top: 32%; left: 50%; }
+/* Brick horizontal position comes from --brick-left-pct, set per scene
+   by preproduction.js placeBricks(). The rule: each brick's peak
+   visibility (moment it's centered on the viewport) must land in a
+   'safe zone' of the AE BG video — the settled scene between two
+   transitions. Deadzones and safe zones are declared in
+   preproduction.js DEADZONES; the JS math accounts for scene width
+   changing between iPhone (100% of stage) and desktop (78% of stage).
+   50% fallback if JS hasn't run yet or if content isn't loaded. */
+.scene--01 .brick,
+.scene--02 .brick,
+.scene--03 .brick,
+.scene--04 .brick,
+.scene--05 .brick { left: var(--brick-left-pct, 50%); }
+.scene--01 .brick { top: 32%; }
+.scene--02 .brick { top: 32%; }
+.scene--03 .brick { top: 36%; }
+.scene--04 .brick { top: 32%; }
+.scene--05 .brick { top: 32%; }
 
 .brick-popup {
   position: absolute;
@@ -987,11 +993,19 @@ body {
    brick center after translate(-50%). Bottoms match each brick's
    `top` value minus 100% (converting top→bottom anchor) + 12px gap
    above the brick top edge. */
-.scene--01 .brick-popup { bottom: calc(68% + 12px); left: calc(60% + 44px); }
-.scene--02 .brick-popup { bottom: calc(68% + 12px); left: calc(56% + 44px); }
-.scene--03 .brick-popup { bottom: calc(64% + 12px); left: calc(64% + 44px); }
-.scene--04 .brick-popup { bottom: calc(68% + 12px); left: calc(52% + 44px); }
-.scene--05 .brick-popup { bottom: calc(68% + 12px); left: calc(60% + 44px); }
+/* Popup left tracks its brick via the same --brick-left-pct custom
+   property (set by preproduction.js placeBricks). +44px = brick's
+   half-width, so popup center = brick center after translate(-50%). */
+.scene--01 .brick-popup,
+.scene--02 .brick-popup,
+.scene--03 .brick-popup,
+.scene--04 .brick-popup,
+.scene--05 .brick-popup { left: calc(var(--brick-left-pct, 50%) + 44px); }
+.scene--01 .brick-popup { bottom: calc(68% + 12px); }
+.scene--02 .brick-popup { bottom: calc(68% + 12px); }
+.scene--03 .brick-popup { bottom: calc(64% + 12px); }
+.scene--04 .brick-popup { bottom: calc(68% + 12px); }
+.scene--05 .brick-popup { bottom: calc(68% + 12px); }
 
 /* Portrait iPhone: pin the brick popup HORIZONTALLY centered at the
    TOP of the viewport, so it doesn't cover the bike/scene below.
@@ -1697,8 +1711,12 @@ body {
    to the AE video underneath regardless of viewport aspect. */
 .page-producer-ride .scene { flex: 0 0 var(--stage-w, 100vw); }
 .page-producer-ride .scene--night { flex-basis: calc(2 * var(--stage-w, 100vw)); }
-.page-producer-ride .scene--night .brick { left: 25%; }
-.page-producer-ride .scene--night .brick-popup { left: 8%; top: 14%; }
+/* Last scene (crash) is 2× wide via flex-basis above. Let placeBricks
+   in preproduction.js compute its brick position from --brick-left-pct
+   same as other scenes — the JS math accounts for asymmetric scene
+   widths by measuring each scene's rect at compute-time. */
+.page-producer-ride .scene--night .brick { left: var(--brick-left-pct, 25%); }
+.page-producer-ride .scene--night .brick-popup { left: calc(var(--brick-left-pct, 25%) + 44px); top: 14%; bottom: auto; }
 .scene-car {
   position: absolute;
   bottom: 8%;

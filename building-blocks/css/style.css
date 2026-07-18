@@ -77,17 +77,23 @@ body {
   display: flex;
   gap: 26px;
   margin: 0; padding: 0;
-  /* isolate from the parent's mix-blend-mode (when .nav--blend is set on
-     pages like preproduction/postproduction). Lets the dark-red color
-     below render true on every page instead of getting differenced into
-     whatever the background frame happens to be. */
-  isolation: isolate;
+}
+/* Every nav link (HOME on the left + the three section links on the
+   right) is the same solid rust red at bold 700 weight. Charlie:
+   'illegible... see through or have an overlay setting on. I need
+   these to be the same BOLD font as the rest of the page and I want
+   them all to be the same shade of red as that photo i sent.'
+   Previously .nav--blend applied mix-blend-mode: difference + white
+   which washed the color into whatever frame the AE video was on,
+   and .nav-sections a used a darker #8b0000 that disappeared on
+   night-sky scenes. Now every link renders in solid var(--rust)
+   regardless of background. */
+.nav a {
+  color: var(--rust);
+  font-weight: 700;
 }
 .nav-sections a {
   position: relative;
-  color: #8b0000;        /* dark red */
-  font-weight: 700;
-  mix-blend-mode: normal;
 }
 .nav-sections a::after {
   content: "";
@@ -105,10 +111,12 @@ body {
   transform: scaleX(1);
   transform-origin: left;
 }
-/* invert nav over varying section backgrounds */
+/* .nav--blend previously did mix-blend-mode: difference — kept as a
+   no-op class so the HTML markup on preproduction/postproduction
+   still parses without CSS orphans. Charlie's ask: always legible,
+   never blended into the background. */
 .nav--blend {
-  color: #ffffff;
-  mix-blend-mode: difference;
+  /* intentionally empty — see .nav a above */
 }
 
 

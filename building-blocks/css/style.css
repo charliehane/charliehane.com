@@ -503,18 +503,16 @@ body {
     font-size: clamp(1.05rem, 4.5vw, 1.4rem);
     letter-spacing: 0.16em;
     text-align: center;
-    position: relative;   /* becomes containing block for the absolute ::after ! */
   }
-  /* iPhone: pull ! back so it reads 'CLICK THE SIGN!' (touching) and
-     absolute-position it so its width doesn't count when the parent
-     centers the text. Charlie: 'move the ! back one so its CLICK THE
-     SIGN! not CLICK THE SIGN ! - also please do not take the ! into
-     account when centering the CLICK THE SIGN text on the iphone.' */
+  /* iPhone ! sits inline (kept close to the N with a negative margin
+     that eats the letter-spacing after the N so it reads 'CLICK THE
+     SIGN!' not 'CLICK THE SIGN !'). Left inline — an earlier absolute
+     positioning at left: 100% pushed it off the right edge of the
+     narrow viewport, so it wasn't visible. Charlie: 'on the iphone
+     I need the ! back, coming in and out throughout the scene like
+     it does on the computer.' */
   .sign-hotspot--bio .sign-hotspot-pill::after {
-    position: absolute;
-    left: 100%;
-    bottom: 0.4em;         /* aligns with the text baseline (matches padding) */
-    margin-left: -0.16em;  /* eats the letter-spacing after the N */
+    margin-left: -0.16em;
   }
 }
 /* Quote hotspots sit above the bio's fullscreen click area so their
@@ -559,13 +557,15 @@ body {
 .sign-hotspot--bio:hover .sign-hotspot-pill {
   background: rgba(20, 14, 8, 0.55);
   /* Explicit color: #fa3941 to override the MORE GENERAL
-     .sign-hotspot:hover .sign-hotspot-pill rule (line 317) which
-     sets color:#1a1208 (dark brown) — that rule fires on the bio
-     hotspot too since .sign-hotspot--bio IS a .sign-hotspot.
-     Charlie: 'no matter what I do with my cursor I need this text
-     to stay CONSISTENTLY the same exact red.' */
+     .sign-hotspot:hover .sign-hotspot-pill rule that would tint it
+     dark brown. Charlie: 'no matter what I do with my cursor I need
+     this text to stay CONSISTENTLY the same exact red.' */
   color: #fa3941;
-  transform: translateY(-2px) scale(1.02);
+  /* No transform / scale on hover — Charlie: 'the CLICK THE SIGN
+     button, without user interaction, shrinks slightly and then
+     grows bigger.' That was the cursor grazing the pill area
+     triggering + releasing the old scale(1.02) transform. Removed
+     so the pill stays a consistent size regardless of hover. */
   animation-play-state: paused;
 }
 /* Text color stays fully opaque throughout the pulse — Charlie:

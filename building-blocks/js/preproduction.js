@@ -677,21 +677,25 @@
 
       setTimeout(() => {
         if (!target) return;
-        const r = target.getBoundingClientRect();
-        if (!r.width) return;
-        // Peak height matches the CSS keyframe: -44vh on desktop, -39vh
-        // on portrait iPhone (retuned so biker heads land at brick bottom
-        // — see bikeJumpMobile keyframe in style.css).
-        const jumpVhFrac = window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches
-          ? 0.33
-          : 0.44;
-        const peakTop    = bikeRect.top - window.innerHeight * jumpVhFrac;
-        const peakBottom = peakTop + bikeRect.height;
-        const peakCenter = bikeCx + aimX;
-        const peakLeft   = peakCenter - bikeRect.width / 2;
-        const peakRight  = peakCenter + bikeRect.width / 2;
-        const overlapV = peakBottom > r.top && peakTop < r.bottom;
-        const overlapH = peakRight > r.left && peakLeft < r.right;
+        const brickR = target.getBoundingClientRect();
+        if (!brickR.width) return;
+        // Measure the bike's ACTUAL bounding rect at collision-check
+        // time instead of predicting the peak from bikeRect + a vh
+        // fraction. Two reasons:
+        //   1. iOS Safari's CSS `vh` sizes against the LARGE visual
+        //      viewport (URL bar hidden) while window.innerHeight
+        //      returns the SMALL one, so a JS-side vh calc is off by
+        //      tens of pixels on iPhone — that's why Charlie's bricks
+        //      were failing to break even though the jump visually
+        //      reached the brick.
+        //   2. getBoundingClientRect already accounts for the CSS
+        //      transform (translateY + rotate) at whatever animation
+        //      frame we're on, so no need to reproduce that math.
+        // COLLISION_DELAY (320ms) lands us near mid-animation (peak
+        // window is 35-55% of the 750ms bikeJump/bikeJumpMobile).
+        const bikeR = bikeEl.getBoundingClientRect();
+        const overlapV = bikeR.bottom > brickR.top && bikeR.top < brickR.bottom;
+        const overlapH = bikeR.right > brickR.left && bikeR.left < brickR.right;
         if (overlapV && overlapH) {
           explodeBrick(target);
           showProjectPopup(target);

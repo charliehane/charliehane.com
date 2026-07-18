@@ -558,10 +558,13 @@ body {
 }
 .sign-hotspot--bio:hover .sign-hotspot-pill {
   background: rgba(20, 14, 8, 0.55);
-  /* NO color override — Charlie: 'on the computer if I have my
-     cursor on it the red goes away, I need it to stay CONSISTENTLY
-     red.' Previously this rule set color:#fff5cd (cream) on hover
-     which flipped the text back to cream. */
+  /* Explicit color: #fa3941 to override the MORE GENERAL
+     .sign-hotspot:hover .sign-hotspot-pill rule (line 317) which
+     sets color:#1a1208 (dark brown) — that rule fires on the bio
+     hotspot too since .sign-hotspot--bio IS a .sign-hotspot.
+     Charlie: 'no matter what I do with my cursor I need this text
+     to stay CONSISTENTLY the same exact red.' */
+  color: #fa3941;
   transform: translateY(-2px) scale(1.02);
   animation-play-state: paused;
 }
@@ -936,11 +939,18 @@ body {
   100% { transform: translate(130px,250px) rotate(360deg); opacity: 0; }
 }
 
-.scene--01 .brick { top: 32%; left: 60%; }
-.scene--02 .brick { top: 32%; left: 56%; }
-.scene--03 .brick { top: 36%; left: 64%; }
-.scene--04 .brick { top: 32%; left: 52%; }
-.scene--05 .brick { top: 32%; left: 60%; }
+/* All bricks anchored at horizontal center of their scene, so a brick
+   is centered on the viewport exactly when its scene is — Charlie:
+   'no more than 1/4th of their lifetime on the screen can the ? boxes
+   be BEHIND these transitional elements — IE effecting the PLACEMENT
+   of the bricks throughout the scene.' Combined with the scroll-linked
+   opacity fade in preproduction.js (fade to 0 at scene-off-center)
+   this keeps bricks visible only during their scene's settled window. */
+.scene--01 .brick { top: 32%; left: 50%; }
+.scene--02 .brick { top: 32%; left: 50%; }
+.scene--03 .brick { top: 36%; left: 50%; }
+.scene--04 .brick { top: 32%; left: 50%; }
+.scene--05 .brick { top: 32%; left: 50%; }
 
 .brick-popup {
   position: absolute;

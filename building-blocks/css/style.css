@@ -1065,6 +1065,40 @@ body {
   opacity: 0.7;
 }
 
+/* WATCH chip inside brick / work / coffin — shown ONLY when the item
+   has a youtubeUrl set in the CMS. content-loader.js won't set an
+   href attribute if the value is empty, so :not([href]) hides the
+   chip cleanly for films without a video. */
+.popup-watch,
+.work-watch,
+.coffin-watch {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 6px 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: #fa3941;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid #fa3941;
+  border-radius: 4px;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.popup-watch:hover,
+.work-watch:hover,
+.coffin-watch:hover {
+  background: #fa3941;
+  color: #000;
+}
+.popup-watch:not([href]),
+.work-watch:not([href]),
+.coffin-watch:not([href]) {
+  display: none;
+}
+
 /* ----- bike rider (placeholder) ----- */
 .world-bike {
   position: absolute;

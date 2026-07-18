@@ -1,0 +1,236 @@
+# Pages CMS configuration for charliehane.com
+# Docs: https://pagescms.org/docs/configuration/
+#
+# What this does: exposes the site's content JSON (bio text, film
+# titles, YouTube links, etc.) as a friendly form-based editor at
+# https://app.pagescms.org. Charlie signs in with GitHub, edits
+# the form, clicks Save, and Pages CMS commits the JSON change to
+# GitHub. Cloudflare Pages auto-rebuilds and the live site updates
+# in ~60 seconds.
+#
+# ONE CONTENT FILE — "Editable Text Content.json" — drives every
+# page on the site. Every field below maps to a key in that JSON.
+# Adding a new film? Click "Add" under the corresponding list.
+# Removing? Click the delete icon. Reordering? Drag.
+#
+# YouTube support: any of the films/works/coffins can carry a
+# youtubeUrl. If set, clicking the ? brick / work / coffin plays
+# the video in the popup. If blank, the popup shows just text.
+
+media:
+  input: assets
+  output: /assets
+
+content:
+  - name: content
+    label: Site content (everything)
+    path: 'Editable Text Content.json'
+    type: file
+    format: json
+
+    fields:
+      # ----------------------------------------------------------
+      # Global site chrome (footer, meta tags, etc.)
+      # ----------------------------------------------------------
+      - name: site
+        label: Site chrome
+        type: object
+        fields:
+          - { name: name,     label: Site name (nav / OG) }
+          - { name: nameLine1, label: Name — line 1 (home hero) }
+          - { name: nameLine2, label: Name — line 2 (home hero) }
+          - { name: tagline,  label: Tagline (home) }
+          - { name: blurb,    label: Home blurb }
+          - { name: email,    label: Email }
+          - { name: domain,   label: Domain }
+          - { name: year,     label: Copyright year }
+          - { name: moreSoon, label: Footer "more soon." text }
+
+      # ----------------------------------------------------------
+      # Nav labels (all 4 pages)
+      # ----------------------------------------------------------
+      - name: navLabels
+        label: Nav labels
+        type: object
+        fields:
+          - { name: home,           label: Home link text }
+          - { name: preproduction,  label: Preproduction link text }
+          - { name: production,     label: Production link text }
+          - { name: postproduction, label: Postproduction link text }
+
+      # ----------------------------------------------------------
+      # FOREST / HOME — bio signs
+      # ----------------------------------------------------------
+      - name: forest
+        label: Home — Forest cinema bio signs
+        type: object
+        fields:
+          - name: videoSrc
+            label: Home background video paths
+            type: object
+            fields:
+              - { name: desktop,  label: Desktop video path (assets/…) }
+              - { name: portrait, label: Portrait/mobile video path (assets/…) }
+
+          - name: bios
+            label: Bio signs (3 parts, ordered top-to-bottom in scroll)
+            type: object
+            list:
+              min: 1
+              max: 10
+            fields:
+              - { name: kind,        label: Kind, default: bio, hidden: true }
+              - { name: role,        label: Internal label (Bio Pt. 1, etc.) }
+              - { name: title,       label: Modal title (usually your name) }
+              - { name: scrollIn,    label: Scroll fade-IN (0–1), type: number }
+              - { name: scrollOut,   label: Scroll fade-OUT (0–1), type: number }
+              - { name: labelShort,  label: CTA text ("click the sign") }
+              - name: paragraphs
+                label: Body paragraphs (HTML allowed — use <em>italic</em>)
+                type: string
+                list: true
+
+      # ----------------------------------------------------------
+      # PREPRODUCTION — ? brick films (bike ride)
+      # ----------------------------------------------------------
+      - name: preproduction
+        label: Preproduction (bike ride ? bricks)
+        type: object
+        fields:
+          - { name: pageTitle,  label: Browser tab title }
+          - { name: title,      label: Page headline (e.g. "Preproduction.") }
+          - { name: eyebrow,    label: Section label (e.g. "section i") }
+          - { name: lede,       label: Lede paragraph (under headline) }
+          - { name: caption,    label: Bottom caption ("swipe to ride · click to jump") }
+
+          - name: films
+            label: Films — bike ride ? bricks
+            type: object
+            list:
+              min: 1
+              max: 20
+            fields:
+              - { name: scene,       label: Scene name (Forest, Mountains, Coast, City…) }
+              - { name: atmosphere,  label: Scene mood notes (INTERNAL — not shown on site) }
+              - { name: sceneNum,    label: Scene label (e.g. "01 / forest") }
+              - { name: tag,         label: Popup tag (e.g. "FILM 01") }
+              - { name: title,       label: Film title (shown in popup) }
+              - name: youtubeUrl
+                label: YouTube video URL (optional — popup embeds it if set)
+                type: string
+                required: false
+                description: 'Paste any YouTube URL — https://youtu.be/… or https://youtube.com/watch?v=… — the site auto-embeds.'
+              - { name: meta,        label: Meta line (year / role / credit) }
+
+      # ----------------------------------------------------------
+      # PRODUCTION — director films
+      # ----------------------------------------------------------
+      - name: production
+        label: Production (director works)
+        type: object
+        fields:
+          - { name: pageTitle,  label: Browser tab title }
+          - { name: title,      label: Page headline }
+          - { name: eyebrow,    label: Section label }
+          - { name: lede,       label: Lede paragraph }
+
+          - name: works
+            label: Works (director credits)
+            type: object
+            list:
+              min: 1
+              max: 30
+            fields:
+              - { name: tag,    label: Tag (e.g. "001") }
+              - { name: title,  label: Film title }
+              - { name: credit, label: Credit / role }
+              - { name: blurb,  label: One-line description }
+              - name: youtubeUrl
+                label: YouTube video URL (optional)
+                type: string
+                required: false
+                description: 'Paste any YouTube URL — the site auto-embeds.'
+
+      # ----------------------------------------------------------
+      # POSTPRODUCTION — coffins
+      # ----------------------------------------------------------
+      - name: postproduction
+        label: Postproduction (editor works — coffins)
+        type: object
+        fields:
+          - { name: pageTitle,  label: Browser tab title }
+          - { name: title,      label: Page headline }
+          - { name: eyebrow,    label: Section label }
+          - { name: lede,       label: Lede paragraph }
+
+          - name: coffins
+            label: Coffins (each coffin = one edited film)
+            type: object
+            list:
+              min: 1
+              max: 30
+            fields:
+              - { name: tag,    label: Tag (e.g. "001") }
+              - { name: title,  label: Film title }
+              - { name: credit, label: Credit / role }
+              - name: youtubeUrl
+                label: YouTube video URL (optional)
+                type: string
+                required: false
+                description: 'Paste any YouTube URL — the site auto-embeds.'
+              - name: position
+                label: Coffin position (advanced — leave alone unless repositioning)
+                type: object
+                fields:
+                  - { name: top,   label: Top (%) }
+                  - { name: left,  label: Left (%) — leave blank if using Right }
+                  - { name: right, label: Right (%) — leave blank if using Left }
+                  - { name: rot,   label: Rotation (e.g. -8deg) }
+
+          - name: skeletonCoffinPosition
+            label: Skeleton coffin position (advanced — pirate easter egg)
+            type: object
+            fields:
+              - { name: top,   label: Top (%) }
+              - { name: right, label: Right (%) }
+              - { name: rot,   label: Rotation }
+
+      # ----------------------------------------------------------
+      # MENUS — inter-page navigation blocks
+      # ----------------------------------------------------------
+      - name: menus
+        label: Menus (inter-page links)
+        type: object
+        fields:
+          - name: home
+            label: Home page menu
+            type: object
+            list: true
+            fields:
+              - { name: label, label: Label }
+              - { name: href,  label: Link (page.html or full URL) }
+              - { name: num,   label: Number (01, 02, ↺, etc.) }
+          - name: afterPreproduction
+            label: After Preproduction menu
+            type: object
+            list: true
+            fields:
+              - { name: label, label: Label }
+              - { name: href,  label: Link }
+              - { name: num,   label: Number }
+          - name: afterProduction
+            label: After Production menu
+            type: object
+            list: true
+            fields:
+              - { name: label, label: Label }
+              - { name: href,  label: Link }
+              - { name: num,   label: Number }
+          - name: hellMenu
+            label: Hell menu (bottom of postproduction)
+            type: object
+            list: true
+            fields:
+              - { name: label, label: Label }
+              - { name: href,  label: Link }
+              - { name: num,   label: Number }

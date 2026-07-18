@@ -79,6 +79,7 @@
         "sceneNum": "01 / forest",
         "tag": "FILM 01",
         "title": "UPLOADS IN PROGRESS - Preproduction #1",
+        "youtubeUrl": "",
         "meta": ""
       },
       {
@@ -87,6 +88,7 @@
         "sceneNum": "02 / mountains",
         "tag": "FILM 02",
         "title": "UPLOADS IN PROGRESS - Preproduction #2",
+        "youtubeUrl": "",
         "meta": ""
       },
       {
@@ -95,6 +97,7 @@
         "sceneNum": "03 / coast",
         "tag": "FILM 03",
         "title": "UPLOADS IN PROGRESS - Preproduction #3",
+        "youtubeUrl": "",
         "meta": ""
       },
       {
@@ -103,6 +106,7 @@
         "sceneNum": "04 / city",
         "tag": "FILM 04",
         "title": "UPLOADS IN PROGRESS - Preproduction #4",
+        "youtubeUrl": "",
         "meta": ""
       }
     ]
@@ -118,25 +122,29 @@
         "tag": "001",
         "title": "UPLOADS IN PROGRESS - Production #1",
         "credit": "",
-        "blurb": ""
+        "blurb": "",
+        "youtubeUrl": ""
       },
       {
         "tag": "002",
         "title": "UPLOADS IN PROGRESS - Production #2",
         "credit": "",
-        "blurb": ""
+        "blurb": "",
+        "youtubeUrl": ""
       },
       {
         "tag": "003",
         "title": "UPLOADS IN PROGRESS - Production #3",
         "credit": "",
-        "blurb": ""
+        "blurb": "",
+        "youtubeUrl": ""
       },
       {
         "tag": "004",
         "title": "UPLOADS IN PROGRESS - Production #4",
         "credit": "",
-        "blurb": ""
+        "blurb": "",
+        "youtubeUrl": ""
       }
     ]
   },
@@ -151,24 +159,28 @@
         "tag": "001",
         "title": "UPLOADS IN PROGRESS - Postproduction #1",
         "credit": "",
+        "youtubeUrl": "",
         "position": { "top": "6%", "left": "6%", "rot": "-8deg" }
       },
       {
         "tag": "002",
         "title": "UPLOADS IN PROGRESS - Postproduction #2",
         "credit": "",
+        "youtubeUrl": "",
         "position": { "top": "24%", "right": "6%", "rot": "12deg" }
       },
       {
         "tag": "003",
         "title": "UPLOADS IN PROGRESS - Postproduction #3",
         "credit": "",
+        "youtubeUrl": "",
         "position": { "top": "44%", "left": "30%", "rot": "4deg" }
       },
       {
         "tag": "004",
         "title": "UPLOADS IN PROGRESS - Postproduction #4",
         "credit": "",
+        "youtubeUrl": "",
         "position": { "top": "78%", "left": "12%", "rot": "-14deg" }
       }
     ],

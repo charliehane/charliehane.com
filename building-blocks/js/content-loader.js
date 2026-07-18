@@ -39,7 +39,11 @@
       const target = a.name.slice('data-attr-'.length);
       const fieldName = a.value;
       const v = item[fieldName];
-      if (v != null) el.setAttribute(target, v);
+      // Treat empty strings as absent — otherwise <a href=""> becomes a
+      // clickable dead link (jumps to the current page). Applies to
+      // youtubeUrl: films/works/coffins without a URL should not render
+      // a visible WATCH chip; the CSS hides anchors that have no href.
+      if (v != null && v !== '') el.setAttribute(target, v);
     }
   };
 

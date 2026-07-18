@@ -966,26 +966,6 @@ body {
   .scene--03 .brick,
   .scene--04 .brick,
   .scene--05 .brick { top: 28% !important; }
-  /* Bike-jump peak retuned so the biker heads (top of the sprite)
-     land EXACTLY at the brick bottom edge — Charlie: 'right now
-     the bikers are kinda going through the box.'
-
-     Measured in a 375x812 preview (portrait iPhone, stage-h = 666.67px
-     b/c the 9:16 stage doesn't fill the 812vh viewport):
-       bike top at rest    = 551.9px from top of viewport
-       brick bottom (28%)  = 321.2px from top
-       travel needed       = 230.7px = 28.4% of 812vh → -28vh
-     The old -44vh overshot the brick by ~86px which is what Charlie
-     was seeing as bikers 'going through the box'. */
-  .page-producer-ride .world-bike.is-jumping {
-    animation: bikeJumpMobile 0.75s cubic-bezier(.3,-0.4,.5,1.5) 1;
-  }
-  @keyframes bikeJumpMobile {
-    0%   { transform: translateX(-50%) translateY(0)     rotate(0deg); }
-    35%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(-29vh) rotate(-10deg); }
-    55%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(-29vh) rotate(10deg); }
-    100% { transform: translateX(-50%) translateY(0)     rotate(0deg); }
-  }
 }
 
 .popup-tag {
@@ -1745,13 +1725,11 @@ body {
 .page-producer-ride .world-bike-pos.is-crashed .world-bike--sprite { opacity: 0; }
 .page-producer-ride .world-bike-pos.is-crashed .world-bike-crashed { opacity: 1; }
 
-/* Bike size + position (iPhone-only). Charlie: 'all of this scaling
-   stuff is messing with the horizontal version of this video.' Desktop
-   base rules above stay at the original 70-240px width @ bottom:8%.
-   These portrait overrides land AFTER the base rules so they win in
-   source order (both selectors have equal specificity):
-     - width clamp ~2.7x bigger (191-653 vs desktop 70-240)
-     - bottom 12% (vs 8%) so the bike sits higher on the 9:16 stage */
+/* Bike size + position + jump (iPhone-only). Placed AFTER all the
+   .page-producer-ride base rules above so they win in source order
+   (equal specificity). Charlie: 'all of this scaling stuff is messing
+   with the horizontal version of this video' — desktop keeps original
+   width clamp 70-240px @ bottom:8% @ -44vh peak. */
 @media (orientation: portrait) and (max-width: 500px) {
   .page-producer-ride .world-bike--sprite,
   .page-producer-ride .world-bike-crashed {
@@ -1759,6 +1737,21 @@ body {
   }
   .world-bike-pos {
     bottom: 12%;
+  }
+  /* Bike-jump peak retuned so the biker heads (top of the sprite)
+     land EXACTLY at the brick bottom edge — Charlie: 'the bikers
+     are kinda going through the box' / 'bike heads arent reaching
+     the block.' Measured in a 375x812 preview: bike top at rest =
+     551.9px, brick bottom (28%) = 317.3px → travel 234.6px = 28.9%
+     of 812vh → -29vh. Old -44vh overshot into the brick middle. */
+  .page-producer-ride .world-bike.is-jumping {
+    animation: bikeJumpMobile 0.75s cubic-bezier(.3,-0.4,.5,1.5) 1;
+  }
+  @keyframes bikeJumpMobile {
+    0%   { transform: translateX(-50%) translateY(0)     rotate(0deg); }
+    35%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(-29vh) rotate(-10deg); }
+    55%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(-29vh) rotate(10deg); }
+    100% { transform: translateX(-50%) translateY(0)     rotate(0deg); }
   }
 }
 

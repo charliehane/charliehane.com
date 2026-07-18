@@ -65,30 +65,18 @@
     "caption": "swipe to ride · click to jump",
     "films": [
       {
-        "scene": "Forest",
-        "atmosphere": "night — deep green, dark canopy, moonlight",
-        "sceneNum": "01 / forest",
         "tag": "FILM 01",
         "title": "UPLOADS IN PROGRESS - Preproduction #1"
       },
       {
-        "scene": "Mountains",
-        "atmosphere": "blue hour — cold cobalt sky, silhouetted peaks",
-        "sceneNum": "02 / mountains",
         "tag": "FILM 02",
         "title": "UPLOADS IN PROGRESS - Preproduction #2"
       },
       {
-        "scene": "Coast",
-        "atmosphere": "sunrise — orange and pink, low sun glinting on water",
-        "sceneNum": "03 / coast",
         "tag": "FILM 03",
         "title": "UPLOADS IN PROGRESS - Preproduction #3"
       },
       {
-        "scene": "City",
-        "atmosphere": "midday — urban bright, hard light, traffic + glass",
-        "sceneNum": "04 / city",
         "tag": "FILM 04",
         "title": "UPLOADS IN PROGRESS - Preproduction #4"
       }

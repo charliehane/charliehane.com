@@ -110,13 +110,10 @@ content:
               min: 1
               max: 20
             fields:
-              - { name: scene,       label: Scene name (Forest, Mountains, Coast, City…) }
-              - { name: atmosphere,  label: Scene mood notes (INTERNAL — not shown on site) }
-              - { name: sceneNum,    label: Scene label (e.g. "01 / forest") }
               - { name: tag,         label: Popup tag (e.g. "FILM 01") }
               - { name: title,       label: Film title (shown in popup) }
               - name: youtubeUrl
-                label: YouTube video URL (optional — popup embeds it if set)
+                label: YouTube video URL (optional — click opens video in the site)
                 type: string
                 required: false
                 description: 'Paste any YouTube URL — https://youtu.be/… or https://youtube.com/watch?v=… — the site auto-embeds.'

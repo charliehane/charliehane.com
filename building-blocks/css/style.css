@@ -89,7 +89,7 @@ body {
    night-sky scenes. Now every link renders in solid var(--rust)
    regardless of background. */
 .nav a {
-  color: #D64147;   /* Charlie-specified nav red — brighter/pinker than the site's rust */
+  color: #fa3941;   /* Charlie-specified nav red */
   font-weight: 700;
 }
 .nav-sections a {

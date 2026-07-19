@@ -1240,7 +1240,7 @@ html.video-lightbox-open body {
 }
 .world-caption {
   position: absolute;
-  bottom: 56px;
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
   font-family: var(--mono);

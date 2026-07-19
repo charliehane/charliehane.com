@@ -1213,6 +1213,21 @@ body {
    cursors) — the (hover: none) block later in the file drops
    these back to no expansion. */
 @media (hover: hover) {
+  /* Hit-radius expansion: an invisible ::before that extends 22px
+     around every clickable element, so anywhere the custom cursor
+     sprite visually overlaps the target, the click still lands on
+     it. The pseudo-element is transparent (content: '' with no bg)
+     and inherits pointer-events: auto, so clicks in the expansion
+     zone bubble up to the parent element's own click handler.
+
+     DO NOT override the parent's `position` here — .brick is
+     originally position: absolute with per-scene left/top values;
+     forcing it to relative slid bricks off their intended spot
+     (Charlie: 'Preproduction doesnt have the ? anymore'). The
+     other targets (.popup-video, .work-thumb, .coffin-watch) get
+     position: relative because they're anchors with no
+     positioning of their own — position: relative is needed for
+     the ::before's inset: -22px to anchor to them. */
   .brick::before,
   .popup-video::before,
   .work-thumb.has-video::before,
@@ -1220,9 +1235,7 @@ body {
     content: '';
     position: absolute;
     inset: -22px;
-    z-index: -1;
   }
-  .brick,
   .popup-video,
   .work-thumb,
   .coffin-watch {

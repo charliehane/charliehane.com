@@ -352,8 +352,8 @@
   // ============================================================
   const undergroundHost = document.getElementById('digUnderground');
   const digWorldHost    = document.getElementById('digWorld');
-  const COFFIN_W_PX     = 200;   // matches .coffin { width: 200px }
-  const COFFIN_H_PX     = 320;   // matches .coffin { height: 320px }
+  const COFFIN_W_PX     = 400;   // matches .coffin { width: 400px }
+  const COFFIN_H_PX     = 640;   // matches .coffin { height: 640px }
   const COFFIN_PAD_PX   = 40;    // min gap between any two coffins
   const COVERAGE_MAX    = 0.25;  // trigger for extending underground
   const PLACE_ATTEMPTS  = 60;    // retries per unplaced coffin

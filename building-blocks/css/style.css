@@ -1240,6 +1240,7 @@ body {
   .brick::before,
   .popup-video::before,
   .work-thumb.has-video::before,
+  .coffin-video::before,
   .coffin-watch::before {
     content: '';
     position: absolute;
@@ -1251,6 +1252,7 @@ body {
   .nav a,
   .popup-video,
   .work-thumb,
+  .coffin-video,
   .coffin-watch {
     position: relative;
   }
@@ -2776,8 +2778,9 @@ body.director-fall-locked {
 /* hexagonal coffins, top-down view */
 .coffin {
   position: absolute;
-  width: 200px;
-  height: 320px;
+  /* Charlie: 'DOUBLE the size of each coffin'. Was 200x320. */
+  width: 400px;
+  height: 640px;
   transform: rotate(var(--rot, 0deg));
   z-index: 5;
 }
@@ -2815,26 +2818,62 @@ body.director-fall-locked {
   top: auto;
   bottom: 14%;
 }
+/* Text sizes scaled up ~1.6x to match the doubled coffin footprint
+   — the interior is roughly 4x the pixel area but text feels balanced
+   somewhere between 1x and 2x. */
 .coffin-tag {
-  font-size: 10px;
+  font-size: 15px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: #d4a878;
-  margin: 0 0 6px;
+  margin: 0 0 10px;
   font-weight: 700;
 }
 .coffin-title {
   font-family: var(--serif);
   font-weight: 380;
   font-style: italic;
-  font-size: 13px;
-  line-height: 1.1;
-  margin: 0 0 6px;
+  font-size: 20px;
+  line-height: 1.15;
+  margin: 0 0 10px;
   color: #f3ebe0;
   letter-spacing: -0.01em;
 }
+
+/* Video thumbnail inside the coffin — sits above the 001 tag, tucked
+   in the velvet head-panel. Aspect-locked 16:9, background painted by
+   video-lightbox.js. Play button overlay via CSS (shared class with
+   the popup + work variants). Rotates with the coffin because it's a
+   child of .coffin which owns the rotate() transform. */
+.coffin-video {
+  display: block;
+  width: 88%;
+  aspect-ratio: 16 / 9;
+  margin: 0 auto 14px;
+  background: #000 no-repeat center / cover;
+  border: 2px solid #000;
+  border-radius: 2px;
+  position: relative;
+  text-decoration: none;
+  cursor: none;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.coffin-video:not([href]) { display: none; }
+.coffin-video:hover { transform: scale(1.03); box-shadow: 0 0 18px rgba(250,57,65,0.5); }
+.coffin-video[href] .video-play-btn { display: block; }
+/* Play button sized down for the compact coffin thumbnail. */
+.coffin-video .video-play-btn::before {
+  width: 44px; height: 44px;
+  margin: -22px 0 0 -22px;
+  border-width: 1.5px;
+}
+.coffin-video .video-play-btn::after {
+  margin: -9px 0 0 -5px;
+  border-width: 9px 0 9px 14px;
+}
 .coffin-credit {
-  font-size: 9.5px;
+  font-size: 14px;
   margin: 0;
   color: rgba(243,235,224,0.65);
   letter-spacing: 0.04em;

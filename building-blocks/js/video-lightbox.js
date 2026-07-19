@@ -85,7 +85,7 @@
   // fine with content-loader's template render since the elements
   // exist by the time any user click happens.
   document.addEventListener('click', (e) => {
-    const link = e.target.closest('.popup-video, .work-thumb, .coffin-watch, .popup-watch, .work-watch');
+    const link = e.target.closest('.popup-video, .work-thumb, .coffin-video, .coffin-watch, .popup-watch, .work-watch');
     if (!link) return;
     // Respect modifier-clicks — let ⌘-click open in a new tab.
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -106,7 +106,7 @@
   // Elements without a href just stay as their static placeholder
   // (colored gradient for .work-thumb, hidden for .popup-video).
   const paintThumbs = () => {
-    document.querySelectorAll('.popup-video, .work-thumb').forEach((el) => {
+    document.querySelectorAll('.popup-video, .work-thumb, .coffin-video').forEach((el) => {
       const url = el.getAttribute('href');
       if (!url) return;
       const id = extractId(url);

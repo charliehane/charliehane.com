@@ -94,11 +94,17 @@
                on the page at once. -->
           <img class="coffin-shape" src="assets/coffin.png" alt="" draggable="false">
           <div class="coffin-content">
+            <!-- Video thumbnail sits ABOVE the tag inside the velvet
+                 lining. video-lightbox.js paints the ytimg background
+                 after JSON loads; play button overlay via CSS. Hidden
+                 if no youtubeUrl. Rotates with the coffin because
+                 .coffin's rotate() transform cascades to all children. -->
+            <a class="coffin-video"  data-attr-href="youtubeUrl" aria-label="Play video">
+              <span class="video-play-btn" aria-hidden="true"></span>
+            </a>
             <p class="coffin-tag"    data-field="tag"></p>
             <h3 class="coffin-title" data-field="title"></h3>
             <p class="coffin-credit" data-field="credit"></p>
-            <a class="coffin-watch"  data-attr-href="youtubeUrl"
-               target="_blank" rel="noopener noreferrer">▶ WATCH ↗</a>
           </div>
         </article>
       </template>

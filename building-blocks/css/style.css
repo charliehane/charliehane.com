@@ -978,6 +978,11 @@ body {
 .brick-popup.is-shown {
   opacity: 1;
   transform: translate(-50%, -12px) scale(1);
+  /* Restore pointer-events on the shown popup so its interactive
+     children (the WATCH chip) can be clicked. The base rule sets
+     pointer-events: none so a hidden popup can't intercept clicks
+     meant for the ? brick below it. */
+  pointer-events: auto;
 }
 /* Popup sits DIRECTLY ABOVE its ? brick — Charlie: 'on the computer
    version the playbox on the preproduction page shows up to the left

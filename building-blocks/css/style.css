@@ -828,7 +828,15 @@ body {
 .world-track-clip {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  /* overflow-x: clip hides the horizontally off-screen scenes as
+     .world-track translates through them. Unlike overflow-x: hidden,
+     `clip` does NOT force overflow-y to `auto`/`scroll` — so the tall
+     brick popup (title + description + thumbnail) can extend UPWARD
+     past the top of the scene without being clipped. Before this, the
+     full `overflow: hidden` clipped the top of the popup and Charlie
+     couldn't see the tag/title. */
+  overflow-x: clip;
+  overflow-y: visible;
   z-index: 1;
 }
 /* Lives inside .world-pin now, so the old sticky + negative-margin trick
@@ -2960,11 +2968,11 @@ body.director-fall-locked {
   letter-spacing: 0.04em;
   font-family: var(--mono);
 }
-/* Trapezoidal description panel — sits between title and credit
-   inside the coffin. clip-path polygon narrows toward the bottom to
-   hug the coffin's foot-taper (Charlie: 'slight trapezoidal
-   description box'). Rotates with the coffin because it's a child
-   of .coffin which owns the rotate() transform. */
+/* Description sits between title and credit inside the coffin.
+   Charlie: 'there is a pill/a background highlight for the text
+   that is slightly grey, I would love to remove that without effect
+   the text or the rest of the image at all.' → dropped the
+   background + clip-path so only the text renders, unobstructed. */
 .coffin-description {
   font-family: var(--serif);
   font-size: 13px;
@@ -2972,10 +2980,6 @@ body.director-fall-locked {
   margin: 0;
   padding: 12px 14px 14px;
   color: rgba(243,235,224,0.9);
-  background: rgba(0, 0, 0, 0.35);
-  /* wider at top, ~10% inset each side at bottom → gentle trapezoid */
-  clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
-  -webkit-clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
   text-align: center;
 }
 .coffin-description:empty { display: none; }

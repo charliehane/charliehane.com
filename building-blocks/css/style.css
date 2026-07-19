@@ -2878,12 +2878,12 @@ body.director-fall-locked {
        coffin rotates up to ~14deg, which pushes its visual
        footprint ~80px past its flex-layout box on both ends. */
     gap: 180px;
-    /* padding-bottom generous (260px) so the rotated LAST coffin's
-       bounding box has room. Without this, the coffin's rotation
-       overhead pushed past the dig-underground's edge and the coffin
-       bottom got clipped against the page background. Charlie: 'SOME
-       coffins on the bottum are still being cutoff slightly'. */
-    padding: 100px 0 260px;
+    /* padding-bottom: 40vh guarantees a full 40%-viewport-height
+       strip of dirt below the last coffin so it never clips into the
+       next section (Charlie: 'there needs to be a rule about spacing
+       of dirt before the end of the section'). Scales with viewport
+       so the dirt tail stays proportional across screen sizes. */
+    padding: 100px 0 40vh;
   }
   .dig-underground .coffin {
     position: relative !important;

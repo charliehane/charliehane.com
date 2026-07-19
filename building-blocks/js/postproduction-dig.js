@@ -558,12 +558,15 @@
       'assets/scenery/cloud-2.png',
       'assets/scenery/cloud-3.png',
     ];
+    // Cloud top-positions shifted up ~4% (Charlie: 'move the clouds up
+     // slightly') so they don't collide with the sky text/lede pushed
+     // down below.
     const conf = [
-      { top: '4%',  dur: 95,  delay: 0 },
-      { top: '11%', dur: 125, delay: -30 },
-      { top: '6%',  dur: 80,  delay: -65 },
-      { top: '16%', dur: 110, delay: -10 },
-      { top: '20%', dur: 140, delay: -88 },
+      { top: '0%',  dur: 95,  delay: 0 },
+      { top: '7%',  dur: 125, delay: -30 },
+      { top: '2%',  dur: 80,  delay: -65 },
+      { top: '12%', dur: 110, delay: -10 },
+      { top: '16%', dur: 140, delay: -88 },
     ];
     for (let i = 0; i < conf.length; i++) {
       const c = conf[i];

@@ -2536,9 +2536,12 @@ body.director-fall-locked {
 }
 .dig-sky-text {
   /* fixed in viewport — stays put as the user scrolls; the dirt
-     (z-index higher) rises up and visually covers it */
+     (z-index higher) rises up and visually covers it. Nudged down
+     from top: 14vh to top: 20vh (Charlie: 'move post production ad
+     the "an editor" text down JUST A HAIR') so title + lede clear the
+     raised clouds and sit further into the visible sky. */
   position: fixed;
-  top: 14vh;
+  top: 20vh;
   left: 0; right: 0;
   max-width: 100vw;
   text-align: center;
@@ -2580,7 +2583,11 @@ body.director-fall-locked {
   line-height: 1.4;
   max-width: 36ch;
   margin: 0 auto;
-  color: rgba(26,22,20,0.75);
+  /* White so the lede stays legible against the green hills/grass
+     that sit right behind it (Charlie: '"an editor..." text is not
+     really visible... make the "an editor" text white'). */
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
 }
 
 .dig-clouds {

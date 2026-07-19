@@ -2797,10 +2797,21 @@ body.director-fall-locked {
 @media (orientation: portrait) and (max-width: 500px) {
   /* Sized so the rotated bounding box (up to +/-14deg tilt on the
      pinned coffins) NEVER overlaps its neighbor at the JSON-pinned
-     top/left/right percentages. 200x320 was the OLD desktop size —
-     that layout fit fine, so it fits here too even after Charlie's
-     doubling on desktop. */
-  .coffin { width: 200px !important; height: 320px !important; }
+     top/left/right percentages. 230x368 = OLD desktop 200x320 bumped
+     15% per Charlie ('make the coffins just 15% larger, and still be
+     sure to have them never come close to overlapping'). */
+  .coffin { width: 230px !important; height: 368px !important; }
+  /* Play button also smaller on the coffin thumbnail (Charlie: 'make
+     the play button on top of the thumbnail smaller'). Scales down
+     from 44px → 32px circle so it doesn't dominate the little inset. */
+  .coffin-video .video-play-btn::before {
+    width: 32px !important; height: 32px !important;
+    margin: -16px 0 0 -16px !important;
+  }
+  .coffin-video .video-play-btn::after {
+    margin: -7px 0 0 -3px !important;
+    border-width: 7px 0 7px 10px !important;
+  }
 }
 .coffin-shape {
   width: 100%;

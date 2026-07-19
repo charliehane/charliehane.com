@@ -800,7 +800,7 @@ body {
      the last biome... these elements must be moved vertically the
      EXACT SAME amount.' Shared --world-video-y-offset custom
      property on both layers so any future tweak stays in lockstep. */
-  --world-video-y-offset: -2.5vh;
+  --world-video-y-offset: -3.75vh;
   transform: translateY(var(--world-video-y-offset));
   z-index: 0;
   pointer-events: none;
@@ -819,7 +819,7 @@ body {
   /* Must match the BG's `contain` so the two layers scale identically. */
   object-fit: contain;
   /* Same vertical offset as BG so both layers stay in lockstep. */
-  --world-video-y-offset: -2.5vh;
+  --world-video-y-offset: -3.75vh;
   transform: translateY(var(--world-video-y-offset));
   z-index: 10;
   pointer-events: none;
@@ -2827,18 +2827,55 @@ body.director-fall-locked {
 /* hexagonal coffins, top-down view */
 .coffin {
   position: absolute;
-  /* Charlie: 'DOUBLE the size of each coffin' (400x640 on wide
-     screens) AND 'when I resize my window to be smaller, the coffins
-     do end up overlapping. This cannot happen, there needs to be a
-     rule that makes this impossible.' Viewport-relative sizing scales
-     the coffin down as the window narrows, so the pinned percentage
-     positions never overrun each other. At 1600px viewport: 400x640
-     (full size). At 1000px: 280x448. At 600px: 168x268. The iPhone
-     @media block below then takes over on true phone widths. */
-  width: min(400px, 28vw);
-  height: min(640px, 44.8vw);
+  /* Charlie: 'DOUBLE the size of each coffin'. Was 200x320.
+     Fixed size at every desktop width — the narrow-window
+     @media rule below the pinned per-scene positions instead
+     switches the layout to a full vertical stack (like iPhone)
+     so text stays readable and coffins never overlap. */
+  width: 400px;
+  height: 640px;
   transform: rotate(var(--rot, 0deg));
   z-index: 5;
+}
+
+/* Narrow-window fallback: below ~900px viewport width, the absolute-
+   positioned pinned layout can no longer fit the fixed-size coffins
+   side-by-side. Switch to a vertical flex stack (coffin → dirt →
+   coffin → dirt → …) — Charlie: 'Until it becomes so vertical that
+   it is a lot like the iphone coffins, a coffin, some dirt space,
+   and then another coffin directly below it.'
+
+   Only applies to landscape/tablet narrow widths; the true iPhone
+   media query (portrait ≤500px) already has its own coffin sizing
+   that fits its own pinned layout. */
+@media (max-width: 900px) and (min-width: 501px) {
+  .dig-underground {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* 180px gap accommodates the rotated bounding boxes — each
+       coffin rotates up to ±14deg, which pushes its visual footprint
+       ~80px past its flex-layout box on both ends. 80px flex gap +
+       ~80px rotation overhead ×2 → 180px keeps every coffin visually
+       separated with a real dirt strip between. */
+    gap: 180px;
+    padding: 100px 0 160px;
+    /* Was overflow: hidden; that would clip a tall stack of coffins.
+       Overflow visible so the stack can extend downward as needed. */
+    overflow: visible;
+  }
+  .dig-underground .coffin {
+    /* Kill the JSON-set inline position/top/left/right — everything
+     becomes a flex column item instead. Rotation is preserved. */
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    inset: auto !important;
+  }
+  /* Give the dig-world enough vertical room for a fully stacked
+     coffin column (4 x 640 + 3 x 80 gap + padding ≈ 2900px). */
+  .dig-world { height: auto; min-height: 100vh; }
 }
 /* iPhone override — must come AFTER the base rule (source order wins
    at equal specificity). The @media block way earlier in this file

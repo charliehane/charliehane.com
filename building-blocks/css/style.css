@@ -1286,6 +1286,25 @@ html.video-lightbox-open,
 html.video-lightbox-open body {
   overflow: hidden !important;
 }
+/* While the lightbox is up, restore the native OS cursor and hide
+   every custom cursor sprite. Charlie: 'when the video is clicked,
+   the cursor can become its NORMAL self again on the TOP of the
+   blackness (i.e always seeable by the user).' The art cursors live
+   at z-index 9999 but the lightbox backdrop is at 99999, so those
+   sprites end up trapped behind the black — the user's real mouse
+   is invisible until this override kicks in. */
+html.video-lightbox-open,
+html.video-lightbox-open body,
+html.video-lightbox-open a,
+html.video-lightbox-open button,
+html.video-lightbox-open * {
+  cursor: auto !important;
+}
+html.video-lightbox-open .cursor-90s,
+html.video-lightbox-open .stick-cursor,
+html.video-lightbox-open .shovel-cursor {
+  display: none !important;
+}
 .video-lightbox-frame {
   position: relative;
   width: min(1200px, 100%);

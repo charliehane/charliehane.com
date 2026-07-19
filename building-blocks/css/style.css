@@ -3393,17 +3393,23 @@ body.director-fall-locked {
    Sits at z-index: -1 so non-positioned text/works stack above.
    ============================================================ */
 .director-skyline {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  /* SAFE default before JS runs: park the skyline far below the viewport
-     so any momentary flicker before the first updateSkyline() call shows
-     nothing. JS will override `bottom` per frame once it's running. */
-  bottom: -200vh;
+  /* Was position: fixed with per-scroll JS bottom updates — that read
+     concreteEl.getBoundingClientRect() on every scroll frame and set
+     `bottom` on this element, which browsers process AFTER the scroll
+     paint, so the skyline visibly lagged the concrete by one frame.
+     Now anchored ABSOLUTE inside .director-concrete with bottom: 100%,
+     so it scrolls WITH the page as a natural child — no JS reposition,
+     zero lag, zero glitch. Building depth-parallax (--py) still lives
+     in production.js and is compositor-cheap. */
+  position: absolute;
+  bottom: 100%;              /* sit directly above the concrete strip */
+  left: 0; right: 0;
+  height: 100vh;             /* tall enough for the tallest building */
   overflow: hidden;
   z-index: -1;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.12s ease;   /* faster fade-in so fast scrolls catch it */
+  transition: opacity 0.12s ease;
 }
 .director-skyline.is-visible { opacity: 1; }
 

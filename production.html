@@ -80,12 +80,16 @@
        below the works content (never overlapping text/videos) -->
   <div class="director-sky-buffer" aria-hidden="true"></div>
 
-  <!-- city skyline — populated by production.js with 13 buildings in 3
-       depth bands. Anchored just above the concrete strip. -->
-  <div class="director-skyline" id="directorSkyline" aria-hidden="true"></div>
-
-  <!-- concrete floor — stick figure splats here when crossed -->
+  <!-- concrete floor — stick figure splats here when crossed. The
+       skyline is a CHILD of this section so it can be positioned
+       absolute against it (bottom: 100% = directly above the concrete
+       strip) instead of position:fixed + JS-driven per-scroll bottom
+       updates — that pattern was inherently one frame behind the
+       scroll, so buildings glitched every time Charlie scrolled. -->
   <section class="director-concrete" id="directorConcrete">
+    <!-- city skyline — populated by production.js with 13 buildings in
+         3 depth bands. Sits directly on top of the concrete strip. -->
+    <div class="director-skyline" id="directorSkyline" aria-hidden="true"></div>
     <div class="concrete-cracks" aria-hidden="true"></div>
     <!-- smushed body — swap by editing assets/smushed-body.svg -->
     <div class="smushed-body" id="smushedBody" data-art="smushed-body" aria-hidden="true"></div>

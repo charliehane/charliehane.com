@@ -402,30 +402,26 @@
       buildings.push(el);
     }
 
-    // Skyline is `position: fixed` with overflow:hidden. Each frame, we
-    // set its `bottom` so the clip's bottom edge aligns with the concrete
-    // strip's TOP — anything translated below that line is hidden.
+    // Skyline is now a POSITION: ABSOLUTE child of .director-concrete
+    // with bottom: 100% in CSS — it scrolls with the page natively, no
+    // per-frame reposition. Previously we set skylineHost.style.bottom
+    // every scroll frame; that read runs AFTER browser paint, so the
+    // skyline lagged the concrete by one frame and Charlie flagged the
+    // buildings as glitchy on scroll. Removed entirely.
     //
-    // VISIBILITY is handled by IntersectionObserver on the sky-buffer
-    // element. This is rock-solid against layout-timing bugs (no chance
-    // of buildings flashing on first paint) and works regardless of page
-    // height. Buildings appear only when the sky-buffer is approaching
-    // the viewport — i.e., the user has scrolled past the works content.
+    // The `--py` parallax sink still needs per-frame updates because
+    // each building sinks at its own speed. Transforms are compositor-
+    // cheap and don't cause the same lag as top/bottom reflow.
+    //
+    // VISIBILITY handled by IntersectionObserver on the sky-buffer
+    // element — same as before.
     const MAX_SINK = 220;
-    // Portrait iPhone: skip the per-building parallax sink entirely.
-    // Charlie flagged it as a source of the scroll stutter on phone.
-    // Buildings sit anchored to the concrete strip (their default
-    // bottom:0 position); no per-frame transform on each of the 12
-    // building imgs. Desktop keeps the full depth-band parallax.
     const isPortraitPhone = () =>
       window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches;
     let ticking = false;
     const updateSkyline = () => {
-      const concreteRect = concreteEl.getBoundingClientRect();
-      const bottomFromViewport = window.innerHeight - concreteRect.top;
-      skylineHost.style.bottom = `${bottomFromViewport}px`;
-
       if (!isPortraitPhone()) {
+        const concreteRect = concreteEl.getBoundingClientRect();
         const sinkProgress = Math.max(0, Math.min(1,
           (window.innerHeight - concreteRect.top) / window.innerHeight
         ));
@@ -435,7 +431,6 @@
           el.style.setProperty('--py', `${py}px`);
         }
       }
-
       ticking = false;
     };
     window.addEventListener('scroll', () => {
@@ -445,8 +440,6 @@
       }
     }, { passive: true });
     window.addEventListener('resize', updateSkyline);
-    // Defer the first update until after first layout pass to avoid
-    // measuring before the page is fully positioned.
     requestAnimationFrame(updateSkyline);
 
     // ── Visibility: IntersectionObserver on the sky-buffer ─────────────

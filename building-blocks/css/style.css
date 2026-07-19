@@ -1213,29 +1213,42 @@ body {
    cursors) — the (hover: none) block later in the file drops
    these back to no expansion. */
 @media (hover: hover) {
-  /* Hit-radius expansion: an invisible ::before that extends 22px
-     around every clickable element, so anywhere the custom cursor
-     sprite visually overlaps the target, the click still lands on
-     it. The pseudo-element is transparent (content: '' with no bg)
-     and inherits pointer-events: auto, so clicks in the expansion
-     zone bubble up to the parent element's own click handler.
+  /* Hit-radius expansion: an invisible ::before that extends the
+     click zone around every clickable element, so anywhere the
+     custom cursor sprite visually overlaps the target, the click
+     still lands on it.
 
-     DO NOT override the parent's `position` here — .brick is
-     originally position: absolute with per-scene left/top values;
-     forcing it to relative slid bricks off their intended spot
-     (Charlie: 'Preproduction doesnt have the ? anymore'). The
-     other targets (.popup-video, .work-thumb, .coffin-watch) get
-     position: relative because they're anchors with no
-     positioning of their own — position: relative is needed for
-     the ::before's inset: -22px to anchor to them. */
+     Charlie: 'The top of the shovel PNG and the top as in the feet
+     of the animated Charlie PNG aren't able to click, it's only at
+     their bottom slash maybe their center.' The shovel is 90px tall
+     with mouse at the blade tip (bottom), and the stick figure is
+     110px tall with mouse at its center — so aiming with the TOP
+     of either sprite puts the actual mouse 45–80px below the target.
+     Vertical expansion is generous (60px) to swallow that offset;
+     horizontal stays tight (30px) because sprites are narrower and
+     bricks/works sit close to each other side-to-side.
+
+     DO NOT override .brick's position — it's originally
+     position: absolute with per-scene left values; forcing relative
+     slid bricks off screen last time (Charlie: 'Preproduction
+     doesnt have the ? anymore'). The other targets (.popup-video,
+     .work-thumb, .coffin-watch, .nav a) get position: relative
+     because they're anchors/buttons with no positioning of their
+     own — position: relative is needed for the ::before's inset to
+     anchor to them. */
+  .nav a::before,
   .brick::before,
   .popup-video::before,
   .work-thumb.has-video::before,
   .coffin-watch::before {
     content: '';
     position: absolute;
-    inset: -22px;
+    top: -60px;
+    bottom: -60px;
+    left: -30px;
+    right: -30px;
   }
+  .nav a,
   .popup-video,
   .work-thumb,
   .coffin-watch {

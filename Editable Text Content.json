@@ -28,7 +28,12 @@
         "title": "Charlie Hane",
         "scrollIn": 0.06,
         "scrollOut": 0.38,
-        "hotspot": { "x": "0%", "y": "0%", "w": "100%", "h": "100%" },
+        "hotspot": {
+          "x": "0%",
+          "y": "0%",
+          "w": "100%",
+          "h": "100%"
+        },
         "labelShort": "click the sign",
         "paragraphs": [
           "Charlie Hane has been creating films since long before high school, but it was there that he really began finding his voice, when he was selected to direct the final project at Northwestern University's National High School Film &amp; Video Institute before going on to study Film and Business at Syracuse University. His directing and writing soon started winning awards: <em>FIVE STRING</em>, which he directed, shot, and edited, won Outstanding Cinematography at the National New Age Film Festival, and <em>SHE'S A GOOD GIRL</em>, which he wrote, won Best Picture at the Texas 48 Hour Film Festival. During the COVID-19 pandemic he stepped into producing, co-founding the Austin-based production company Voyager LLC, which generated more than $29,000 in gross profit in under six months while producing the $25,000+ short film <em>HALCYON DAYS</em>. He studied abroad his junior year at Prague's renowned FAMU Film School, joined Happy Accidents Media as an intern in the fall of his senior year, and graduated from Syracuse in 2023 with a 3.8 GPA."
@@ -40,7 +45,12 @@
         "title": "Charlie Hane",
         "scrollIn": 0.38,
         "scrollOut": 0.64,
-        "hotspot": { "x": "0%", "y": "0%", "w": "100%", "h": "100%" },
+        "hotspot": {
+          "x": "0%",
+          "y": "0%",
+          "w": "100%",
+          "h": "100%"
+        },
         "labelShort": "click the sign",
         "paragraphs": [
           "Three and a half years later, he is the Coordinator at Happy Accidents Media, helping oversee more than fifteen productions simultaneously while supporting senior producers and reporting to Holly Hines (<em>GINNY &amp; GEORGIA</em>, <em>THE OFFICE</em>) and Eric Jarboe (<em>THE PRINCESS SWITCH</em>). Alongside his production work, he contributes film criticism to Bright Lights Film Journal, including a 2024 interview with the Palme d'Or and Academy Award-winning producer of <em>ANORA</em>. He also associate produced the SAG-AFTRA series <em>SWOLE MATE</em>, a $250,000 production filmed across fourteen consecutive shooting days."
@@ -52,7 +62,12 @@
         "title": "Charlie Hane",
         "scrollIn": 0.64,
         "scrollOut": 1,
-        "hotspot": { "x": "0%", "y": "0%", "w": "100%", "h": "100%" },
+        "hotspot": {
+          "x": "0%",
+          "y": "0%",
+          "w": "100%",
+          "h": "100%"
+        },
         "labelShort": "click the sign",
         "paragraphs": [
           "The past two years have marked a rapid expansion of Charlie's filmmaking career. In 2025, he wrote, directed, and edited <em>DIVORCED DADS HOTEL</em>, which won awards from IndieFEST Film Awards and International Independent Shorts Awards and was named a Semi-Finalist at the Cannes Indie Shorts Awards. That summer he began producing the feature documentary <em>THE ETERNAL STEPPE</em>, building the production from the ground up in Mongolia's remote steppe and leading a twelve-person international crew that captured more than 100 hours of footage; the film is now in post-production with PBS distribution conversations underway. In 2026, he produced and assistant-directed <em>MASHA/MARIA</em>, a Dance on Camera Production Grant recipient that premiered at Film at Lincoln Center and was shot using SCUBA cinematography in a blackout pool; produced the music video and album artwork for <em>HALCYON BLUES</em> by Citizen, a band with more than 200 million Spotify streams; and creatively produced and animated the proof-of-concept pilot <em>UP THE WATER SPOUT</em>, which garnered 500,000 Instagram views within its first 24 hours online."
@@ -95,7 +110,8 @@
     "works": [
       {
         "tag": "001",
-        "title": "UPLOADS IN PROGRESS - Production #1"
+        "title": "UPLOADS IN PROGRESS - Production #1",
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
       },
       {
         "tag": "002",
@@ -124,7 +140,8 @@
           "top": "6%",
           "left": "6%",
           "rot": "-8deg"
-        }
+        },
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
       },
       {
         "tag": "002",

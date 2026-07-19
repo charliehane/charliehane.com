@@ -2807,7 +2807,7 @@ body.director-fall-locked {
      that widest part of the coffin'. Text below (001 / title / credit)
      drops down with justify-content: flex-start so the thumbnail
      hugs the top rather than being centered in the remaining space. */
-  top: 14%;
+  top: 19%;
   left: 20%;
   right: 20%;
   bottom: 20%;

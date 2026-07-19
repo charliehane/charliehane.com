@@ -2045,7 +2045,9 @@ html.video-lightbox-open .shovel-cursor {
    ============================================================ */
 
 .page-producer-ride {
-  background: var(--ink);
+  /* Charlie wants pure black behind the title, not the very-dark
+     var(--ink) (#1a1614) that read as slightly gray. */
+  background: #000;
   /* preproduction.js draws a .cursor-90s DOM cursor; hide the native
      OS cursor everywhere on this page so only the pixel-arrow shows.
      Matches the same pattern used on .page-landing / .page-sky
@@ -2636,11 +2638,9 @@ body.director-fall-locked {
      any residual vertical overlap has non-obscured text on each end. */
   max-width: 60ch;
   margin: 0 auto;
-  /* White so the lede stays legible against the green hills/grass
-     that sit right behind it (Charlie: '"an editor..." text is not
-     really visible... make the "an editor" text white'). */
-  color: #fff;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  /* Charlie: 'make the text directly underneath post production
+     black instead of white'. */
+  color: #000;
 }
 
 .dig-clouds {

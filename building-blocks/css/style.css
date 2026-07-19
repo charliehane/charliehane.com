@@ -2873,7 +2873,12 @@ body.director-fall-locked {
        coffin rotates up to ~14deg, which pushes its visual
        footprint ~80px past its flex-layout box on both ends. */
     gap: 180px;
-    padding: 100px 0 160px;
+    /* padding-bottom generous (260px) so the rotated LAST coffin's
+       bounding box has room. Without this, the coffin's rotation
+       overhead pushed past the dig-underground's edge and the coffin
+       bottom got clipped against the page background. Charlie: 'SOME
+       coffins on the bottum are still being cutoff slightly'. */
+    padding: 100px 0 260px;
   }
   .dig-underground .coffin {
     position: relative !important;
@@ -2889,7 +2894,18 @@ body.director-fall-locked {
   .dig-world {
     height: auto;
     min-height: 100vh;
-    overflow: visible;
+    /* padding-top pushes the in-flow .dig-underground BELOW the sky
+       region (75vh of sky + 32px lip, matching the original absolute-
+       positioned underground offset). Padding avoids the margin-collapse
+       trap where margin-top on the first child gets pushed OUTSIDE
+       the parent and the parent doesn't account for it — that made the
+       gravestone render on top of the coffins ('coffins do not stay
+       underground when the window is squeezed'). */
+    padding-top: calc(75vh + 32px);
+    /* overflow: hidden on the parent also disables margin collapse
+       as belt-and-suspenders, and keeps the ± rotation overhead from
+       leaking into whatever section renders below the world. */
+    overflow: hidden;
   }
   /* Gravestone was scaled off the tiny viewport too — 144x180 at
      500px width dwarfs the layout. Cap it responsively so it stays

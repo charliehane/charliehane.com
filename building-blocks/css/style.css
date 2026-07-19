@@ -800,7 +800,7 @@ body {
      the last biome... these elements must be moved vertically the
      EXACT SAME amount.' Shared --world-video-y-offset custom
      property on both layers so any future tweak stays in lockstep. */
-  --world-video-y-offset: -3vh;
+  --world-video-y-offset: 0vh;
   transform: translateY(var(--world-video-y-offset));
   z-index: 0;
   pointer-events: none;
@@ -819,7 +819,7 @@ body {
   /* Must match the BG's `contain` so the two layers scale identically. */
   object-fit: contain;
   /* Same vertical offset as BG so both layers stay in lockstep. */
-  --world-video-y-offset: -3vh;
+  --world-video-y-offset: 0vh;
   transform: translateY(var(--world-video-y-offset));
   z-index: 10;
   pointer-events: none;

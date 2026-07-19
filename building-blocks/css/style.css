@@ -2082,7 +2082,9 @@ html.video-lightbox-open .shovel-cursor {
 
 .page-producer-ride .page-header {
   padding: 140px 8vw 60px;
-  background: var(--ink);
+  /* Pure black behind the title, matching body — was var(--ink)
+     which read as slightly gray. */
+  background: #000;
   color: var(--cream);
   position: relative;
   z-index: 2;

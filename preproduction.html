@@ -134,7 +134,6 @@
         </div>
       </template>
 
-      <p class="world-caption" data-content="preproduction.caption">swipe to ride · click to jump</p>
       <div class="world-progress"><div class="world-progress-bar" id="worldProgressBar"></div></div>
 
       <!-- bike + stick figure rider — lives INSIDE .world-pin so it shares
@@ -165,6 +164,13 @@
         </div>
       </div>
       </div><!-- /.world-stage -->
+
+      <!-- Caption anchored to the .world-pin (full viewport) rather than
+           .world-stage (letterboxed video window). When the viewport is
+           narrower than 1.89:1 the stage is short and leaves black
+           letterbox above/below; the caption stays down here in the
+           bottom letterbox instead of riding up onto the video. -->
+      <p class="world-caption" data-content="preproduction.caption">swipe to ride · click to jump</p>
     </div>
   </section>
 

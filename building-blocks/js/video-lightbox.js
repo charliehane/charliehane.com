@@ -78,11 +78,14 @@
     document.documentElement.classList.remove('video-lightbox-open');
   };
 
-  // Global click delegation — one listener catches every WATCH chip
-  // on every page (works fine with content-loader's template render
-  // since the chips exist by the time any user click happens).
+  // Global click delegation — one listener catches every WATCH-style
+  // trigger on every page: the preproduction thumbnail card
+  // (.popup-video), the production work thumbnail (.work-thumb),
+  // and the postproduction coffin WATCH chip (.coffin-watch). Works
+  // fine with content-loader's template render since the elements
+  // exist by the time any user click happens.
   document.addEventListener('click', (e) => {
-    const link = e.target.closest('.popup-watch, .work-watch, .coffin-watch');
+    const link = e.target.closest('.popup-video, .work-thumb, .coffin-watch, .popup-watch, .work-watch');
     if (!link) return;
     // Respect modifier-clicks — let ⌘-click open in a new tab.
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -94,6 +97,28 @@
       e.stopPropagation();
     }
   });
+
+  // After content:loaded (content-loader fires this once the JSON is
+  // in and templates are rendered), paint YouTube thumbnails onto
+  // every card that carries a href. Each YouTube URL yields a
+  // predictable thumbnail image at img.youtube.com/vi/<id>/hqdefault.jpg
+  // (480x360, always exists for a valid ID; no API key required).
+  // Elements without a href just stay as their static placeholder
+  // (colored gradient for .work-thumb, hidden for .popup-video).
+  const paintThumbs = () => {
+    document.querySelectorAll('.popup-video, .work-thumb').forEach((el) => {
+      const url = el.getAttribute('href');
+      if (!url) return;
+      const id = extractId(url);
+      if (!id) return;
+      el.style.backgroundImage = `url("https://i.ytimg.com/vi/${id}/hqdefault.jpg")`;
+      el.classList.add('has-video');
+    });
+  };
+  document.addEventListener('content:loaded', paintThumbs);
+  // Fallback in case content:loaded already fired before this script
+  // parsed (rare but possible with browser-cached JSON).
+  if (window.__CONTENT__) paintThumbs();
 
   window.VideoLightbox = { open, close };
 })();

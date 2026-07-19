@@ -59,14 +59,18 @@
 
   <template id="workTpl" data-modifier-count="12">
     <article class="work">
-      <div class="work-thumb" data-modifier></div>
+      <!-- Thumbnail card: if youtubeUrl is set, becomes a clickable
+           YouTube thumb (background painted by video-lightbox.js after
+           JSON loads, play button overlay via CSS). If unset, stays as
+           a colored placeholder via the .work-thumb--NN modifier. -->
+      <a class="work-thumb" data-modifier data-attr-href="youtubeUrl" aria-label="Play video">
+        <span class="video-play-btn" aria-hidden="true"></span>
+      </a>
       <div class="work-meta">
         <p class="work-tag"    data-field="tag"></p>
         <h2 class="work-title" data-field="title"></h2>
         <p class="work-credit" data-field="credit"></p>
         <p class="work-blurb"  data-field="blurb"></p>
-        <a class="work-watch"  data-attr-href="youtubeUrl"
-           target="_blank" rel="noopener noreferrer">▶ WATCH ↗</a>
       </div>
     </article>
   </template>

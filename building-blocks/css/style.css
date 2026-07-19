@@ -41,8 +41,12 @@ button { font: inherit; background: none; border: 0; padding: 0; }
 
 body {
   font-family: var(--sans);
-  background: var(--cream);
-  color: var(--ink);
+  /* Charlie: unify every page on a solid black canvas. Previously each
+     page painted its own bg (cream for landing/inner, sky-blue gradient
+     for production, dark ink/brown for pre/post). Now the base body is
+     black and the .page-* overrides all resolve to #000 too. */
+  background: #000;
+  color: var(--cream);
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -1070,12 +1074,109 @@ body {
   opacity: 0.7;
 }
 
-/* WATCH chip inside brick / work / coffin — shown ONLY when the item
-   has a youtubeUrl set in the CMS. content-loader.js won't set an
-   href attribute if the value is empty, so :not([href]) hides the
-   chip cleanly for films without a video. */
-.popup-watch,
-.work-watch,
+/* ============================================================
+   VIDEO CARDS — YouTube thumbnails + play button
+   ============================================================
+   Charlie: on the brick popup + production work-thumb, show the
+   YouTube thumbnail with a play button in the middle instead of a
+   text "WATCH" chip. video-lightbox.js paints the background-image
+   after content:loaded; the CSS handles sizing, the play button
+   overlay, and hover feedback.
+
+   Postproduction coffins keep the old text WATCH chip
+   (.coffin-watch) — Charlie's spec. */
+
+/* Preproduction popup thumbnail — appears below tag/title/meta,
+   hidden entirely when no youtubeUrl is set on the film. */
+.popup-video {
+  display: block;
+  margin-top: 12px;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000 no-repeat center / cover;
+  border: 2px solid #000;
+  position: relative;
+  text-decoration: none;
+  cursor: none;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.popup-video:not([href]) { display: none; }
+.popup-video:hover { transform: scale(1.02); box-shadow: 0 0 24px rgba(250,57,65,0.4); }
+
+/* Production work card — the big 4:3 tile Charlie sees on the left of
+   each work row. Now clickable when youtubeUrl is set. When there's no
+   URL, it stays as the current colored gradient placeholder (.work-thumb--NN
+   modifier classes) and clicks do nothing. */
+.work-thumb {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform 0.7s cubic-bezier(.2,.8,.2,1);
+  cursor: none;
+}
+.work-thumb.has-video {
+  background-color: #000 !important;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border: 3px solid #000;
+}
+.work-thumb.has-video:hover { transform: scale(1.015); }
+
+/* Play button — a solid black circle with a red triangle. Rendered
+   via pseudo-elements so we don't need an image asset. Shows ONLY on
+   cards that actually have a video (has-video is added by
+   video-lightbox.js after the thumbnail paints). */
+.video-play-btn {
+  position: absolute;
+  inset: 0;
+  display: none;
+  pointer-events: none;
+}
+.popup-video[href] .video-play-btn,
+.work-thumb.has-video .video-play-btn {
+  display: block;
+}
+.video-play-btn::before,
+.video-play-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+.video-play-btn::before {
+  width: 68px;
+  height: 68px;
+  margin: -34px 0 0 -34px;
+  background: rgba(0, 0, 0, 0.82);
+  border: 2px solid #fa3941;
+  border-radius: 50%;
+}
+.video-play-btn::after {
+  width: 0;
+  height: 0;
+  margin: -14px 0 0 -8px;
+  border-style: solid;
+  border-width: 14px 0 14px 22px;
+  border-color: transparent transparent transparent #fa3941;
+}
+/* Smaller play button on the compact popup thumbnail. */
+.popup-video .video-play-btn::before {
+  width: 44px; height: 44px;
+  margin: -22px 0 0 -22px;
+  border-width: 1.5px;
+}
+.popup-video .video-play-btn::after {
+  margin: -9px 0 0 -5px;
+  border-width: 9px 0 9px 14px;
+}
+
+/* Coffin WATCH chip (postproduction) — Charlie: 'on post production
+   use your -> Watch button that you had been using for PREPRODUCTION
+   inside of the coffin, right below the context text'. Text chip
+   pattern, same red-on-black look as the previous preproduction chip. */
 .coffin-watch {
   display: inline-block;
   margin-top: 10px;
@@ -1092,16 +1193,38 @@ body {
   text-transform: uppercase;
   transition: background 0.15s ease, color 0.15s ease;
 }
-.popup-watch:hover,
-.work-watch:hover,
-.coffin-watch:hover {
-  background: #fa3941;
-  color: #000;
-}
-.popup-watch:not([href]),
-.work-watch:not([href]),
-.coffin-watch:not([href]) {
-  display: none;
+.coffin-watch:hover { background: #fa3941; color: #000; }
+.coffin-watch:not([href]) { display: none; }
+
+/* ============================================================
+   CURSOR HIT-RADIUS EXPANSION
+   ============================================================
+   Charlie: 'sometimes its hard to find what PART of the old
+   fashioned cursor, charlies flying body, or the shovel will hit
+   correct'. The custom cursor sprites are ~50-80px tall and the
+   'click point' (a specific pixel of the sprite) is easy to miss.
+   Instead of chasing exact pixel alignment, expand every clickable
+   element's hit box outward via an invisible ::before layer so a
+   click anywhere the sprite VISUALLY overlaps the element counts.
+   Only applies on desktop (touch devices don't have the custom
+   cursors) — the (hover: none) block later in the file drops
+   these back to no expansion. */
+@media (hover: hover) {
+  .brick::before,
+  .popup-video::before,
+  .work-thumb.has-video::before,
+  .coffin-watch::before {
+    content: '';
+    position: absolute;
+    inset: -22px;
+    z-index: -1;
+  }
+  .brick,
+  .popup-video,
+  .work-thumb,
+  .coffin-watch {
+    position: relative;
+  }
 }
 
 /* ============================================================
@@ -1357,8 +1480,8 @@ html.video-lightbox-open body {
    ============================================================ */
 
 .page-inner {
-  background: var(--cream);
-  color: var(--ink);
+  background: #000;
+  color: var(--cream);
   cursor: none;
   overflow-x: hidden;
 }
@@ -1494,7 +1617,7 @@ html.video-lightbox-open body {
    ============================================================ */
 
 .page-editor-dig {
-  background: #0a0604;
+  background: #000;
   color: var(--cream);
   cursor: none;
   overflow-x: hidden;
@@ -1826,7 +1949,7 @@ html.video-lightbox-open body {
    ============================================================ */
 
 .page-producer-ride {
-  background: var(--ink);
+  background: #000;
   /* preproduction.js draws a .cursor-90s DOM cursor; hide the native
      OS cursor everywhere on this page so only the pixel-arrow shows.
      Matches the same pattern used on .page-landing / .page-sky
@@ -2226,7 +2349,7 @@ body.director-fall-locked {
    ============================================================ */
 
 .page-sky {
-  background: linear-gradient(180deg, #cfe6f0 0%, #a8cfe2 50%, #d4e6ee 100%);
+  background: #000;   /* was sky-blue gradient — Charlie: unify on black */
   cursor: none;
   overflow-x: hidden;
 }
@@ -2235,7 +2358,9 @@ body.director-fall-locked {
 .sky-bg {
   position: fixed;
   inset: 0;
-  background: linear-gradient(180deg, #cfe6f0 0%, #a8cfe2 50%, #d4e6ee 100%);
+  /* Was sky-blue gradient; Charlie unified every page bg to black.
+     Clouds + birds now float against a night-sky black instead. */
+  background: #000;
   z-index: -2;
 }
 
@@ -2332,7 +2457,10 @@ body.director-fall-locked {
    ============================================================ */
 
 .page-editor-dig {
-  background: linear-gradient(180deg, #cfe6f0 0%, #a8cfe2 18%, #d4e6ee 24%, #4a6a3a 24.6%, #6a4a2a 25.2%, #050302 100%);
+  /* Was sky-to-underground gradient (blue → grass → dirt → black);
+     Charlie unified every page bg to black. Hills / gravestone / grass
+     still layer on top. */
+  background: #000;
   background-attachment: fixed;
   color: var(--cream);
   cursor: none;
@@ -2350,7 +2478,8 @@ body.director-fall-locked {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 75vh;
-  background: linear-gradient(180deg, #cfe6f0 0%, #a8cfe2 70%, #d4e6ee 100%);
+  /* Was sky-blue gradient; Charlie unified every page bg to black. */
+  background: #000;
   z-index: 1;
 }
 
@@ -3353,7 +3482,9 @@ body.director-fall-locked {
 }
 .page-director {
   position: relative;
-  background: linear-gradient(180deg, #cfe6f0 0%, #a8cfe2 50%, #d4e6ee 100%);
+  /* Was sky-blue gradient; Charlie unified every page bg to black.
+     Clouds + birds + lighthouse still float on top, now on night sky. */
+  background: #000;
   background-attachment: fixed;
 }
 .page-director .sky-bg { display: none; }

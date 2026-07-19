@@ -128,8 +128,14 @@
             <p class="popup-tag"     data-field="tag"></p>
             <h4 class="popup-title"  data-field="title"></h4>
             <p class="popup-meta"    data-field="meta"></p>
-            <a class="popup-watch"   data-attr-href="youtubeUrl"
-               target="_blank" rel="noopener noreferrer">▶ WATCH ↗</a>
+            <!-- Thumbnail card: content-loader sets href to the youtubeUrl
+                 (or omits it when blank); video-lightbox.js paints the
+                 YouTube thumbnail into background-image after the JSON
+                 loads. Hidden entirely when no URL is set. -->
+            <a class="popup-video"   data-attr-href="youtubeUrl"
+               target="_blank" rel="noopener noreferrer" aria-label="Play video">
+              <span class="video-play-btn" aria-hidden="true"></span>
+            </a>
           </div>
         </div>
       </template>

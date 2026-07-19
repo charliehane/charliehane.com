@@ -86,22 +86,26 @@
       {
         "tag": "FILM 01",
         "title": "UPLOADS IN PROGRESS - Preproduction #1",
-        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "description": "Behind-the-scenes on this film — the shoot, the shape of the story, and the little decisions that ended up mattering most."
       },
       {
         "tag": "FILM 02",
         "title": "UPLOADS IN PROGRESS - Preproduction #2",
-        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "description": "Behind-the-scenes on this film — the shoot, the shape of the story, and the little decisions that ended up mattering most."
       },
       {
         "tag": "FILM 03",
         "title": "UPLOADS IN PROGRESS - Preproduction #3",
-        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "description": "Behind-the-scenes on this film — the shoot, the shape of the story, and the little decisions that ended up mattering most."
       },
       {
         "tag": "FILM 04",
         "title": "UPLOADS IN PROGRESS - Preproduction #4",
-        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "description": "Behind-the-scenes on this film — the shoot, the shape of the story, and the little decisions that ended up mattering most."
       }
     ]
   },
@@ -114,22 +118,26 @@
       {
         "tag": "001",
         "title": "UPLOADS IN PROGRESS - Production #1",
-        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "description": "Behind-the-scenes on this film — the shoot, the shape of the story, and the little decisions that ended up mattering most."
       },
       {
         "tag": "002",
         "title": "UPLOADS IN PROGRESS - Production #2",
-        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "description": "Behind-the-scenes on this film — the shoot, the shape of the story, and the little decisions that ended up mattering most."
       },
       {
         "tag": "003",
         "title": "UPLOADS IN PROGRESS - Production #3",
-        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "description": "Behind-the-scenes on this film — the shoot, the shape of the story, and the little decisions that ended up mattering most."
       },
       {
         "tag": "004",
         "title": "UPLOADS IN PROGRESS - Production #4",
-        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "description": "Behind-the-scenes on this film — the shoot, the shape of the story, and the little decisions that ended up mattering most."
       }
     ]
   },
@@ -147,7 +155,8 @@
           "left": "6%",
           "rot": "-8deg"
         },
-        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "description": "Behind-the-scenes on this film — the shoot, the shape of the story, and the little decisions that ended up mattering most."
       },
       {
         "tag": "002",
@@ -157,7 +166,8 @@
           "right": "6%",
           "rot": "12deg"
         },
-        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "description": "Behind-the-scenes on this film — the shoot, the shape of the story, and the little decisions that ended up mattering most."
       },
       {
         "tag": "003",
@@ -167,7 +177,8 @@
           "left": "30%",
           "rot": "4deg"
         },
-        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "description": "Behind-the-scenes on this film — the shoot, the shape of the story, and the little decisions that ended up mattering most."
       },
       {
         "tag": "004",
@@ -177,7 +188,8 @@
           "left": "12%",
           "rot": "-14deg"
         },
-        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "description": "Behind-the-scenes on this film — the shoot, the shape of the story, and the little decisions that ended up mattering most."
       }
     ],
     "skeletonCoffinPosition": {

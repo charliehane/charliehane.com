@@ -126,6 +126,10 @@ content:
             fields:
               - { name: tag,         label: Popup tag (e.g. "FILM 01") }
               - { name: title,       label: Film title (shown in popup) }
+              - name: description
+                label: Description (a paragraph about this film — sits between the title and the video thumbnail)
+                type: text
+                required: false
               - name: youtubeUrl
                 label: YouTube video URL (optional — click opens video in the site)
                 type: string
@@ -154,8 +158,12 @@ content:
             fields:
               - { name: tag,    label: Tag (e.g. "001") }
               - { name: title,  label: Film title }
+              - name: description
+                label: Description (a paragraph — sits below the title, centered next to the video thumbnail)
+                type: text
+                required: false
               - { name: credit, label: Credit / role }
-              - { name: blurb,  label: One-line description }
+              - { name: blurb,  label: One-line description (optional short blurb, separate from Description) }
               - name: youtubeUrl
                 label: YouTube video URL (optional)
                 type: string
@@ -183,6 +191,10 @@ content:
             fields:
               - { name: tag,    label: Tag (e.g. "001") }
               - { name: title,  label: Film title }
+              - name: description
+                label: Description (a paragraph inside the coffin, sits below the title)
+                type: text
+                required: false
               - { name: credit, label: Credit / role }
               - name: youtubeUrl
                 label: YouTube video URL (optional)

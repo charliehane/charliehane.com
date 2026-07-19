@@ -967,7 +967,10 @@ body {
 
 .brick-popup {
   position: absolute;
-  width: 280px;
+  /* Widened 280 → 340 to fit the new description paragraph between
+     the title and the thumbnail without cramping (Charlie: 'expand
+     that dialogue box entirely so that that can fit in there'). */
+  width: 340px;
   background: var(--cream);
   color: var(--ink);
   border: 4px solid var(--ink);
@@ -1076,6 +1079,17 @@ body {
   margin: 0;
   opacity: 0.7;
 }
+/* Description paragraph in the brick popup — sits between the title
+   and the video thumbnail. Hidden entirely when empty so the popup
+   doesn't collapse into a suspicious gap. */
+.popup-description {
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 0 0 12px;
+  opacity: 0.82;
+}
+.popup-description:empty { display: none; }
 
 /* ============================================================
    VIDEO CARDS — YouTube thumbnails + play button
@@ -1632,6 +1646,20 @@ html.video-lightbox-open .shovel-cursor {
   margin: 0 0 14px;
   letter-spacing: -0.02em;
 }
+/* Description paragraph — sits directly below the title. The parent
+   .work grid already uses align-items: center so the whole .work-meta
+   column (tag/title/description/credit/blurb) stays vertically
+   centered against the 4:3 video thumbnail next to it. */
+.work-description {
+  font-family: var(--serif);
+  font-weight: 350;
+  font-size: 18px;
+  line-height: 1.5;
+  margin: 0 0 16px;
+  max-width: 40ch;
+  opacity: 0.85;
+}
+.work-description:empty { display: none; }
 .work-credit {
   font-family: var(--mono);
   font-size: 13px;
@@ -2882,6 +2910,9 @@ body.director-fall-locked {
   display: block;
   width: 88%;
   aspect-ratio: 16 / 9;
+  /* Don't let the flex column parent squeeze this — aspect-ratio
+     must win so the thumbnail actually looks like a thumbnail. */
+  flex-shrink: 0;
   margin: 0 auto 14px;
   background: #000 no-repeat center / cover;
   border: 2px solid #000;
@@ -2907,11 +2938,30 @@ body.director-fall-locked {
 }
 .coffin-credit {
   font-size: 14px;
-  margin: 0;
+  margin: 10px 0 0;
   color: rgba(243,235,224,0.65);
   letter-spacing: 0.04em;
   font-family: var(--mono);
 }
+/* Trapezoidal description panel — sits between title and credit
+   inside the coffin. clip-path polygon narrows toward the bottom to
+   hug the coffin's foot-taper (Charlie: 'slight trapezoidal
+   description box'). Rotates with the coffin because it's a child
+   of .coffin which owns the rotate() transform. */
+.coffin-description {
+  font-family: var(--serif);
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0;
+  padding: 12px 14px 14px;
+  color: rgba(243,235,224,0.9);
+  background: rgba(0, 0, 0, 0.35);
+  /* wider at top, ~10% inset each side at bottom → gentle trapezoid */
+  clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+  -webkit-clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+  text-align: center;
+}
+.coffin-description:empty { display: none; }
 
 .coffin-skeleton {
   position: absolute;

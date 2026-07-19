@@ -2849,33 +2849,56 @@ body.director-fall-locked {
    media query (portrait ≤500px) already has its own coffin sizing
    that fits its own pinned layout. */
 @media (max-width: 900px) and (min-width: 501px) {
+  /* Two containers to work with here:
+     - .dig-underground : the dirt-gradient panel, was position:
+       absolute. Made relative so it participates in flow and grows
+       to fit the coffin stack.
+     - Its immediate child <div data-template="coffinTpl"> : this is
+       where content-loader renders the coffins, so THIS is the flex
+       parent (not .dig-underground). Earlier I applied flex to
+       .dig-underground and the coffins didn't gap — they weren't
+       flex items because their real parent is this unclassed div. */
   .dig-underground {
+    position: relative;
+    top: auto;
+    inset: auto;
+    overflow: visible;
+    min-height: 100vh;
+  }
+  .dig-underground [data-template="coffinTpl"] {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* 180px gap accommodates the rotated bounding boxes — each
-       coffin rotates up to ±14deg, which pushes its visual footprint
-       ~80px past its flex-layout box on both ends. 80px flex gap +
-       ~80px rotation overhead ×2 → 180px keeps every coffin visually
-       separated with a real dirt strip between. */
+    /* 180px gap covers the ±14deg rotated bounding boxes — each
+       coffin rotates up to ~14deg, which pushes its visual
+       footprint ~80px past its flex-layout box on both ends. */
     gap: 180px;
     padding: 100px 0 160px;
-    /* Was overflow: hidden; that would clip a tall stack of coffins.
-       Overflow visible so the stack can extend downward as needed. */
-    overflow: visible;
   }
   .dig-underground .coffin {
-    /* Kill the JSON-set inline position/top/left/right — everything
-     becomes a flex column item instead. Rotation is preserved. */
     position: relative !important;
     top: auto !important;
     left: auto !important;
     right: auto !important;
     inset: auto !important;
   }
-  /* Give the dig-world enough vertical room for a fully stacked
-     coffin column (4 x 640 + 3 x 80 gap + padding ≈ 2900px). */
-  .dig-world { height: auto; min-height: 100vh; }
+  /* Let the parent .dig-world size to its content instead of the
+     fixed 380vh — because the underground is now in-flow, dig-world
+     needs to grow. The sky region above (dig-sky / dig-hills) still
+     wants a viewport-height minimum so it looks like a sky. */
+  .dig-world {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+  /* Gravestone was scaled off the tiny viewport too — 144x180 at
+     500px width dwarfs the layout. Cap it responsively so it stays
+     the right size next to the shrunken sky region. */
+  .dig-gravestone-center {
+    width: 100px !important;
+    height: 125px !important;
+    top: calc(75vh - 125px) !important;
+  }
 }
 /* iPhone override — must come AFTER the base rule (source order wins
    at equal specificity). The @media block way earlier in this file

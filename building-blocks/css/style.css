@@ -795,6 +795,13 @@ body {
      the video's 1.89:1. No cropping. Must match the FG video's
      object-fit so the two layers stay aligned. */
   object-fit: contain;
+  /* Charlie: 'raise both the BG and FG interactable videos just
+     slightly, the issue is the biker does not touch the ground in
+     the last biome... these elements must be moved vertically the
+     EXACT SAME amount.' Shared --world-video-y-offset custom
+     property on both layers so any future tweak stays in lockstep. */
+  --world-video-y-offset: -2.5vh;
+  transform: translateY(var(--world-video-y-offset));
   z-index: 0;
   pointer-events: none;
   background: var(--ink);
@@ -811,6 +818,9 @@ body {
   height: 100%;
   /* Must match the BG's `contain` so the two layers scale identically. */
   object-fit: contain;
+  /* Same vertical offset as BG so both layers stay in lockstep. */
+  --world-video-y-offset: -2.5vh;
+  transform: translateY(var(--world-video-y-offset));
   z-index: 10;
   pointer-events: none;
   background: transparent;
@@ -2809,9 +2819,16 @@ body.director-fall-locked {
 /* hexagonal coffins, top-down view */
 .coffin {
   position: absolute;
-  /* Charlie: 'DOUBLE the size of each coffin'. Was 200x320. */
-  width: 400px;
-  height: 640px;
+  /* Charlie: 'DOUBLE the size of each coffin' (400x640 on wide
+     screens) AND 'when I resize my window to be smaller, the coffins
+     do end up overlapping. This cannot happen, there needs to be a
+     rule that makes this impossible.' Viewport-relative sizing scales
+     the coffin down as the window narrows, so the pinned percentage
+     positions never overrun each other. At 1600px viewport: 400x640
+     (full size). At 1000px: 280x448. At 600px: 168x268. The iPhone
+     @media block below then takes over on true phone widths. */
+  width: min(400px, 28vw);
+  height: min(640px, 44.8vw);
   transform: rotate(var(--rot, 0deg));
   z-index: 5;
 }

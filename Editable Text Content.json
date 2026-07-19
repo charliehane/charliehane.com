@@ -90,15 +90,18 @@
       },
       {
         "tag": "FILM 02",
-        "title": "UPLOADS IN PROGRESS - Preproduction #2"
+        "title": "UPLOADS IN PROGRESS - Preproduction #2",
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
       },
       {
         "tag": "FILM 03",
-        "title": "UPLOADS IN PROGRESS - Preproduction #3"
+        "title": "UPLOADS IN PROGRESS - Preproduction #3",
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
       },
       {
         "tag": "FILM 04",
-        "title": "UPLOADS IN PROGRESS - Preproduction #4"
+        "title": "UPLOADS IN PROGRESS - Preproduction #4",
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
       }
     ]
   },
@@ -115,15 +118,18 @@
       },
       {
         "tag": "002",
-        "title": "UPLOADS IN PROGRESS - Production #2"
+        "title": "UPLOADS IN PROGRESS - Production #2",
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
       },
       {
         "tag": "003",
-        "title": "UPLOADS IN PROGRESS - Production #3"
+        "title": "UPLOADS IN PROGRESS - Production #3",
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
       },
       {
         "tag": "004",
-        "title": "UPLOADS IN PROGRESS - Production #4"
+        "title": "UPLOADS IN PROGRESS - Production #4",
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
       }
     ]
   },
@@ -150,7 +156,8 @@
           "top": "24%",
           "right": "6%",
           "rot": "12deg"
-        }
+        },
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
       },
       {
         "tag": "003",
@@ -159,7 +166,8 @@
           "top": "44%",
           "left": "30%",
           "rot": "4deg"
-        }
+        },
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
       },
       {
         "tag": "004",
@@ -168,7 +176,8 @@
           "top": "78%",
           "left": "12%",
           "rot": "-14deg"
-        }
+        },
+        "youtubeUrl": "https://www.youtube.com/watch?v=jNQXAC9IVRw"
       }
     ],
     "skeletonCoffinPosition": {

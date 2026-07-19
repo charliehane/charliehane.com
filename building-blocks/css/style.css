@@ -2709,11 +2709,14 @@ body.director-fall-locked {
 }
 .dig-gravestone-center {
   position: absolute;
-  top: calc(75vh - 90px);
+  /* Doubled from 72x90 to 144x180 (Charlie: 'double the size of the
+     gravestone'). Top offset scales with the height so the base still
+     sits on the grass line at 75vh. */
+  top: calc(75vh - 180px);
   left: 50%;
   transform: translateX(-50%);
-  width: 72px;
-  height: 90px;
+  width: 144px;
+  height: 180px;
   z-index: 6;
   pointer-events: none;
 }

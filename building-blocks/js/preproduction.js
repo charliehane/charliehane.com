@@ -832,6 +832,46 @@
     // another block is hit.' The kill-existing loop at the top of
     // showProjectPopup handles the new-click case; the popup stays
     // visible in the top-center area indefinitely otherwise.
+    //
+    // …EXCEPT: Charlie's follow-up: 'when the next ? box comes into
+    // view on JUST the iphone, i need the currently open video /
+    // description dialogue box to fade closed.' We remember which
+    // scene owns the shown popup so the IntersectionObserver below
+    // can detect the next brick entering view and close this one.
+    if (isPortraitPhone) popup._ownerScene = scene;
+  }
+
+  // iPhone-only: when any un-owning brick becomes 50% visible in the
+  // horizontal bike ride, fade the current popup closed. On desktop
+  // the 4s auto-hide handles it; on iPhone the popup persists (per
+  // Charlie's earlier spec) so we have to close it deliberately when
+  // the user has swiped past the film that owns it.
+  //
+  // Wait for content:loaded because bricks are rendered from templates
+  // by content-loader.js AFTER the JSON fetch resolves — if we call
+  // querySelectorAll('.brick') at script-parse time it returns []
+  // and the observer never watches anything.
+  const setupIPhonePopupAutoClose = () => {
+    if (!window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches) return;
+    const bricks = document.querySelectorAll('.brick');
+    if (!bricks.length || !('IntersectionObserver' in window)) return;
+    const obs = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const enteringScene = entry.target.closest('.scene');
+        const shown =
+          document.body.querySelector(':scope > .brick-popup.is-shown') ||
+          document.querySelector('.brick-popup.is-shown');
+        if (!shown || !shown._ownerScene) continue;
+        if (shown._ownerScene !== enteringScene) hidePopup(shown);
+      }
+    }, { root: null, threshold: 0.5 });
+    bricks.forEach(b => obs.observe(b));
+  };
+  if (document.querySelector('.brick')) {
+    setupIPhonePopupAutoClose();
+  } else {
+    document.addEventListener('content:loaded', setupIPhonePopupAutoClose, { once: true });
   }
 
   if (section && bikeEl) {

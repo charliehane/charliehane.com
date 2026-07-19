@@ -2787,6 +2787,21 @@ body.director-fall-locked {
   transform: rotate(var(--rot, 0deg));
   z-index: 5;
 }
+/* iPhone override — must come AFTER the base rule (source order wins
+   at equal specificity). The @media block way earlier in this file
+   set 130x220 but was overridden by the newer 400x640 base rule,
+   which caused Charlie's coffins to overlap on iPhone (viewport too
+   narrow to fit 400px-wide coffins at the pinned percentages). This
+   restores a phone-appropriate size — 2x the OLD iPhone size (130→260,
+   220→416) so the doubling still feels bigger without breaking layout. */
+@media (orientation: portrait) and (max-width: 500px) {
+  /* Sized so the rotated bounding box (up to +/-14deg tilt on the
+     pinned coffins) NEVER overlaps its neighbor at the JSON-pinned
+     top/left/right percentages. 200x320 was the OLD desktop size —
+     that layout fit fine, so it fits here too even after Charlie's
+     doubling on desktop. */
+  .coffin { width: 200px !important; height: 320px !important; }
+}
 .coffin-shape {
   width: 100%;
   height: 100%;

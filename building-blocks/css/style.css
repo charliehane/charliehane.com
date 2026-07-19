@@ -1825,7 +1825,18 @@ html.video-lightbox-open body {
    PRODUCER PAGE — owns the bike-hits-bricks horizontal world
    ============================================================ */
 
-.page-producer-ride { background: var(--ink); }
+.page-producer-ride {
+  background: var(--ink);
+  /* preproduction.js draws a .cursor-90s DOM cursor; hide the native
+     OS cursor everywhere on this page so only the pixel-arrow shows.
+     Matches the same pattern used on .page-landing / .page-sky
+     (production) / .page-editor-dig (postproduction). Touch devices
+     re-enable auto via the (hover: none) block near the top of this
+     file, so nothing changes on iPhone. */
+  cursor: none;
+}
+.page-producer-ride a,
+.page-producer-ride button { cursor: none; }
 .page-producer-ride .world-section { height: 2000vh; }
 /* Scene widths are stage-relative (via --stage-w) so scenes stay locked
    to the AE video underneath regardless of viewport aspect. */

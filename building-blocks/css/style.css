@@ -2800,16 +2800,20 @@ body.director-fall-locked {
 }
 .coffin-content {
   position: absolute;
-  top: 26%;
-  /* Tighter left/right padding matches the plush interior of the new
-     velvet coffin image (coffin.png) — the wooden frame eats more of
-     the visible area than the old flat SVG did. */
+  /* Shifted up (top 26% → 14%) so the video thumbnail — the first
+     child in .coffin-content — lands at the widest part of the
+     coffin hex (roughly the "shoulders" area) instead of below it.
+     Charlie: 'shift the thumbnail position up a bit so that it hits
+     that widest part of the coffin'. Text below (001 / title / credit)
+     drops down with justify-content: flex-start so the thumbnail
+     hugs the top rather than being centered in the remaining space. */
+  top: 14%;
   left: 20%;
   right: 20%;
-  bottom: 26%;
+  bottom: 20%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   text-align: center;
   font-family: var(--mono);
   z-index: 2;

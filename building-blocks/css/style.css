@@ -2629,7 +2629,12 @@ body.director-fall-locked {
   font-style: italic;
   font-size: clamp(15px, 1.6vw, 18px);
   line-height: 1.4;
-  max-width: 36ch;
+  /* Widened 36ch → 60ch so the paragraph wraps across fewer lines
+     and doesn't stack down into the gravestone below it (Charlie:
+     'the gravestone covers the description'). Wider lines also
+     push the text further past the gravestone's center-x column so
+     any residual vertical overlap has non-obscured text on each end. */
+  max-width: 60ch;
   margin: 0 auto;
   /* White so the lede stays legible against the green hills/grass
      that sit right behind it (Charlie: '"an editor..." text is not

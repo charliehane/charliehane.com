@@ -41,12 +41,8 @@ button { font: inherit; background: none; border: 0; padding: 0; }
 
 body {
   font-family: var(--sans);
-  /* Charlie: unify every page on a solid black canvas. Previously each
-     page painted its own bg (cream for landing/inner, sky-blue gradient
-     for production, dark ink/brown for pre/post). Now the base body is
-     black and the .page-* overrides all resolve to #000 too. */
-  background: #000;
-  color: var(--cream);
+  background: var(--cream);
+  color: var(--ink);
   font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -95,6 +91,13 @@ body {
 .nav a {
   color: #fa3941;   /* Charlie-specified nav red */
   font-weight: 700;
+  /* Black pill highlight — Charlie: 'the pills should ONLY be on
+     these' (the nav links). Same pattern as .world-caption. Kept
+     tight (small padding + radius) so the pill hugs each link
+     rather than looking like a chunky button. */
+  background: #000;
+  padding: 6px 12px;
+  border-radius: 4px;
 }
 .nav-sections a {
   position: relative;
@@ -1480,8 +1483,8 @@ html.video-lightbox-open body {
    ============================================================ */
 
 .page-inner {
-  background: #000;
-  color: var(--cream);
+  background: var(--cream);
+  color: var(--ink);
   cursor: none;
   overflow-x: hidden;
 }
@@ -1617,7 +1620,7 @@ html.video-lightbox-open body {
    ============================================================ */
 
 .page-editor-dig {
-  background: #000;
+  background: #0a0604;
   color: var(--cream);
   cursor: none;
   overflow-x: hidden;
@@ -1949,7 +1952,7 @@ html.video-lightbox-open body {
    ============================================================ */
 
 .page-producer-ride {
-  background: #000;
+  background: var(--ink);
   /* preproduction.js draws a .cursor-90s DOM cursor; hide the native
      OS cursor everywhere on this page so only the pixel-arrow shows.
      Matches the same pattern used on .page-landing / .page-sky
@@ -2349,7 +2352,7 @@ body.director-fall-locked {
    ============================================================ */
 
 .page-sky {
-  background: #000;   /* was sky-blue gradient — Charlie: unify on black */
+  background: linear-gradient(180deg, #cfe6f0 0%, #a8cfe2 50%, #d4e6ee 100%);
   cursor: none;
   overflow-x: hidden;
 }
@@ -2358,9 +2361,7 @@ body.director-fall-locked {
 .sky-bg {
   position: fixed;
   inset: 0;
-  /* Was sky-blue gradient; Charlie unified every page bg to black.
-     Clouds + birds now float against a night-sky black instead. */
-  background: #000;
+  background: linear-gradient(180deg, #cfe6f0 0%, #a8cfe2 50%, #d4e6ee 100%);
   z-index: -2;
 }
 
@@ -2457,10 +2458,7 @@ body.director-fall-locked {
    ============================================================ */
 
 .page-editor-dig {
-  /* Was sky-to-underground gradient (blue → grass → dirt → black);
-     Charlie unified every page bg to black. Hills / gravestone / grass
-     still layer on top. */
-  background: #000;
+  background: linear-gradient(180deg, #cfe6f0 0%, #a8cfe2 18%, #d4e6ee 24%, #4a6a3a 24.6%, #6a4a2a 25.2%, #050302 100%);
   background-attachment: fixed;
   color: var(--cream);
   cursor: none;
@@ -2478,8 +2476,7 @@ body.director-fall-locked {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 75vh;
-  /* Was sky-blue gradient; Charlie unified every page bg to black. */
-  background: #000;
+  background: linear-gradient(180deg, #cfe6f0 0%, #a8cfe2 70%, #d4e6ee 100%);
   z-index: 1;
 }
 
@@ -3482,9 +3479,7 @@ body.director-fall-locked {
 }
 .page-director {
   position: relative;
-  /* Was sky-blue gradient; Charlie unified every page bg to black.
-     Clouds + birds + lighthouse still float on top, now on night sky. */
-  background: #000;
+  background: linear-gradient(180deg, #cfe6f0 0%, #a8cfe2 50%, #d4e6ee 100%);
   background-attachment: fixed;
 }
 .page-director .sky-bg { display: none; }

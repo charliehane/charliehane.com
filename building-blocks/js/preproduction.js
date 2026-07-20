@@ -795,6 +795,11 @@
       document.removeEventListener('pointerdown', p._outsideDismiss, true);
       p._outsideDismiss = null;
     }
+    if (p._scrollDismiss) {
+      window.removeEventListener('scroll', p._scrollDismiss);
+      window.removeEventListener('wheel',  p._scrollDismiss);
+      p._scrollDismiss = null;
+    }
     // Un-explode the source ? brick so it fades back in immediately
     // (rather than waiting on the 5.2s safety timer in explodeBrick).
     // Charlie: 'I would love the ? to fade back in directly after'
@@ -905,8 +910,35 @@
     popup._sourceBrick = brick;
 
     if (!isPortraitPhone) {
-      // Desktop keeps its existing 4-second auto-hide.
-      popup._hideTimer = setTimeout(() => hidePopup(popup), 4000);
+      // Desktop: dismiss on the SECOND scroll burst. Charlie: 'you're
+      // able to scroll with it open one swipe, but on the second
+      // swipe it fades away, that way you never run into a situation
+      // where a ? is being even slightly blocked.' A "burst" is a
+      // run of scroll/wheel events separated by ~350ms of idle.
+      let burstIdx = -1;   // -1 = no burst yet, 0 = mid first burst, ...
+      let idleTimer = null;
+      const onScrollTick = () => {
+        // A new burst starts whenever idleTimer is null (nothing
+        // pending). Bump the counter, then arm the idle timer that
+        // resets us to "between bursts" state.
+        if (idleTimer === null) {
+          burstIdx++;
+          if (burstIdx >= 1) {   // 0 = first burst (keep), 1+ = second (dismiss)
+            hidePopup(popup);
+            return;
+          }
+        }
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => { idleTimer = null; }, 350);
+      };
+      popup._scrollDismiss = onScrollTick;
+      // Attached one frame later so the tick that opened this popup
+      // (bike jump ends with the world already scrolling) doesn't
+      // instantly count as the first burst.
+      requestAnimationFrame(() => {
+        window.addEventListener('scroll', onScrollTick, { passive: true });
+        window.addEventListener('wheel',  onScrollTick, { passive: true });
+      });
     } else {
       // iPhone: no auto-dismiss timer. Charlie: 'if they press (even
       // to begin swipping) anywhere OUTSIDE of the dialogue box, the

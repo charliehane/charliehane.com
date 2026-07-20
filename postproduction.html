@@ -84,6 +84,18 @@
            horizontally so its face points the way it's traveling. -->
       <div class="dig-worm dig-worm--rev" aria-hidden="true"></div>
 
+      <!-- BURIED TREASURE CHEST — desktop-only easter egg. Starts
+           hidden under a dirt patch. User digs it out with successive
+           clicks of the shovel cursor (data-dig increments 0→5); on
+           the 5th dig the dirt cover disappears and the chest is
+           clickable. Clicking the fully-revealed chest steps through
+           the 8-frame sprite (closed → open with gems + sparkles) and
+           then opens a bonus video in the lightbox. -->
+      <div class="dig-chest" id="digChest" data-dig="0" aria-hidden="true">
+        <div class="dig-chest-sprite"></div>
+        <div class="dig-chest-dirt" title="dig!"></div>
+      </div>
+
       <!-- coffins are rendered from content.json into this container -->
       <div data-template="coffinTpl" data-source="postproduction.coffins"></div>
 

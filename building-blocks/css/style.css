@@ -2855,6 +2855,78 @@ body.director-fall-locked {
   z-index: 5;
 }
 
+/* ============================================================
+   BURIED CHEST — desktop-only easter egg. Placed in a coffin-free
+   pocket of the underground (right: 22%, top: 62% — between
+   coffin #3 and #4, well clear of both). Starts hidden under a
+   dirt patch; postproduction-dig.js increments data-dig on each
+   shovel-click until the dirt disappears. Then the sprite is
+   clickable and JS steps through the 4x2 open animation before
+   opening a bonus video.
+   ============================================================ */
+.dig-chest {
+  position: absolute;
+  right: 22%;
+  top: 62%;
+  /* ~1/3 the size of a coffin (400x640 → ~130x140 for the chest
+     itself). Container is a bit bigger to give the dirt patch some
+     room to sit around the chest. */
+  width: 150px;
+  height: 150px;
+  /* z-index lower than coffins (5) so a coffin ALWAYS renders over
+     the chest if there were ever any placement overlap. Belt +
+     suspenders — the pinned positions already keep them apart. */
+  z-index: 3;
+  cursor: none;
+}
+/* Hide on iPhone / touch entirely — chest is desktop-only per
+   Charlie's spec ('ONLY on the computer version'). */
+@media (hover: none), (orientation: portrait) and (max-width: 500px) {
+  .dig-chest { display: none !important; }
+}
+.dig-chest-sprite {
+  position: absolute;
+  inset: 0;
+  background-image: url('assets/chest-sprite.png');
+  /* 4 columns × 2 rows spritesheet. background-size: 400% 200%
+     makes the FULL sheet 4x wider + 2x taller than the container,
+     so background-position 0/100% shifts between frames cleanly. */
+  background-size: 400% 200%;
+  background-position: 0% 0%;   /* frame 1 = closed chest */
+  background-repeat: no-repeat;
+  cursor: none;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.55));
+}
+.dig-chest-dirt {
+  position: absolute;
+  /* Slightly bigger than the chest so the dirt patch reads as a
+     mound, not a rectangle. */
+  inset: -18px;
+  background:
+    radial-gradient(circle at 35% 35%, rgba(0, 0, 0, 0.35) 0%, transparent 55%),
+    radial-gradient(circle at 70% 65%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+    linear-gradient(180deg, #5c3a1c 0%, #4a2f18 60%, #3a2412 100%);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55) inset,
+              0 6px 14px rgba(0, 0, 0, 0.45);
+  cursor: none;
+  transition: transform 0.18s ease, opacity 0.18s ease, clip-path 0.18s ease;
+}
+/* Each dig-click removes a slice of the dirt from the top. By
+   dig=5 the whole cover is gone and the chest is fully exposed. */
+.dig-chest[data-dig="0"] .dig-chest-dirt { clip-path: inset(0 0 0 0); }
+.dig-chest[data-dig="1"] .dig-chest-dirt { clip-path: inset(20% 0 0 0); }
+.dig-chest[data-dig="2"] .dig-chest-dirt { clip-path: inset(40% 0 0 0); }
+.dig-chest[data-dig="3"] .dig-chest-dirt { clip-path: inset(60% 0 0 0); }
+.dig-chest[data-dig="4"] .dig-chest-dirt { clip-path: inset(80% 0 0 0); }
+.dig-chest[data-dig="5"] .dig-chest-dirt { display: none; }
+/* Subtle hover feedback on the fully-dug chest so users know to
+   click it. */
+.dig-chest[data-dig="5"] .dig-chest-sprite:hover {
+  transform: scale(1.05);
+  transition: transform 0.15s ease;
+}
+
 /* Narrow-window fallback: below ~900px viewport width, the absolute-
    positioned pinned layout can no longer fit the fixed-size coffins
    side-by-side. Switch to a vertical flex stack (coffin → dirt →

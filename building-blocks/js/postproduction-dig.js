@@ -621,4 +621,87 @@
     applyParallax();
   }
 
+
+  // ============================================================
+  // BURIED CHEST — desktop-only easter egg. Charlie: 'hide the first
+  // image from this sprite sheet underneath the dirt… when a user
+  // COMPLETELY unburies it and then CLICKS it, have the chest
+  // animation happen of it opening, and then a new dialogue box with
+  // a new video pops up.'
+  //
+  // Flow:
+  //   1. Chest sits at right:22% top:62% in .dig-underground under
+  //      a dirt patch. data-dig starts at 0.
+  //   2. Every click on the dirt increments data-dig (CSS peels
+  //      the dirt back a slice at a time). At data-dig=5 the dirt
+  //      disappears entirely.
+  //   3. Click on the fully-revealed chest steps the sprite through
+  //      frames 1→8 (250ms/frame), then opens the video lightbox.
+  //   4. If user clicks the sprite before it's fully dug, the click
+  //      counts as another dig — so a chest never becomes 'stuck'.
+  //
+  // Touch devices are ruled out entirely via CSS display:none on
+  // .dig-chest inside the (hover: none) media block.
+  // ============================================================
+  const chestEl = document.getElementById('digChest');
+  if (chestEl && window.matchMedia('(hover: hover)').matches) {
+    const dirtEl   = chestEl.querySelector('.dig-chest-dirt');
+    const spriteEl = chestEl.querySelector('.dig-chest-sprite');
+    const DIG_CLICKS_NEEDED = 5;
+    const CHEST_VIDEO_URL   = 'https://www.youtube.com/watch?v=jNQXAC9IVRw';
+    // Sprite is 4 cols × 2 rows = 8 frames total.
+    const COLS = 4;
+    const ROWS = 2;
+    const TOTAL_FRAMES = COLS * ROWS;
+    const FRAME_MS = 90;
+
+    let digCount = 0;
+    let isOpening = false;
+
+    const incrementDig = () => {
+      digCount = Math.min(digCount + 1, DIG_CLICKS_NEEDED);
+      chestEl.dataset.dig = String(digCount);
+    };
+
+    const playOpenAnimation = () => {
+      if (isOpening) return;
+      isOpening = true;
+      let frame = 0;
+      const step = () => {
+        const col = frame % COLS;
+        const row = Math.floor(frame / COLS);
+        // With background-size: 400% 200%, background-position 0%..100%
+        // moves the sheet by exactly one frame per (100/(cols-1))% or
+        // (100/(rows-1))% — so col/(cols-1)*100% picks the right column
+        // and row/(rows-1)*100% picks the right row.
+        spriteEl.style.backgroundPosition =
+          `${(col / (COLS - 1)) * 100}% ${(row / (ROWS - 1)) * 100}%`;
+        frame++;
+        if (frame < TOTAL_FRAMES) {
+          setTimeout(step, FRAME_MS);
+        } else {
+          // Small beat after the last frame so the "fully open with
+          // sparkles" pose registers before the lightbox blows in.
+          setTimeout(() => {
+            if (window.VideoLightbox) window.VideoLightbox.open(CHEST_VIDEO_URL);
+          }, 380);
+        }
+      };
+      step();
+    };
+
+    // Clicks anywhere on the chest container while it's still
+    // buried count as a dig; clicks after it's fully dug play the
+    // animation. Two separate elements (dirt + sprite) both listen
+    // via delegation on the parent so no click is missed.
+    chestEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (digCount < DIG_CLICKS_NEEDED) {
+        incrementDig();
+      } else {
+        playOpenAnimation();
+      }
+    });
+  }
+
 })();

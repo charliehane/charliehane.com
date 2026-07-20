@@ -56,6 +56,14 @@
   `;
   document.body.appendChild(wrap);
 
+  // The stick-cursor is injected AFTER lottie-loader.js has already
+  // done its initial sweep, so we have to kick a fresh sweep here
+  // ourselves — otherwise the old SVG fallback (line-wind) stays
+  // stuck on the cursor on first load, and only a refresh happens to
+  // win the race with the content:loaded event. Explicitly sweeping
+  // here removes that race entirely.
+  if (typeof window.loadLotties === 'function') window.loadLotties();
+
   // The cursor figure is a 10-frame sprite (assets/you-sprite.png) — CSS
   // cycles the background-position via steps() animation to "rotate" through
   // the frames. See .stick-cursor .stick-spin in style.css.

@@ -1001,7 +1001,14 @@ body {
   transform: translate(-50%, 0) scale(0.94);
   transform-origin: bottom center;
   transition: opacity 0.35s ease, transform 0.35s cubic-bezier(.3,1.5,.5,1);
-  z-index: 5;
+  /* Must sit ABOVE .world-fg-video (z-index: 10) — otherwise the
+     FG coal-strip / biker renders on top of the popup and covers
+     the video thumbnail / description on narrow-window resizes,
+     even after switching to bottom-anchoring. Charlie's fix ('its
+     top is outside the realm of the bg fg videos') only helps the
+     upward extension; anything the popup overlaps in the FG area
+     still needs to lose the z-stack race, so we bump it here. */
+  z-index: 15;
 }
 .brick-popup.is-shown {
   opacity: 1;
@@ -1034,17 +1041,33 @@ body {
 .scene--03 .brick-popup,
 .scene--04 .brick-popup,
 .scene--05 .brick-popup { left: calc(var(--brick-left-pct, 50%) + 44px); }
-/* Popups now TOP-anchored instead of bottom-anchored. Growing down
-   from a fixed top means the title/tag is always visible no matter
-   how tall the popup content is — Charlie: 'the dialogue box that
-   pops up… is too high to the point where it's getting cut off on
-   the top… the title in the top of the dialogue box always, always,
-   always needs to be fully viewable.' */
+/* Popups BOTTOM-anchored so the popup grows UPWARD as content gets
+   taller. On narrow-desktop resizes the tall popup (title +
+   description + thumbnail) was overflowing the bottom of the scene
+   and getting covered by foreground elements — Charlie: 'I would
+   rather its alignment be upward rather than downward in this case,
+   even if that means its top is outside the realm of the bg fg
+   videos.' `.world-track-clip` uses overflow-x: clip; overflow-y:
+   visible, so the top of a tall popup can safely extend past the
+   scene without being clipped. */
 .scene--01 .brick-popup,
 .scene--02 .brick-popup,
 .scene--03 .brick-popup,
 .scene--04 .brick-popup,
-.scene--05 .brick-popup { top: 4vh; bottom: auto; }
+.scene--05 .brick-popup { bottom: 4vh; top: auto; }
+
+/* While ANY brick popup is open (body flag set by preproduction.js),
+   lift the .world-track-clip above the FG video (z:10). We have to
+   target the CLIP, not .world-track — .world-track sits INSIDE
+   .world-track-clip which itself has z-index:1, so bumping the
+   inner track only wins inside that trapped context. Lifting the
+   clip promotes the entire subtree (including the popup) above the
+   FG at the world-stage level. When the popup closes, the flag goes
+   away and biker/coal-strip return to rendering in front of the
+   bricks during normal riding. */
+body.brick-popup-open .world-track-clip {
+  z-index: 20;
+}
 
 /* Portrait iPhone: pin the brick popup HORIZONTALLY centered at the
    TOP of the viewport, so it doesn't cover the bike/scene below.
@@ -2909,42 +2932,37 @@ body.director-fall-locked {
   background-repeat: no-repeat;
   cursor: none;
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.55));
-  /* Chest is FULLY there under the dirt — but we use clip-path on
-     the sprite itself to hide/reveal it, INSTEAD of a separate dirt
-     cover element. Charlie's take: 'I want just the normal dirt
-     removal that happens on the REST OF THE PAGE to be the thing
-     that reveals it.' So whatever the underground shows behind the
-     chest IS the dirt covering it. As we clip less of the sprite
-     (from bottom → top), the chest visibly emerges from the exact
-     same dirt gradient it sits in. Zero color mismatch, zero rectangle. */
+  /* Chest is always fully rendered — the <canvas> layered on top
+     is what hides/reveals it. JS fills the canvas with dirt-colored
+     pixels and uses destination-out compositing to LITERALLY erase
+     circles where the shovel passes, so the chest visibly emerges
+     from the dirt only in the spots the user has dug. Charlie: 'the
+     dirt being removed by the cursor is what reveals it'. */
   opacity: 1;
-  clip-path: inset(0 0 100% 0);   /* fully hidden at data-dig=0 */
-  transition: clip-path 0.18s ease;
 }
-.dig-chest[data-dig="1"] .dig-chest-sprite { clip-path: inset(0 0 80% 0); }
-.dig-chest[data-dig="2"] .dig-chest-sprite { clip-path: inset(0 0 60% 0); }
-.dig-chest[data-dig="3"] .dig-chest-sprite { clip-path: inset(0 0 40% 0); }
-.dig-chest[data-dig="4"] .dig-chest-sprite { clip-path: inset(0 0 20% 0); }
-.dig-chest[data-dig="5"] .dig-chest-sprite { clip-path: inset(0px 0px 0px 0px); }
 .dig-chest-dirt {
   position: absolute;
-  /* -50px inset gives a ~250x250 dig zone around the chest center
-     so the shovel can rake anywhere in that area to accumulate
-     dig progress. */
+  /* -50px inset gives a ~250x250 dirt patch around the chest. */
   inset: -50px;
-  /* No visible cover — the sprite's own clip-path handles all the
-     hiding/revealing so what "covers" the chest is the actual
-     underground gradient (no separate rectangle). This element is
-     just a pointer-events target for the shovel's mousemove tracker. */
-  background: transparent;
+  /* Dirt-colored gradient matching the surrounding underground so
+     the covered chest just reads as more dirt. */
+  background:
+    radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.05), transparent 60%),
+    linear-gradient(180deg, #3a2516 0%, #2a1810 60%, #1a0e08 100%);
   cursor: none;
+  /* Direction-aware clip-path — the first swipe writes data-dig-dir
+     on .dig-chest, and each direction picks a different edge to
+     recede from. --dig-progress goes 0 → 1 as the shovel travels. */
+  --p: calc(var(--dig-progress, 0) * 100%);
+  clip-path: inset(0 0 0 var(--p));   /* default: reveals L → R */
+  transition: clip-path 60ms linear;
 }
-/* Once fully dug, hide the dirt hit-area too so it doesn't sit on
-   top of the chest and steal the click event. */
-.dig-chest[data-dig="5"] .dig-chest-dirt { display: none; }
-/* Subtle hover feedback on the fully-dug chest so users know to
-   click it. */
-.dig-chest[data-dig="5"] .dig-chest-sprite:hover {
+.dig-chest[data-dig-dir="right"] .dig-chest-dirt { clip-path: inset(0 0 0 var(--p)); }
+.dig-chest[data-dig-dir="left"]  .dig-chest-dirt { clip-path: inset(0 var(--p) 0 0); }
+.dig-chest[data-dig-dir="down"]  .dig-chest-dirt { clip-path: inset(var(--p) 0 0 0); }
+.dig-chest[data-dig-dir="up"]    .dig-chest-dirt { clip-path: inset(0 0 var(--p) 0); }
+.dig-chest.is-fully-dug .dig-chest-dirt { display: none; }
+.dig-chest.is-fully-dug .dig-chest-sprite:hover {
   transform: scale(1.05);
   transition: transform 0.15s ease;
 }

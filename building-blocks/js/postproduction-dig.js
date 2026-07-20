@@ -647,60 +647,68 @@
   if (chestEl && window.matchMedia('(hover: hover)').matches) {
     const dirtEl   = chestEl.querySelector('.dig-chest-dirt');
     const spriteEl = chestEl.querySelector('.dig-chest-sprite');
-    const CHEST_VIDEO_URL = 'https://www.youtube.com/watch?v=jNQXAC9IVRw';
-    // Sprite is 4 cols × 2 rows = 8 frames total.
-    const COLS = 4;
-    const ROWS = 2;
-    const TOTAL_FRAMES = COLS * ROWS;
-    const FRAME_MS = 90;
+    // URL comes from postproduction.chestVideoUrl in Editable Text
+    // Content.json (labeled "Secrete Video - Post production" in
+    // Pages CMS). Read lazily at click time so CMS edits take effect
+    // without a code change, and fall back to the demo video if the
+    // content hasn't loaded yet.
+    const CHEST_VIDEO_URL_FALLBACK = 'https://www.youtube.com/watch?v=jNQXAC9IVRw';
+    const getChestVideoUrl = () =>
+      (window.__CONTENT__ && window.__CONTENT__.postproduction &&
+       window.__CONTENT__.postproduction.chestVideoUrl) ||
+      CHEST_VIDEO_URL_FALLBACK;
+    const COLS = 4, ROWS = 2, TOTAL_FRAMES = COLS * ROWS, FRAME_MS = 90;
 
-    // Charlie: 'I do not want the user to need to click to dig, I
-    // want the digging of the dirt to work as the key.' Track the
-    // cumulative distance the mouse (which visually IS the shovel)
-    // travels while over the dirt. Each pixel of movement = a bit
-    // of digging. At ~700px of accumulated shovel travel the dirt
-    // is fully cleared and the chest becomes clickable.
-    const MAX_DIG_DISTANCE_PX = 700;
+    // Charlie: 'the direction it is revealed be determined by the
+    // direction the first cursor swipe came in at.' First mousemove
+    // over the dirt picks the dominant axis of motion → sets
+    // data-dig-dir on .dig-chest (left/right/up/down). Then every
+    // subsequent pixel of shovel travel in that same axis grows
+    // --dig-progress from 0 → 1, which the CSS turns into a
+    // clip-path inset from the trailing edge — dirt physically
+    // recedes the way the shovel is pushing.
+    const MAX_DIG_DISTANCE_PX = 500;
     let digDistance = 0;
-    let lastX = null;
-    let lastY = null;
+    let lastX = null, lastY = null;
+    let dir = null;                    // 'left' | 'right' | 'up' | 'down'
+    let axis = null;                   // 'x' | 'y' — derived from dir
     let isOpening = false;
     let isFullyDug = false;
 
-    const DIRT_STAGES = 5;   // matches [data-dig="1"…"5"] CSS clip-path steps
-
-    const updateDigVisual = () => {
-      const progress = Math.min(1, digDistance / MAX_DIG_DISTANCE_PX);
-      // Map progress [0..1] onto discrete data-dig steps [0..5].
-      const step = Math.min(DIRT_STAGES, Math.floor(progress * DIRT_STAGES) +
-                            (progress > 0 ? 1 : 0));
-      chestEl.dataset.dig = String(step);
-      // Charlie: 'once 90% of the dirt is off the chest, the user is
-      // able to CLICK THE CHEST.' Snap the dirt to fully gone once we
-      // cross 90%, and unlock clicks.
-      if (progress >= 0.9 && !isFullyDug) {
+    const setProgress = (p) => {
+      chestEl.style.setProperty('--dig-progress', p);
+      if (p >= 1 && !isFullyDug) {
         isFullyDug = true;
-        chestEl.dataset.dig = String(DIRT_STAGES);
+        chestEl.classList.add('is-fully-dug');
       }
     };
 
-    // mousemove distance on the WHOLE chest container (dirt or
-    // sprite) = shovel travel = dig progress. Listening on the
-    // container catches every pixel the mouse crosses regardless of
-    // which child element is under the cursor mid-motion.
-    chestEl.addEventListener('mousemove', (e) => {
+    dirtEl.addEventListener('mousemove', (e) => {
       if (isFullyDug) return;
-      if (lastX !== null) {
-        digDistance += Math.hypot(e.clientX - lastX, e.clientY - lastY);
-        updateDigVisual();
+      if (lastX === null) { lastX = e.clientX; lastY = e.clientY; return; }
+      const dx = e.clientX - lastX, dy = e.clientY - lastY;
+      lastX = e.clientX; lastY = e.clientY;
+
+      // Lock in the reveal direction the first time we see real motion.
+      if (!dir && (Math.abs(dx) > 1 || Math.abs(dy) > 1)) {
+        if (Math.abs(dx) >= Math.abs(dy)) {
+          dir  = dx >= 0 ? 'right' : 'left';
+          axis = 'x';
+        } else {
+          dir  = dy >= 0 ? 'down' : 'up';
+          axis = 'y';
+        }
+        chestEl.dataset.digDir = dir;
       }
-      lastX = e.clientX;
-      lastY = e.clientY;
+      if (!dir) return;
+
+      // Only motion IN the locked axis counts as digging — otherwise
+      // shovel wiggle perpendicular to the swipe direction wouldn't
+      // physically be brushing dirt off.
+      digDistance += axis === 'x' ? Math.abs(dx) : Math.abs(dy);
+      setProgress(Math.min(1, digDistance / MAX_DIG_DISTANCE_PX));
     });
-    chestEl.addEventListener('mouseleave', () => {
-      lastX = null;
-      lastY = null;
-    });
+    dirtEl.addEventListener('mouseleave', () => { lastX = null; lastY = null; });
 
     const playOpenAnimation = () => {
       if (isOpening) return;
@@ -715,28 +723,16 @@
         if (frame < TOTAL_FRAMES) {
           setTimeout(step, FRAME_MS);
         } else {
-          // Charlie: 'when the chest opens fully, the video
-          // automatically opens up and plays.' Small beat after the
-          // last frame so the fully-open pose registers before the
-          // lightbox blows in.
           setTimeout(() => {
-            if (window.VideoLightbox) window.VideoLightbox.open(CHEST_VIDEO_URL);
+            if (window.VideoLightbox) window.VideoLightbox.open(getChestVideoUrl());
           }, 380);
         }
       };
       step();
     };
 
-    // Click handler on the whole chest container. Once the dig has
-    // finished (isFullyDug true) OR the dirt is display:none in CSS
-    // (belt-and-suspenders for anyone who somehow dug past 100% or
-    // hit an odd state), any click opens the chest.
-    chestEl.addEventListener('click', (e) => {
-      const dirtGone =
-        isFullyDug ||
-        chestEl.dataset.dig === String(DIRT_STAGES) ||
-        getComputedStyle(dirtEl).display === 'none';
-      if (!dirtGone) return;
+    spriteEl.addEventListener('click', (e) => {
+      if (!isFullyDug) return;
       e.stopPropagation();
       playOpenAnimation();
     });

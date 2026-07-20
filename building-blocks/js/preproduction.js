@@ -789,9 +789,21 @@
   function hidePopup(p) {
     p.classList.remove('is-shown');
     clearTimeout(p._hideTimer);
+    // Clear the desktop portal's inline positioning so when the popup
+    // is re-parented and shown again from a different brick, we don't
+    // inherit stale coordinates.
+    p.style.position = '';
+    p.style.left     = '';
+    p.style.right    = '';
+    p.style.top      = '';
+    p.style.bottom   = '';
+    p.style.zIndex   = '';
     if (p._portalParent) {
       p._portalParent.appendChild(p);
       p._portalParent = null;
+    }
+    if (!document.querySelector('.brick-popup.is-shown')) {
+      document.body.classList.remove('brick-popup-open');
     }
   }
 
@@ -810,18 +822,54 @@
     const isPortraitPhone =
       window.matchMedia('(orientation: portrait) and (max-width: 500px)').matches;
 
-    if (isPortraitPhone) {
-      // Portal out of the horizontally-translating .world-track subtree.
-      // .world-track has a `transform` which makes any position:fixed
-      // descendant compute against .world-track instead of the viewport,
-      // so the CSS override 'top:12%;left:50%' only works after reparent.
-      popup._portalParent = popup.parentElement;
-      document.body.appendChild(popup);
+    // Portal BOTH desktop AND phone popups out to <body>. The .world-
+    // track ancestor has a `transform` which:
+    //   (a) creates a stacking context that traps any inner z-index
+    //       below the FG video (biker/coal-strip render on top of the
+    //       popup card), and
+    //   (b) makes position:fixed descendants compute against the track
+    //       instead of the viewport.
+    // Reparenting to <body> escapes both problems. We remember the
+    // original parent on popup._portalParent so hidePopup can put it
+    // back for the next open.
+    popup._portalParent = popup.parentElement;
+    document.body.appendChild(popup);
+
+    // Desktop: pin the popup at fixed viewport coordinates centered
+    // horizontally on the brick, with its bottom just above the brick
+    // top (matching the original "popup grows upward from the brick"
+    // feel). iPhone keeps its own CSS-driven fixed top-center layout.
+    if (!isPortraitPhone) {
+      const brickRect = brick.getBoundingClientRect();
+      // Popup width comes from CSS (340 desktop, 220 on narrow via
+      // the tiny-screen media query at line 1991) — read it live so we
+      // clamp correctly whichever rule wins.
+      const popupW = popup.offsetWidth || 340;
+      const MARGIN = 16;
+      const cx = brickRect.left + brickRect.width / 2;
+      // .brick-popup base transform includes translate(-50%) so `left`
+      // is the popup CENTER. Clamp that center so `left ± popupW/2`
+      // stays inside [MARGIN, innerWidth - MARGIN].
+      const halfW = popupW / 2;
+      const clampedLeft = Math.max(
+        MARGIN + halfW,
+        Math.min(cx, window.innerWidth - MARGIN - halfW)
+      );
+      // Anchor by BOTTOM so growth is upward (Charlie's ask).
+      const bottomFromViewportBottom =
+        window.innerHeight - brickRect.top + 12; // 12px gap above brick
+      popup.style.position = 'fixed';
+      popup.style.left     = `${clampedLeft}px`;
+      popup.style.right    = 'auto';
+      popup.style.top      = 'auto';
+      popup.style.bottom   = `${bottomFromViewportBottom}px`;
+      popup.style.zIndex   = '9999';
     }
 
     popup.classList.remove('is-shown');
     void popup.offsetWidth;
     popup.classList.add('is-shown');
+    document.body.classList.add('brick-popup-open');
 
     if (!isPortraitPhone) {
       // Desktop keeps its existing 4-second auto-hide.

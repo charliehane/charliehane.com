@@ -218,6 +218,12 @@ content:
               - { name: right, label: Right (%) }
               - { name: rot,   label: Rotation }
 
+          - name: chestVideoUrl
+            label: Secrete Video - Post production
+            type: string
+            required: false
+            description: 'YouTube URL that opens when the buried treasure chest is fully dug up (desktop-only easter egg).'
+
       # ----------------------------------------------------------
       # MENUS — inter-page navigation blocks
       # ----------------------------------------------------------

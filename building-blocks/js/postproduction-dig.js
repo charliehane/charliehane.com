@@ -645,7 +645,6 @@
   // ============================================================
   const chestEl = document.getElementById('digChest');
   if (chestEl && window.matchMedia('(hover: hover)').matches) {
-    const dirtEl   = chestEl.querySelector('.dig-chest-dirt');
     const spriteEl = chestEl.querySelector('.dig-chest-sprite');
     // URL comes from postproduction.chestVideoUrl in Editable Text
     // Content.json (labeled "Secrete Video - Post production" in
@@ -659,56 +658,61 @@
       CHEST_VIDEO_URL_FALLBACK;
     const COLS = 4, ROWS = 2, TOTAL_FRAMES = COLS * ROWS, FRAME_MS = 90;
 
-    // Charlie: 'the direction it is revealed be determined by the
-    // direction the first cursor swipe came in at.' First mousemove
-    // over the dirt picks the dominant axis of motion → sets
-    // data-dig-dir on .dig-chest (left/right/up/down). Then every
-    // subsequent pixel of shovel travel in that same axis grows
-    // --dig-progress from 0 → 1, which the CSS turns into a
-    // clip-path inset from the trailing edge — dirt physically
-    // recedes the way the shovel is pushing.
-    const MAX_DIG_DISTANCE_PX = 500;
-    let digDistance = 0;
-    let lastX = null, lastY = null;
-    let dir = null;                    // 'left' | 'right' | 'up' | 'down'
-    let axis = null;                   // 'x' | 'y' — derived from dir
-    let isOpening = false;
-    let isFullyDug = false;
+    // Charlie: 'as natural as the rest of the dirt around it to
+    // remove.' No separate dirt cover, no rectangular patch, no
+    // direction lock. The chest sprite starts invisible under the
+    // underground gradient; every pixel of shovel travel WITHIN a
+    // radius of the chest counts as digging and fades the sprite in
+    // proportionally. Once opacity hits 1 the chest is "unburied"
+    // and clickable.
+    //
+    // DIG_RADIUS is the radius (in CSS px) around the chest center
+    // that "counts" as digging near it — outside this, mouse motion
+    // doesn't touch the chest at all. MAX_DIG_DISTANCE_PX is the
+    // cumulative in-radius travel needed to fully reveal.
+    const DIG_RADIUS         = 140;
+    const MAX_DIG_DISTANCE_PX = 350;
+    let   digDistance        = 0;
+    let   lastX = null, lastY = null;
+    let   isOpening = false;
+    let   isFullyDug = false;
 
     const setProgress = (p) => {
-      chestEl.style.setProperty('--dig-progress', p);
+      spriteEl.style.opacity = String(p);
       if (p >= 1 && !isFullyDug) {
         isFullyDug = true;
         chestEl.classList.add('is-fully-dug');
       }
     };
 
-    dirtEl.addEventListener('mousemove', (e) => {
+    // Attach on window so mousemove works even when the cursor isn't
+    // physically over any chest element — the sprite starts at
+    // pointer-events:none and there's no cover to catch events.
+    window.addEventListener('mousemove', (e) => {
       if (isFullyDug) return;
-      if (lastX === null) { lastX = e.clientX; lastY = e.clientY; return; }
-      const dx = e.clientX - lastX, dy = e.clientY - lastY;
-      lastX = e.clientX; lastY = e.clientY;
-
-      // Lock in the reveal direction the first time we see real motion.
-      if (!dir && (Math.abs(dx) > 1 || Math.abs(dy) > 1)) {
-        if (Math.abs(dx) >= Math.abs(dy)) {
-          dir  = dx >= 0 ? 'right' : 'left';
-          axis = 'x';
-        } else {
-          dir  = dy >= 0 ? 'down' : 'up';
-          axis = 'y';
-        }
-        chestEl.dataset.digDir = dir;
+      // Chest center in viewport coords, computed live so it works
+      // during scroll / resize / responsive re-layouts.
+      const r  = chestEl.getBoundingClientRect();
+      if (r.width === 0) return;   // chest hidden (iPhone media query)
+      const cx = r.left + r.width  / 2;
+      const cy = r.top  + r.height / 2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const distFromChest = Math.hypot(dx, dy);
+      if (distFromChest > DIG_RADIUS) {
+        lastX = null; lastY = null;
+        return;
       }
-      if (!dir) return;
-
-      // Only motion IN the locked axis counts as digging — otherwise
-      // shovel wiggle perpendicular to the swipe direction wouldn't
-      // physically be brushing dirt off.
-      digDistance += axis === 'x' ? Math.abs(dx) : Math.abs(dy);
-      setProgress(Math.min(1, digDistance / MAX_DIG_DISTANCE_PX));
-    });
-    dirtEl.addEventListener('mouseleave', () => { lastX = null; lastY = null; });
+      if (lastX !== null) {
+        // Fade with a soft falloff: motion right on top of the chest
+        // reveals faster than motion at the edge of DIG_RADIUS.
+        const proximity = 1 - distFromChest / DIG_RADIUS;
+        const step = Math.hypot(e.clientX - lastX, e.clientY - lastY) * proximity;
+        digDistance += step;
+        setProgress(Math.min(1, digDistance / MAX_DIG_DISTANCE_PX));
+      }
+      lastX = e.clientX; lastY = e.clientY;
+    }, { passive: true });
 
     const playOpenAnimation = () => {
       if (isOpening) return;

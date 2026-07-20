@@ -2925,53 +2925,30 @@ body.director-fall-locked {
 .dig-chest-sprite {
   position: absolute;
   inset: 0;
-  /* Root-relative path — CSS resolves relative URLs against the
-     stylesheet's location (building-blocks/css/), not the HTML page.
-     'assets/chest-sprite.png' would 404 as
-     /building-blocks/css/assets/chest-sprite.png; the actual file
-     lives at /assets/chest-sprite.png (repo root). */
   background-image: url('../../assets/chest-sprite.png');
   /* 4 columns × 2 rows spritesheet. background-size: 400% 200%
      makes the FULL sheet 4x wider + 2x taller than the container,
      so background-position 0/100% shifts between frames cleanly. */
   background-size: 400% 200%;
-  background-position: 0% 0%;   /* frame 1 = closed chest */
+  background-position: 0% 0%;
   background-repeat: no-repeat;
   cursor: none;
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.55));
-  /* Chest is always fully rendered — the <canvas> layered on top
-     is what hides/reveals it. JS fills the canvas with dirt-colored
-     pixels and uses destination-out compositing to LITERALLY erase
-     circles where the shovel passes, so the chest visibly emerges
-     from the dirt only in the spots the user has dug. Charlie: 'the
-     dirt being removed by the cursor is what reveals it'. */
+  /* Starts invisible under the underground gradient. JS bumps
+     opacity as the user drags the shovel near the chest — no
+     rectangular cover, no bar to fill, just the sprite emerging
+     out of the dirt. */
+  opacity: 0;
+  transition: opacity 0.18s linear;
+  pointer-events: none;
+}
+.dig-chest.is-fully-dug .dig-chest-sprite {
   opacity: 1;
+  pointer-events: auto;
 }
-.dig-chest-dirt {
-  position: absolute;
-  /* -50px inset gives a ~250x250 dirt patch around the chest. */
-  inset: -50px;
-  /* Dirt-colored gradient matching the surrounding underground so
-     the covered chest just reads as more dirt. */
-  background:
-    radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.05), transparent 60%),
-    linear-gradient(180deg, #3a2516 0%, #2a1810 60%, #1a0e08 100%);
-  cursor: none;
-  /* Direction-aware clip-path — the first swipe writes data-dig-dir
-     on .dig-chest, and each direction picks a different edge to
-     recede from. --dig-progress goes 0 → 1 as the shovel travels. */
-  --p: calc(var(--dig-progress, 0) * 100%);
-  clip-path: inset(0 0 0 var(--p));   /* default: reveals L → R */
-  transition: clip-path 60ms linear;
-}
-.dig-chest[data-dig-dir="right"] .dig-chest-dirt { clip-path: inset(0 0 0 var(--p)); }
-.dig-chest[data-dig-dir="left"]  .dig-chest-dirt { clip-path: inset(0 var(--p) 0 0); }
-.dig-chest[data-dig-dir="down"]  .dig-chest-dirt { clip-path: inset(var(--p) 0 0 0); }
-.dig-chest[data-dig-dir="up"]    .dig-chest-dirt { clip-path: inset(0 0 var(--p) 0); }
-.dig-chest.is-fully-dug .dig-chest-dirt { display: none; }
 .dig-chest.is-fully-dug .dig-chest-sprite:hover {
   transform: scale(1.05);
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, opacity 0.18s linear;
 }
 
 /* Narrow-window fallback: below ~900px viewport width, the absolute-

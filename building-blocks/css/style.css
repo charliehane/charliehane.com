@@ -2911,7 +2911,26 @@ body.director-fall-locked {
               0 6px 14px rgba(0, 0, 0, 0.45);
   cursor: none;
   transition: transform 0.18s ease, opacity 0.18s ease, clip-path 0.18s ease;
+  /* X-marks-the-spot — a big red X in the middle of the dirt so
+     Charlie (and visitors) can spot the buried chest at a glance
+     against the surrounding dirt. Drawn via two rotated ::before /
+     ::after strokes so it's a real X, not text. */
 }
+.dig-chest-dirt::before,
+.dig-chest-dirt::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 68%;
+  height: 6px;
+  background: #fa3941;
+  border-radius: 2px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+.dig-chest-dirt::before { transform: translate(-50%, -50%) rotate(45deg); }
+.dig-chest-dirt::after  { transform: translate(-50%, -50%) rotate(-45deg); }
 /* Each dig-click removes a slice of the dirt from the top. By
    dig=5 the whole cover is gone and the chest is fully exposed. */
 .dig-chest[data-dig="0"] .dig-chest-dirt { clip-path: inset(0 0 0 0); }

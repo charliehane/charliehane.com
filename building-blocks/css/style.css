@@ -1034,11 +1034,17 @@ body {
 .scene--03 .brick-popup,
 .scene--04 .brick-popup,
 .scene--05 .brick-popup { left: calc(var(--brick-left-pct, 50%) + 44px); }
-.scene--01 .brick-popup { bottom: calc(68% + 12px); }
-.scene--02 .brick-popup { bottom: calc(68% + 12px); }
-.scene--03 .brick-popup { bottom: calc(64% + 12px); }
-.scene--04 .brick-popup { bottom: calc(68% + 12px); }
-.scene--05 .brick-popup { bottom: calc(68% + 12px); }
+/* Popups now TOP-anchored instead of bottom-anchored. Growing down
+   from a fixed top means the title/tag is always visible no matter
+   how tall the popup content is — Charlie: 'the dialogue box that
+   pops up… is too high to the point where it's getting cut off on
+   the top… the title in the top of the dialogue box always, always,
+   always needs to be fully viewable.' */
+.scene--01 .brick-popup,
+.scene--02 .brick-popup,
+.scene--03 .brick-popup,
+.scene--04 .brick-popup,
+.scene--05 .brick-popup { top: 4vh; bottom: auto; }
 
 /* Portrait iPhone: pin the brick popup HORIZONTALLY centered at the
    TOP of the viewport, so it doesn't cover the bike/scene below.
@@ -1406,10 +1412,14 @@ html.video-lightbox-open .shovel-cursor {
   animation: bikeJump 0.75s cubic-bezier(.3,-0.4,.5,1.5) 1;
 }
 @keyframes bikeJump {
-  0%   { transform: translateX(-50%) translateY(0)     rotate(0deg); }
-  35%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(-44vh) rotate(-10deg); }
-  55%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(-44vh) rotate(10deg); }
-  100% { transform: translateX(-50%) translateY(0)     rotate(0deg); }
+  0%   { transform: translateX(-50%) translateY(0) rotate(0deg); }
+  /* --aimY is set by preproduction.js per-click based on the actual
+     distance from bike top to brick bottom, so the jump lands right
+     at the brick no matter what viewport size shrinks it to.
+     Fallback -44vh if --aimY hasn't been set. */
+  35%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(var(--aimY, -44vh)) rotate(-10deg); }
+  55%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(var(--aimY, -44vh)) rotate(10deg); }
+  100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
 }
 
 /* outer wrapper handles "drive off right" drift; inner bike handles jump */
@@ -2177,10 +2187,10 @@ html.video-lightbox-open .shovel-cursor {
     animation: bikeJumpMobile 0.75s cubic-bezier(.3,-0.4,.5,1.5) 1;
   }
   @keyframes bikeJumpMobile {
-    0%   { transform: translateX(-50%) translateY(0)     rotate(0deg); }
-    35%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(-36vh) rotate(-10deg); }
-    55%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(-36vh) rotate(10deg); }
-    100% { transform: translateX(-50%) translateY(0)     rotate(0deg); }
+    0%   { transform: translateX(-50%) translateY(0) rotate(0deg); }
+    35%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(var(--aimY, -36vh)) rotate(-10deg); }
+    55%  { transform: translateX(calc(-50% + var(--aimX, 0px))) translateY(var(--aimY, -36vh)) rotate(10deg); }
+    100% { transform: translateX(-50%) translateY(0) rotate(0deg); }
   }
 }
 

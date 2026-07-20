@@ -893,34 +893,48 @@
         if (d < minD) { minD = d; target = b; }
       }
       let aimX = 0;
+      let aimY = 0;
       if (target) {
         const r = target.getBoundingClientRect();
         const tCx = r.left + r.width / 2;
         aimX = Math.max(-MAX_AIM, Math.min(MAX_AIM, tCx - bikeCx));
+        // Charlie: 'scale the height of the biker jump to the height
+        // of the boxes… when I make the window really small, the
+        // boxes are technically not as high… you'd need to shorten
+        // the bikers jump proportionally.' Compute the vertical
+        // distance from bike top to brick bottom + a small overlap
+        // pad. The CSS keyframe reads --aimY to translate up by
+        // exactly that much, so the jump always lands at the brick
+        // regardless of viewport size. Falls back to 36vh if no target.
+        const BRICK_OVERLAP_PAD = 24;   // land w/ 24px overlap into brick
+        const rawAimY = bikeRect.top - r.bottom + BRICK_OVERLAP_PAD;
+        aimY = Math.max(rawAimY, -window.innerHeight * 0.65);   // safety cap
       }
       bikeEl.style.setProperty('--aimX', `${aimX}px`);
+      bikeEl.style.setProperty('--aimY', `${aimY}px`);
 
       bikeEl.classList.remove('is-jumping');
       void bikeEl.offsetWidth;
       bikeEl.classList.add('is-jumping');
 
+      // GUARANTEED popup open — Charlie: 'that dialogue box needs to
+      // open no matter what, no matter if the biker hits it or not.
+      // The most important thing about the website is that you're
+      // able to view the videos.' We still run the collision check
+      // (which triggers the brick explosion visual + immediate popup
+      // on a clean hit), but a fallback timer opens the popup
+      // regardless a beat later so no click is ever a dead end.
+      let popupOpened = false;
+      const openOnce = (brick) => {
+        if (popupOpened) return;
+        popupOpened = true;
+        showProjectPopup(brick);
+      };
+
       setTimeout(() => {
         if (!target) return;
         const brickR = target.getBoundingClientRect();
         if (!brickR.width) return;
-        // Measure the bike's ACTUAL bounding rect at collision-check
-        // time — getBoundingClientRect accounts for the CSS transform
-        // (translateY + rotate) at whatever animation frame we're on,
-        // so no vh-fraction math needed (which was mismatching between
-        // JS window.innerHeight and CSS vh on iOS Safari).
-        //
-        // Sample the bike TWICE (at ~mid-peak and ~end-of-peak) and
-        // count a hit if EITHER sample overlaps. Charlie reported
-        // 'only #4 worked when i was directly underneath it' — the
-        // animation cubic-bezier(.3,-0.4,.5,1.5) overshoots and
-        // rebounds, so the exact 'peak' position varies mid-animation.
-        // Multi-sample + tolerance = forgiving hit detection without
-        // becoming a fake auto-hit.
         const V_TOL = 20;
         const H_TOL = 10;
         const overlapsBrick = () => {
@@ -932,18 +946,24 @@
         };
         if (overlapsBrick()) {
           explodeBrick(target);
-          showProjectPopup(target);
+          openOnce(target);
         } else {
-          // Try again ~1 frame later in case the animation hadn't quite
-          // landed at peak on the first sample.
           setTimeout(() => {
             if (target && !target.dataset.exploded && overlapsBrick()) {
               explodeBrick(target);
-              showProjectPopup(target);
+              openOnce(target);
             }
           }, 40);
         }
       }, COLLISION_DELAY);
+
+      // Unconditional popup fallback — fires after the animation has
+      // settled. If the collision-hit path already opened it, openOnce
+      // no-ops; otherwise this makes sure Charlie's click always
+      // shows the video.
+      if (target) {
+        setTimeout(() => openOnce(target), COLLISION_DELAY + 250);
+      }
 
       setTimeout(() => { interactionLocked = false; }, 800);
     });

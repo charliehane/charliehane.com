@@ -2895,7 +2895,12 @@ body.director-fall-locked {
 .dig-chest-sprite {
   position: absolute;
   inset: 0;
-  background-image: url('assets/chest-sprite.png');
+  /* Root-relative path — CSS resolves relative URLs against the
+     stylesheet's location (building-blocks/css/), not the HTML page.
+     'assets/chest-sprite.png' would 404 as
+     /building-blocks/css/assets/chest-sprite.png; the actual file
+     lives at /assets/chest-sprite.png (repo root). */
+  background-image: url('../../assets/chest-sprite.png');
   /* 4 columns × 2 rows spritesheet. background-size: 400% 200%
      makes the FULL sheet 4x wider + 2x taller than the container,
      so background-position 0/100% shifts between frames cleanly. */

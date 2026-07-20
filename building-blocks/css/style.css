@@ -2575,6 +2575,12 @@ body.director-fall-locked {
 
 .dig-world {
   position: relative;
+  /* min-height (not height) so dig-world grows on short viewports.
+     The floor is calc(3300px + 75vh) — 75vh for the sky region and
+     ~3300px for the underground where coffin #4 (pinned at top:78%
+     + 640px height + rotation overhead + dirt tail) must fit. On
+     tall viewports 380vh wins and it still looks like a big world. */
+  min-height: calc(3300px + 75vh);
   height: 380vh;
   overflow: hidden;
 }
@@ -2901,9 +2907,11 @@ body.director-fall-locked {
 }
 .dig-chest-dirt {
   position: absolute;
-  /* Slightly bigger than the chest so the dirt patch reads as a
-     mound, not a rectangle. */
-  inset: -18px;
+  /* Bigger dirt hit area (was -18px) so the shovel can dig without
+     the user pixel-hunting the exact chest bounds — Charlie's shovel
+     movements weren't registering enough dig progress. -50px inset
+     gives a ~250x250 dig zone around the chest center. */
+  inset: -50px;
   background:
     radial-gradient(circle at 35% 35%, rgba(0, 0, 0, 0.35) 0%, transparent 55%),
     radial-gradient(circle at 70% 65%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
@@ -2958,15 +2966,14 @@ body.director-fall-locked {
    Only applies to landscape/tablet narrow widths; the true iPhone
    media query (portrait ≤500px) already has its own coffin sizing
    that fits its own pinned layout. */
-/* Trigger the flex-stack layout when EITHER the viewport is narrow
-   (max-width: 900px) OR the viewport is short (max-height: 1100px).
-   The absolute-positioned pinned layout only fits when dig-world's
-   380vh is at least ~2900px, i.e. viewport height ≥ ~950px. Below
-   that, coffin #4's pinned top:78% + its 640px height overshoots
-   the dig-underground and gets clipped (Charlie: 'why is this coffin
-   being cutoff' at 1000x700). Comma = OR in @media. */
-@media (max-width: 900px) and (min-width: 501px),
-       (max-height: 1100px) and (min-width: 501px) {
+/* Trigger the flex-stack layout ONLY on genuinely narrow viewports.
+   Charlie: 'coffins are ALWAYS stacked now, can we revert this' —
+   the max-height: 1100px trigger was catching the vast majority of
+   desktop windows. Reverted to width-only. Coffin #4 fitting into
+   dig-underground on short viewports is now handled by bumping
+   .dig-world's min-height (see rule below) so pinned layout has
+   enough vertical room regardless of viewport height. */
+@media (max-width: 900px) and (min-width: 501px) {
   /* Two containers to work with here:
      - .dig-underground : the dirt-gradient panel, was position:
        absolute. Made relative so it participates in flow and grows

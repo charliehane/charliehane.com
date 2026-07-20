@@ -845,6 +845,7 @@
       // the tiny-screen media query at line 1991) — read it live so we
       // clamp correctly whichever rule wins.
       const popupW = popup.offsetWidth || 340;
+      const popupH = popup.offsetHeight || 380;
       const MARGIN = 16;
       const cx = brickRect.left + brickRect.width / 2;
       // .brick-popup base transform includes translate(-50%) so `left`
@@ -855,15 +856,29 @@
         MARGIN + halfW,
         Math.min(cx, window.innerWidth - MARGIN - halfW)
       );
-      // Anchor by BOTTOM so growth is upward (Charlie's ask).
-      const bottomFromViewportBottom =
-        window.innerHeight - brickRect.top + 12; // 12px gap above brick
+      // Ideal: bottom-anchored 12px above the brick, popup grows
+      // upward. On fullscreen the brick can sit near the middle of a
+      // tall viewport, which pushes the popup top above y=0 and
+      // clips the FILM 0N title — Charlie: 'the top of the dialogue
+      // box is getting cutoff.' Clamp vertically: if the ideal
+      // position would push top above MARGIN, switch to top-anchored
+      // at MARGIN instead so the title is always the first thing you
+      // see. The .is-shown transform also translates the card up 12px
+      // — account for that too so the clamp is precise.
+      const IS_SHOWN_LIFT = 12;
+      const idealBottom = window.innerHeight - brickRect.top + 12;
+      const idealTop    = window.innerHeight - idealBottom - popupH - IS_SHOWN_LIFT;
       popup.style.position = 'fixed';
       popup.style.left     = `${clampedLeft}px`;
       popup.style.right    = 'auto';
-      popup.style.top      = 'auto';
-      popup.style.bottom   = `${bottomFromViewportBottom}px`;
       popup.style.zIndex   = '9999';
+      if (idealTop < MARGIN) {
+        popup.style.top    = `${MARGIN + IS_SHOWN_LIFT}px`;
+        popup.style.bottom = 'auto';
+      } else {
+        popup.style.top    = 'auto';
+        popup.style.bottom = `${idealBottom}px`;
+      }
     }
 
     popup.classList.remove('is-shown');

@@ -2909,7 +2909,20 @@ body.director-fall-locked {
   background-repeat: no-repeat;
   cursor: none;
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.55));
+  /* Hidden by default — Charlie: 'get rid of this ball thing'. The
+     old dirt-mound cover is now transparent, so the sprite would
+     show through and give the chest location away. Instead, fade
+     the sprite IN as the user digs. Opacity 0 pre-dig → nothing
+     visible in the underground until the shovel discovers the
+     spot. */
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
+.dig-chest[data-dig="1"] .dig-chest-sprite { opacity: 0.2; }
+.dig-chest[data-dig="2"] .dig-chest-sprite { opacity: 0.4; }
+.dig-chest[data-dig="3"] .dig-chest-sprite { opacity: 0.6; }
+.dig-chest[data-dig="4"] .dig-chest-sprite { opacity: 0.8; }
+.dig-chest[data-dig="5"] .dig-chest-sprite { opacity: 1; }
 .dig-chest-dirt {
   position: absolute;
   /* Bigger dirt hit area (was -18px) so the shovel can dig without
@@ -2917,13 +2930,14 @@ body.director-fall-locked {
      movements weren't registering enough dig progress. -50px inset
      gives a ~250x250 dig zone around the chest center. */
   inset: -50px;
-  background:
-    radial-gradient(circle at 35% 35%, rgba(0, 0, 0, 0.35) 0%, transparent 55%),
-    radial-gradient(circle at 70% 65%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
-    linear-gradient(180deg, #5c3a1c 0%, #4a2f18 60%, #3a2412 100%);
-  border-radius: 50%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55) inset,
-              0 6px 14px rgba(0, 0, 0, 0.45);
+  /* Fully transparent — Charlie: 'can you get rid of this ball thing
+     too?' The dirt cover is now invisible; the element still exists
+     purely to capture mousemove events for the shovel-dig tracker.
+     Users have to stumble across the chest with the shovel to
+     discover it. Also hides the chest sprite that's beneath (which
+     is what we want pre-dig — nothing tells the user a chest is
+     there). */
+  background: transparent;
   cursor: none;
   transition: transform 0.18s ease, opacity 0.18s ease, clip-path 0.18s ease;
 }

@@ -2909,35 +2909,32 @@ body.director-fall-locked {
   background-repeat: no-repeat;
   cursor: none;
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.55));
-  /* Hidden by default — Charlie: 'get rid of this ball thing'. The
-     old dirt-mound cover is now transparent, so the sprite would
-     show through and give the chest location away. Instead, fade
-     the sprite IN as the user digs. Opacity 0 pre-dig → nothing
-     visible in the underground until the shovel discovers the
-     spot. */
-  opacity: 0;
-  transition: opacity 0.2s ease;
+  /* Chest is FULLY there under the dirt — Charlie: 'I DO NOT want
+     this fade effect, I want the chest to be there under the ground
+     FULLY, the dirt ontop is what is hiding it.' Opacity always 1;
+     the .dig-chest-dirt cover is what visually hides it and gets
+     clipped away as the user digs. */
+  opacity: 1;
 }
-.dig-chest[data-dig="1"] .dig-chest-sprite { opacity: 0.2; }
-.dig-chest[data-dig="2"] .dig-chest-sprite { opacity: 0.4; }
-.dig-chest[data-dig="3"] .dig-chest-sprite { opacity: 0.6; }
-.dig-chest[data-dig="4"] .dig-chest-sprite { opacity: 0.8; }
-.dig-chest[data-dig="5"] .dig-chest-sprite { opacity: 1; }
 .dig-chest-dirt {
   position: absolute;
   /* Bigger dirt hit area (was -18px) so the shovel can dig without
-     the user pixel-hunting the exact chest bounds — Charlie's shovel
-     movements weren't registering enough dig progress. -50px inset
+     the user pixel-hunting the exact chest bounds. -50px inset
      gives a ~250x250 dig zone around the chest center. */
   inset: -50px;
-  /* Fully transparent — Charlie: 'can you get rid of this ball thing
-     too?' The dirt cover is now invisible; the element still exists
-     purely to capture mousemove events for the shovel-dig tracker.
-     Users have to stumble across the chest with the shovel to
-     discover it. Also hides the chest sprite that's beneath (which
-     is what we want pre-dig — nothing tells the user a chest is
-     there). */
-  background: transparent;
+  /* Opaque dirt that HIDES the chest sprite behind it. Radial
+     gradient: solid at center (matches underground gradient at
+     ~55% Y stop for seamless blend), soft-fades to transparent at
+     the edges so there's no hard-edged 'ball' silhouette against
+     the underground gradient — Charlie: 'get rid of this ball thing'
+     but 'the dirt ontop is what is hiding it'. Two solutions in one:
+     dark enough in the center to hide the chest, feathered enough
+     at the edges to blend into the surrounding dirt. */
+  background: radial-gradient(circle at 50% 50%,
+    #2a1810 0%,
+    #2a1810 42%,
+    rgba(42, 24, 16, 0.6) 62%,
+    rgba(42, 24, 16, 0)  100%);
   cursor: none;
   transition: transform 0.18s ease, opacity 0.18s ease, clip-path 0.18s ease;
 }

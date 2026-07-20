@@ -906,9 +906,15 @@
         // pad. The CSS keyframe reads --aimY to translate up by
         // exactly that much, so the jump always lands at the brick
         // regardless of viewport size. Falls back to 36vh if no target.
-        const BRICK_OVERLAP_PAD = 24;   // land w/ 24px overlap into brick
-        const rawAimY = bikeRect.top - r.bottom + BRICK_OVERLAP_PAD;
-        aimY = Math.max(rawAimY, -window.innerHeight * 0.65);   // safety cap
+        // translateY works in CSS coords where NEGATIVE moves UP. The
+        // brick sits ABOVE the bike, so we want a negative translateY
+        // whose magnitude equals (bike_top - brick_bottom). Subtract
+        // an overlap pad so the bike lands slightly INTO the brick.
+        const BRICK_OVERLAP_PAD = 24;
+        const rawAimY = r.bottom - bikeRect.top - BRICK_OVERLAP_PAD;
+        // Safety cap: don't allow a shift bigger than 65% of viewport
+        // (Math.max on two negatives returns the less-negative one).
+        aimY = Math.max(rawAimY, -window.innerHeight * 0.65);
       }
       bikeEl.style.setProperty('--aimX', `${aimX}px`);
       bikeEl.style.setProperty('--aimY', `${aimY}px`);

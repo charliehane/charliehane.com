@@ -658,60 +658,135 @@
       CHEST_VIDEO_URL_FALLBACK;
     const COLS = 4, ROWS = 2, TOTAL_FRAMES = COLS * ROWS, FRAME_MS = 90;
 
-    // Charlie: 'as natural as the rest of the dirt around it to
-    // remove.' No separate dirt cover, no rectangular patch, no
-    // direction lock. The chest sprite starts invisible under the
-    // underground gradient; every pixel of shovel travel WITHIN a
-    // radius of the chest counts as digging and fades the sprite in
-    // proportionally. Once opacity hits 1 the chest is "unburied"
-    // and clickable.
-    //
-    // DIG_RADIUS is the radius (in CSS px) around the chest center
-    // that "counts" as digging near it — outside this, mouse motion
-    // doesn't touch the chest at all. MAX_DIG_DISTANCE_PX is the
-    // cumulative in-radius travel needed to fully reveal.
-    const DIG_RADIUS         = 140;
-    const MAX_DIG_DISTANCE_PX = 350;
-    let   digDistance        = 0;
-    let   lastX = null, lastY = null;
-    let   isOpening = false;
-    let   isFullyDug = false;
+    // Chest sits under a canvas cover filled with the SAME gradient
+    // the .dig-underground uses, aligned so the gradient stripe
+    // inside the cover matches the stripe outside — no visible
+    // rectangle. Shovel motion erases the cover with the same 3-pass
+    // stroke spec the global underground dig-canvas paints with,
+    // so the dig feels identical. At CLEAR_THRESHOLD (60%) erased,
+    // the cover hides and the chest is clickable.
+    const CLEAR_THRESHOLD  = 0.60;
+    const CHECK_EVERY_N    = 5;
+    // Same stroke widths + alphas as the global underground dig
+    // (see draw() in the underground block above) — this is what
+    // makes the chest dig FEEL like the rest of the page.
+    const STROKES = [
+      { w: 88, a: 0.55 },
+      { w: 64, a: 0.75 },
+      { w: 42, a: 0.97 },
+    ];
+    // Underground gradient stops — mirrors the CSS at .dig-underground.
+    const UG_STOPS = [
+      { p: 0.00, c: [0x6a, 0x4a, 0x2a] },
+      { p: 0.12, c: [0x5a, 0x3a, 0x20] },
+      { p: 0.28, c: [0x4a, 0x30, 0x18] },
+      { p: 0.44, c: [0x3a, 0x25, 0x16] },
+      { p: 0.60, c: [0x2a, 0x18, 0x10] },
+      { p: 0.78, c: [0x1a, 0x0e, 0x08] },
+      { p: 1.00, c: [0x05, 0x03, 0x02] },
+    ];
+    const undergroundEl = document.getElementById('digUnderground');
+    const coverEl       = document.getElementById('digChestCover');
+    const ctx           = coverEl.getContext('2d');
 
-    const setProgress = (p) => {
-      spriteEl.style.opacity = String(p);
-      if (p >= 1 && !isFullyDug) {
-        isFullyDug = true;
-        chestEl.classList.add('is-fully-dug');
+    const colorAt = (frac) => {
+      const f = Math.max(0, Math.min(1, frac));
+      for (let i = 1; i < UG_STOPS.length; i++) {
+        const a = UG_STOPS[i - 1], b = UG_STOPS[i];
+        if (f <= b.p) {
+          const t = (f - a.p) / (b.p - a.p);
+          const r = Math.round(a.c[0] + (b.c[0] - a.c[0]) * t);
+          const g = Math.round(a.c[1] + (b.c[1] - a.c[1]) * t);
+          const bl= Math.round(a.c[2] + (b.c[2] - a.c[2]) * t);
+          return `rgb(${r}, ${g}, ${bl})`;
+        }
+      }
+      const last = UG_STOPS[UG_STOPS.length - 1].c;
+      return `rgb(${last[0]}, ${last[1]}, ${last[2]})`;
+    };
+
+    let isOpening   = false;
+    let isFullyDug  = false;
+    let lastX = null, lastY = null;
+    let movesSinceCheck = 0;
+
+    const sizeAndFill = () => {
+      if (!undergroundEl) return;
+      const cRect = coverEl.getBoundingClientRect();
+      const uRect = undergroundEl.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      coverEl.width  = Math.max(1, Math.round(cRect.width  * dpr));
+      coverEl.height = Math.max(1, Math.round(cRect.height * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // The underground gradient spans uRect.height; the cover occupies
+      // Y = (cRect.top - uRect.top) → (cRect.bottom - uRect.top) within it.
+      const topFrac    = (cRect.top    - uRect.top) / uRect.height;
+      const bottomFrac = (cRect.bottom - uRect.top) / uRect.height;
+      const grad = ctx.createLinearGradient(0, 0, 0, cRect.height);
+      // Interpolate stops across the covered slice so the gradient
+      // matches the underground continuously (top and bottom edges
+      // land on the exact color the underground has there).
+      const steps = 6;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const ugF = topFrac + (bottomFrac - topFrac) * t;
+        grad.addColorStop(t, colorAt(ugF));
+      }
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, cRect.width, cRect.height);
+    };
+    sizeAndFill();
+    window.addEventListener('resize', () => { if (!isFullyDug) sizeAndFill(); });
+
+    const eraseSegment = (x0, y0, x1, y1) => {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineCap  = 'round';
+      ctx.lineJoin = 'round';
+      for (const s of STROKES) {
+        ctx.strokeStyle = `rgba(0,0,0,${s.a})`;
+        ctx.lineWidth   = s.w;
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(x1, y1);
+        ctx.stroke();
       }
     };
 
-    // Attach on window so mousemove works even when the cursor isn't
-    // physically over any chest element — the sprite starts at
-    // pointer-events:none and there's no cover to catch events.
+    const erasedFraction = () => {
+      const w = coverEl.width, h = coverEl.height;
+      const step = 8;
+      const data = ctx.getImageData(0, 0, w, h).data;
+      let clear = 0, total = 0;
+      for (let y = 0; y < h; y += step) {
+        for (let x = 0; x < w; x += step) {
+          if (data[(y * w + x) * 4 + 3] === 0) clear++;
+          total++;
+        }
+      }
+      return total ? clear / total : 0;
+    };
+
     window.addEventListener('mousemove', (e) => {
       if (isFullyDug) return;
-      // Chest center in viewport coords, computed live so it works
-      // during scroll / resize / responsive re-layouts.
-      const r  = chestEl.getBoundingClientRect();
-      if (r.width === 0) return;   // chest hidden (iPhone media query)
-      const cx = r.left + r.width  / 2;
-      const cy = r.top  + r.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const distFromChest = Math.hypot(dx, dy);
-      if (distFromChest > DIG_RADIUS) {
+      const r = coverEl.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      if (x < -20 || y < -20 || x > r.width + 20 || y > r.height + 20) {
         lastX = null; lastY = null;
         return;
       }
       if (lastX !== null) {
-        // Fade with a soft falloff: motion right on top of the chest
-        // reveals faster than motion at the edge of DIG_RADIUS.
-        const proximity = 1 - distFromChest / DIG_RADIUS;
-        const step = Math.hypot(e.clientX - lastX, e.clientY - lastY) * proximity;
-        digDistance += step;
-        setProgress(Math.min(1, digDistance / MAX_DIG_DISTANCE_PX));
+        eraseSegment(lastX, lastY, x, y);
+        if (++movesSinceCheck >= CHECK_EVERY_N) {
+          movesSinceCheck = 0;
+          if (erasedFraction() >= CLEAR_THRESHOLD) {
+            isFullyDug = true;
+            chestEl.classList.add('is-fully-dug');
+          }
+        }
       }
-      lastX = e.clientX; lastY = e.clientY;
+      lastX = x; lastY = y;
     }, { passive: true });
 
     const playOpenAnimation = () => {

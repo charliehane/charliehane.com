@@ -2926,30 +2926,37 @@ body.director-fall-locked {
   position: absolute;
   inset: 0;
   background-image: url('../../assets/chest-sprite.png');
-  /* 4 columns × 2 rows spritesheet. background-size: 400% 200%
-     makes the FULL sheet 4x wider + 2x taller than the container,
-     so background-position 0/100% shifts between frames cleanly. */
+  /* 4 columns × 2 rows spritesheet. */
   background-size: 400% 200%;
   background-position: 0% 0%;
   background-repeat: no-repeat;
   cursor: none;
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.55));
-  /* Starts invisible under the underground gradient. JS bumps
-     opacity as the user drags the shovel near the chest — no
-     rectangular cover, no bar to fill, just the sprite emerging
-     out of the dirt. */
-  opacity: 0;
-  transition: opacity 0.18s linear;
+  /* Chest is fully rendered underneath the .dig-chest-cover canvas.
+     The canvas covers it with the same underground gradient colors
+     until the shovel erases through — no fade, just physical uncovering. */
+  opacity: 1;
   pointer-events: none;
 }
 .dig-chest.is-fully-dug .dig-chest-sprite {
-  opacity: 1;
   pointer-events: auto;
 }
 .dig-chest.is-fully-dug .dig-chest-sprite:hover {
   transform: scale(1.05);
-  transition: transform 0.15s ease, opacity 0.18s linear;
+  transition: transform 0.15s ease;
 }
+.dig-chest-cover {
+  position: absolute;
+  /* -50px inset gives a 250×250 dig zone around the 150×150 chest so
+     shovel motion registers over a comfortable area. */
+  inset: -50px;
+  width: calc(100% + 100px);
+  height: calc(100% + 100px);
+  display: block;
+  cursor: none;
+  pointer-events: none;   /* JS listens on window; canvas doesn't need to catch */
+}
+.dig-chest.is-fully-dug .dig-chest-cover { display: none; }
 
 /* Narrow-window fallback: below ~900px viewport width, the absolute-
    positioned pinned layout can no longer fit the fixed-size coffins

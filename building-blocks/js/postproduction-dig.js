@@ -646,16 +646,22 @@
   const chestEl = document.getElementById('digChest');
   if (chestEl && window.matchMedia('(hover: hover)').matches) {
     const spriteEl = chestEl.querySelector('.dig-chest-sprite');
-    // URL comes from postproduction.chestVideoUrl in Editable Text
-    // Content.json (labeled "Secrete Video - Post production" in
-    // Pages CMS). Read lazily at click time so CMS edits take effect
-    // without a code change, and fall back to the demo video if the
-    // content hasn't loaded yet.
+    // URLs come from postproduction.chestVideoUrls in Editable Text
+    // Content.json (labeled "Secrete Videos - Post production" in
+    // Pages CMS). ONE is picked at random per unburial so repeat
+    // visitors get variety. Read lazily at click time so CMS edits
+    // take effect without a code change, and fall back to the demo
+    // video if the content hasn't loaded yet. Also honors the legacy
+    // singular `chestVideoUrl` field so an older JSON keeps working.
     const CHEST_VIDEO_URL_FALLBACK = 'https://www.youtube.com/watch?v=jNQXAC9IVRw';
-    const getChestVideoUrl = () =>
-      (window.__CONTENT__ && window.__CONTENT__.postproduction &&
-       window.__CONTENT__.postproduction.chestVideoUrl) ||
-      CHEST_VIDEO_URL_FALLBACK;
+    const getChestVideoUrl = () => {
+      const post = window.__CONTENT__ && window.__CONTENT__.postproduction;
+      const list = post && post.chestVideoUrls;
+      if (Array.isArray(list) && list.length) {
+        return list[Math.floor(Math.random() * list.length)];
+      }
+      return (post && post.chestVideoUrl) || CHEST_VIDEO_URL_FALLBACK;
+    };
     const COLS = 4, ROWS = 2, TOTAL_FRAMES = COLS * ROWS, FRAME_MS = 90;
 
     // Chest sits under a canvas cover filled with the SAME gradient

@@ -218,11 +218,14 @@ content:
               - { name: right, label: Right (%) }
               - { name: rot,   label: Rotation }
 
-          - name: chestVideoUrl
-            label: Secrete Video - Post production
+          - name: chestVideoUrls
+            label: Secrete Videos - Post production (random pick from this list)
             type: string
+            list:
+              min: 1
+              max: 20
             required: false
-            description: 'YouTube URL that opens when the buried treasure chest is fully dug up (desktop-only easter egg).'
+            description: 'Each time someone digs up the treasure chest, ONE of these URLs plays at random. Add up to 20 — the more you add, the more surprise on repeat unburials. (Desktop-only easter egg.)'
 
       # ----------------------------------------------------------
       # MENUS — inter-page navigation blocks

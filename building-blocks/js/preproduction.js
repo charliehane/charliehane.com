@@ -907,6 +907,20 @@
         popup._outsideDismiss = (e) => {
           if (e.target.closest('.brick-popup.is-shown')) return;
           hidePopup(popup);
+          // Swallow the click event this pointerdown will produce so
+          // the section's bike-jump handler doesn't fire. Charlie:
+          // 'the next click to JUST close the dialogue box - then if
+          // the user clicks AGAIN the dialogue box will open.' Capture
+          // phase + one-shot so the very next click (usually within
+          // ~200ms) is eaten; safety timeout removes it if no click
+          // ever comes (e.g. touch that turns into a scroll).
+          const swallowClick = (ce) => {
+            ce.stopPropagation();
+            ce.preventDefault();
+            document.removeEventListener('click', swallowClick, true);
+          };
+          document.addEventListener('click', swallowClick, true);
+          setTimeout(() => document.removeEventListener('click', swallowClick, true), 700);
         };
         document.addEventListener('pointerdown', popup._outsideDismiss, true);
       });

@@ -2937,7 +2937,15 @@ body.director-fall-locked {
    Only applies to landscape/tablet narrow widths; the true iPhone
    media query (portrait ≤500px) already has its own coffin sizing
    that fits its own pinned layout. */
-@media (max-width: 900px) and (min-width: 501px) {
+/* Trigger the flex-stack layout when EITHER the viewport is narrow
+   (max-width: 900px) OR the viewport is short (max-height: 1100px).
+   The absolute-positioned pinned layout only fits when dig-world's
+   380vh is at least ~2900px, i.e. viewport height ≥ ~950px. Below
+   that, coffin #4's pinned top:78% + its 640px height overshoots
+   the dig-underground and gets clipped (Charlie: 'why is this coffin
+   being cutoff' at 1000x700). Comma = OR in @media. */
+@media (max-width: 900px) and (min-width: 501px),
+       (max-height: 1100px) and (min-width: 501px) {
   /* Two containers to work with here:
      - .dig-underground : the dirt-gradient panel, was position:
        absolute. Made relative so it participates in flow and grows

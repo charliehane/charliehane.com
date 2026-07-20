@@ -2909,42 +2909,38 @@ body.director-fall-locked {
   background-repeat: no-repeat;
   cursor: none;
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.55));
-  /* Chest is FULLY there under the dirt — Charlie: 'I DO NOT want
-     this fade effect, I want the chest to be there under the ground
-     FULLY, the dirt ontop is what is hiding it.' Opacity always 1;
-     the .dig-chest-dirt cover is what visually hides it and gets
-     clipped away as the user digs. */
+  /* Chest is FULLY there under the dirt — but we use clip-path on
+     the sprite itself to hide/reveal it, INSTEAD of a separate dirt
+     cover element. Charlie's take: 'I want just the normal dirt
+     removal that happens on the REST OF THE PAGE to be the thing
+     that reveals it.' So whatever the underground shows behind the
+     chest IS the dirt covering it. As we clip less of the sprite
+     (from bottom → top), the chest visibly emerges from the exact
+     same dirt gradient it sits in. Zero color mismatch, zero rectangle. */
   opacity: 1;
+  clip-path: inset(0 0 100% 0);   /* fully hidden at data-dig=0 */
+  transition: clip-path 0.18s ease;
 }
+.dig-chest[data-dig="1"] .dig-chest-sprite { clip-path: inset(0 0 80% 0); }
+.dig-chest[data-dig="2"] .dig-chest-sprite { clip-path: inset(0 0 60% 0); }
+.dig-chest[data-dig="3"] .dig-chest-sprite { clip-path: inset(0 0 40% 0); }
+.dig-chest[data-dig="4"] .dig-chest-sprite { clip-path: inset(0 0 20% 0); }
+.dig-chest[data-dig="5"] .dig-chest-sprite { clip-path: inset(0px 0px 0px 0px); }
 .dig-chest-dirt {
   position: absolute;
-  /* Bigger dirt hit area (was -18px) so the shovel can dig without
-     the user pixel-hunting the exact chest bounds. -50px inset
-     gives a ~250x250 dig zone around the chest center. */
+  /* -50px inset gives a ~250x250 dig zone around the chest center
+     so the shovel can rake anywhere in that area to accumulate
+     dig progress. */
   inset: -50px;
-  /* Opaque dirt that HIDES the chest sprite behind it. Radial
-     gradient: solid at center (matches underground gradient at
-     ~55% Y stop for seamless blend), soft-fades to transparent at
-     the edges so there's no hard-edged 'ball' silhouette against
-     the underground gradient — Charlie: 'get rid of this ball thing'
-     but 'the dirt ontop is what is hiding it'. Two solutions in one:
-     dark enough in the center to hide the chest, feathered enough
-     at the edges to blend into the surrounding dirt. */
-  background: radial-gradient(circle at 50% 50%,
-    #2a1810 0%,
-    #2a1810 42%,
-    rgba(42, 24, 16, 0.6) 62%,
-    rgba(42, 24, 16, 0)  100%);
+  /* No visible cover — the sprite's own clip-path handles all the
+     hiding/revealing so what "covers" the chest is the actual
+     underground gradient (no separate rectangle). This element is
+     just a pointer-events target for the shovel's mousemove tracker. */
+  background: transparent;
   cursor: none;
-  transition: transform 0.18s ease, opacity 0.18s ease, clip-path 0.18s ease;
 }
-/* Each dig-click removes a slice of the dirt from the top. By
-   dig=5 the whole cover is gone and the chest is fully exposed. */
-.dig-chest[data-dig="0"] .dig-chest-dirt { clip-path: inset(0 0 0 0); }
-.dig-chest[data-dig="1"] .dig-chest-dirt { clip-path: inset(20% 0 0 0); }
-.dig-chest[data-dig="2"] .dig-chest-dirt { clip-path: inset(40% 0 0 0); }
-.dig-chest[data-dig="3"] .dig-chest-dirt { clip-path: inset(60% 0 0 0); }
-.dig-chest[data-dig="4"] .dig-chest-dirt { clip-path: inset(80% 0 0 0); }
+/* Once fully dug, hide the dirt hit-area too so it doesn't sit on
+   top of the chest and steal the click event. */
 .dig-chest[data-dig="5"] .dig-chest-dirt { display: none; }
 /* Subtle hover feedback on the fully-dug chest so users know to
    click it. */

@@ -684,8 +684,11 @@
       }
     };
 
-    // mousemove distance = shovel travel = dig progress
-    dirtEl.addEventListener('mousemove', (e) => {
+    // mousemove distance on the WHOLE chest container (dirt or
+    // sprite) = shovel travel = dig progress. Listening on the
+    // container catches every pixel the mouse crosses regardless of
+    // which child element is under the cursor mid-motion.
+    chestEl.addEventListener('mousemove', (e) => {
       if (isFullyDug) return;
       if (lastX !== null) {
         digDistance += Math.hypot(e.clientX - lastX, e.clientY - lastY);
@@ -694,9 +697,7 @@
       lastX = e.clientX;
       lastY = e.clientY;
     });
-    // reset the last-known point when the shovel leaves — so re-entering
-    // doesn't count the offscreen travel as a jump-teleport of digging.
-    dirtEl.addEventListener('mouseleave', () => {
+    chestEl.addEventListener('mouseleave', () => {
       lastX = null;
       lastY = null;
     });
@@ -726,10 +727,16 @@
       step();
     };
 
-    // Once the dirt is 90%+ cleared, clicking the chest sprite plays
-    // the open animation + fires the video.
-    spriteEl.addEventListener('click', (e) => {
-      if (!isFullyDug) return;
+    // Click handler on the whole chest container. Once the dig has
+    // finished (isFullyDug true) OR the dirt is display:none in CSS
+    // (belt-and-suspenders for anyone who somehow dug past 100% or
+    // hit an odd state), any click opens the chest.
+    chestEl.addEventListener('click', (e) => {
+      const dirtGone =
+        isFullyDug ||
+        chestEl.dataset.dig === String(DIRT_STAGES) ||
+        getComputedStyle(dirtEl).display === 'none';
+      if (!dirtGone) return;
       e.stopPropagation();
       playOpenAnimation();
     });

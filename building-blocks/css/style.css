@@ -2866,17 +2866,19 @@ body.director-fall-locked {
    ============================================================ */
 .dig-chest {
   position: absolute;
-  right: 22%;
-  top: 62%;
+  right: 8%;
+  top: 55%;
   /* ~1/3 the size of a coffin (400x640 → ~130x140 for the chest
      itself). Container is a bit bigger to give the dirt patch some
      room to sit around the chest. */
   width: 150px;
   height: 150px;
-  /* z-index lower than coffins (5) so a coffin ALWAYS renders over
-     the chest if there were ever any placement overlap. Belt +
-     suspenders — the pinned positions already keep them apart. */
-  z-index: 3;
+  /* z-index ABOVE coffins (z:5) so if a coffin ever drifts across
+     the chest's spot (especially in the flex-stack layout where
+     coffins center-align and chest is still absolute-positioned),
+     the chest still shows. Charlie: 'I am not seeing the chest' at
+     his 1000x700 viewport. */
+  z-index: 6;
   cursor: none;
 }
 /* Hide on iPhone / touch entirely — chest is desktop-only per

@@ -647,21 +647,59 @@
   if (chestEl && window.matchMedia('(hover: hover)').matches) {
     const dirtEl   = chestEl.querySelector('.dig-chest-dirt');
     const spriteEl = chestEl.querySelector('.dig-chest-sprite');
-    const DIG_CLICKS_NEEDED = 5;
-    const CHEST_VIDEO_URL   = 'https://www.youtube.com/watch?v=jNQXAC9IVRw';
+    const CHEST_VIDEO_URL = 'https://www.youtube.com/watch?v=jNQXAC9IVRw';
     // Sprite is 4 cols × 2 rows = 8 frames total.
     const COLS = 4;
     const ROWS = 2;
     const TOTAL_FRAMES = COLS * ROWS;
     const FRAME_MS = 90;
 
-    let digCount = 0;
+    // Charlie: 'I do not want the user to need to click to dig, I
+    // want the digging of the dirt to work as the key.' Track the
+    // cumulative distance the mouse (which visually IS the shovel)
+    // travels while over the dirt. Each pixel of movement = a bit
+    // of digging. At ~700px of accumulated shovel travel the dirt
+    // is fully cleared and the chest becomes clickable.
+    const MAX_DIG_DISTANCE_PX = 700;
+    let digDistance = 0;
+    let lastX = null;
+    let lastY = null;
     let isOpening = false;
+    let isFullyDug = false;
 
-    const incrementDig = () => {
-      digCount = Math.min(digCount + 1, DIG_CLICKS_NEEDED);
-      chestEl.dataset.dig = String(digCount);
+    const DIRT_STAGES = 5;   // matches [data-dig="1"…"5"] CSS clip-path steps
+
+    const updateDigVisual = () => {
+      const progress = Math.min(1, digDistance / MAX_DIG_DISTANCE_PX);
+      // Map progress [0..1] onto discrete data-dig steps [0..5].
+      const step = Math.min(DIRT_STAGES, Math.floor(progress * DIRT_STAGES) +
+                            (progress > 0 ? 1 : 0));
+      chestEl.dataset.dig = String(step);
+      // Charlie: 'once 90% of the dirt is off the chest, the user is
+      // able to CLICK THE CHEST.' Snap the dirt to fully gone once we
+      // cross 90%, and unlock clicks.
+      if (progress >= 0.9 && !isFullyDug) {
+        isFullyDug = true;
+        chestEl.dataset.dig = String(DIRT_STAGES);
+      }
     };
+
+    // mousemove distance = shovel travel = dig progress
+    dirtEl.addEventListener('mousemove', (e) => {
+      if (isFullyDug) return;
+      if (lastX !== null) {
+        digDistance += Math.hypot(e.clientX - lastX, e.clientY - lastY);
+        updateDigVisual();
+      }
+      lastX = e.clientX;
+      lastY = e.clientY;
+    });
+    // reset the last-known point when the shovel leaves — so re-entering
+    // doesn't count the offscreen travel as a jump-teleport of digging.
+    dirtEl.addEventListener('mouseleave', () => {
+      lastX = null;
+      lastY = null;
+    });
 
     const playOpenAnimation = () => {
       if (isOpening) return;
@@ -670,18 +708,16 @@
       const step = () => {
         const col = frame % COLS;
         const row = Math.floor(frame / COLS);
-        // With background-size: 400% 200%, background-position 0%..100%
-        // moves the sheet by exactly one frame per (100/(cols-1))% or
-        // (100/(rows-1))% — so col/(cols-1)*100% picks the right column
-        // and row/(rows-1)*100% picks the right row.
         spriteEl.style.backgroundPosition =
           `${(col / (COLS - 1)) * 100}% ${(row / (ROWS - 1)) * 100}%`;
         frame++;
         if (frame < TOTAL_FRAMES) {
           setTimeout(step, FRAME_MS);
         } else {
-          // Small beat after the last frame so the "fully open with
-          // sparkles" pose registers before the lightbox blows in.
+          // Charlie: 'when the chest opens fully, the video
+          // automatically opens up and plays.' Small beat after the
+          // last frame so the fully-open pose registers before the
+          // lightbox blows in.
           setTimeout(() => {
             if (window.VideoLightbox) window.VideoLightbox.open(CHEST_VIDEO_URL);
           }, 380);
@@ -690,17 +726,12 @@
       step();
     };
 
-    // Clicks anywhere on the chest container while it's still
-    // buried count as a dig; clicks after it's fully dug play the
-    // animation. Two separate elements (dirt + sprite) both listen
-    // via delegation on the parent so no click is missed.
-    chestEl.addEventListener('click', (e) => {
+    // Once the dirt is 90%+ cleared, clicking the chest sprite plays
+    // the open animation + fires the video.
+    spriteEl.addEventListener('click', (e) => {
+      if (!isFullyDug) return;
       e.stopPropagation();
-      if (digCount < DIG_CLICKS_NEEDED) {
-        incrementDig();
-      } else {
-        playOpenAnimation();
-      }
+      playOpenAnimation();
     });
   }
 

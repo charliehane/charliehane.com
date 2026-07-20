@@ -795,6 +795,15 @@
       document.removeEventListener('pointerdown', p._outsideDismiss, true);
       p._outsideDismiss = null;
     }
+    // Un-explode the source ? brick so it fades back in immediately
+    // (rather than waiting on the 5.2s safety timer in explodeBrick).
+    // Charlie: 'I would love the ? to fade back in directly after'
+    // the dialogue closes. The .brick opacity transition in style.css
+    // handles the fade curve.
+    if (p._sourceBrick) {
+      delete p._sourceBrick.dataset.exploded;
+      p._sourceBrick = null;
+    }
     // Clear the desktop portal's inline positioning so when the popup
     // is re-parented and shown again from a different brick, we don't
     // inherit stale coordinates.
@@ -891,6 +900,9 @@
     void popup.offsetWidth;
     popup.classList.add('is-shown');
     document.body.classList.add('brick-popup-open');
+    // Remember which ? brick opened this popup so hidePopup can fade
+    // that specific brick back in when the popup closes.
+    popup._sourceBrick = brick;
 
     if (!isPortraitPhone) {
       // Desktop keeps its existing 4-second auto-hide.

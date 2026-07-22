@@ -122,8 +122,15 @@
   // ============================================================
   // UNDERGROUND — cavern tunnels with rocks, droplets, jagged bits
   // ============================================================
+  // Underground dig-canvas is desktop-only. Charlie: 'make it so the
+   // iphone can't dig' — the shovel-cursor mechanic is a computer
+   // interaction, and on touch devices a single tap fires a synthetic
+   // mousemove that would spray a random dark scribble into the
+   // underground. Gate on (hover: hover) so pointer-only devices skip
+   // the entire block (worm-tunnel painting AND chest cover both go
+   // dark on iPhone).
   const underground = document.getElementById('digUnderground');
-  if (underground) {
+  if (underground && window.matchMedia('(hover: hover)').matches) {
     const canvas = document.createElement('canvas');
     canvas.className = 'dig-canvas';
     Object.assign(canvas.style, {

@@ -789,6 +789,8 @@
           if (erasedFraction() >= CLEAR_THRESHOLD) {
             isFullyDug = true;
             chestEl.classList.add('is-fully-dug');
+            const hint = document.getElementById('digChestHint');
+            if (hint) hint.textContent = 'Click';
           }
         }
       }

@@ -103,6 +103,11 @@
            60% erased the chest is unburied → clickable → animation. -->
       <div class="dig-chest" id="digChest" aria-hidden="true">
         <div class="dig-chest-sprite"></div>
+        <!-- Sits just below the chest sprite, under the same dirt
+             cover — revealed by digging along with the chest. JS
+             swaps textContent to "Click" the moment .is-fully-dug
+             fires so the user knows the chest is unlocked. -->
+        <p class="dig-chest-hint" id="digChestHint">Keep Digging</p>
         <canvas class="dig-chest-cover" id="digChestCover"></canvas>
       </div>
 

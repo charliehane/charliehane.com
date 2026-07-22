@@ -2958,6 +2958,31 @@ body.director-fall-locked {
 }
 .dig-chest.is-fully-dug .dig-chest-cover { display: none; }
 
+/* Small nudge label under the chest — sits inside .dig-chest so it's
+   hidden by the same dirt cover, then revealed as the user digs. Text
+   swaps from "Keep Digging" to "Click" when the chest is unlocked. */
+.dig-chest-hint {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 8px 0 0 0;
+  font-family: 'Space Mono', 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #f3ebe0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  white-space: nowrap;
+  pointer-events: none;
+  cursor: none;
+}
+.dig-chest.is-fully-dug .dig-chest-hint {
+  color: #fa3941;   /* nav-red accent so "Click" reads as a call to action */
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95);
+}
+
 /* Narrow-window fallback: below ~900px viewport width, the absolute-
    positioned pinned layout can no longer fit the fixed-size coffins
    side-by-side. Switch to a vertical flex stack (coffin → dirt →

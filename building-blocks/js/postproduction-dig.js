@@ -422,11 +422,21 @@
       const usableH = ugRect.height - COFFIN_H_PX - 2 * COFFIN_PAD_PX;
       if (usableW <= 0 || usableH <= 0) return false;   // underground too small
 
-      for (const el of unpinned) {
+      // Order-biased Y so array order maps to visual top→bottom
+      // (Charlie: coffins near the end of the JSON list should sit
+      // closer to the bottom of the underground). Coffin i of N
+      // unpinned targets y = (i+1)/(N+1) * usableH, with ±6% jitter
+      // for organic feel. X stays random (with retry) to keep the
+      // "scattered graveyard" scatter across the full width.
+      for (let idx = 0; idx < unpinned.length; idx++) {
+        const el = unpinned[idx];
+        const targetY = COFFIN_PAD_PX + ((idx + 1) / (unpinned.length + 1)) * usableH;
         let ok = false;
         for (let i = 0; i < PLACE_ATTEMPTS; i++) {
           const x = COFFIN_PAD_PX + Math.random() * usableW;
-          const y = COFFIN_PAD_PX + Math.random() * usableH;
+          const yJitter = (Math.random() - 0.5) * usableH * 0.06;
+          const y = Math.max(COFFIN_PAD_PX,
+                    Math.min(COFFIN_PAD_PX + usableH, targetY + yJitter));
           const candidate = { x, y, w: COFFIN_W_PX, h: COFFIN_H_PX };
           if (placed.every(p => !overlaps(candidate, p))) {
             const rotDeg = (Math.random() * 24 - 12).toFixed(1);

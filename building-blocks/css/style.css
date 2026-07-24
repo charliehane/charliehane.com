@@ -982,10 +982,10 @@ body {
 /* Shared across every scene — .scene works for any modifier count
    (was hard-coded to scene--01..05, but preproduction.films now scales
    past 5 so we need a modifier-agnostic selector). --brick-left-pct
-   is set per-scene by preproduction.js placeBricks(). */
-.scene .brick { left: var(--brick-left-pct, 50%); top: 32%; }
-/* Per-scene TOP overrides (only scene--03 differs from the 32% default). */
-.scene--03 .brick { top: 36%; }
+   is set per-scene by preproduction.js placeBricks(). Uniform TOP so
+   every ? sits at the same Y as the biker on desktop. Charlie: 'make
+   there Y positioning the same as the rest of the ?'s.' */
+.scene .brick { left: var(--brick-left-pct, 50%); top: 32% !important; }
 
 .brick-popup {
   position: absolute;

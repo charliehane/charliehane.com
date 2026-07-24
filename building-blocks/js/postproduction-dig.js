@@ -829,6 +829,54 @@
         ctx.fillStyle = `rgba(0,0,0,${0.30 + rand() * 0.10})`;
         ctx.beginPath(); ctx.arc(dx, dy, rad, 0, Math.PI * 2); ctx.fill();
       }
+      // Carve the whole rect into a rough oval blob. Charlie: 'still
+      // too square, not oval enough.' Build a MASK on a temp canvas
+      // by drawing one main ellipse plus several offset ellipses at
+      // deterministic positions around it — that produces an irregular
+      // bulging silhouette. Then apply the mask with destination-in
+      // so the corners of the rectangle vanish and the fill only
+      // shows inside the blob's soft edge.
+      const w = cRect.width, h = cRect.height;
+      const cx = w / 2, cy = h / 2;
+      const maskCanvas = document.createElement('canvas');
+      maskCanvas.width  = coverEl.width;
+      maskCanvas.height = coverEl.height;
+      const mctx = maskCanvas.getContext('2d');
+      mctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      // Main oval — 90% of the shorter side across, more like an
+      // ellipse than a circle so it doesn't fill the corners.
+      const drawSoftEllipse = (ex, ey, rx, ry, coreStop) => {
+        // Radial gradient (in a scaled space so it's oval-shaped).
+        mctx.save();
+        mctx.translate(ex, ey);
+        mctx.scale(1, ry / rx);
+        mctx.translate(-ex, -ey);
+        const g = mctx.createRadialGradient(ex, ey, 0, ex, ey, rx);
+        g.addColorStop(0, 'rgba(0,0,0,1)');
+        g.addColorStop(coreStop, 'rgba(0,0,0,1)');
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        mctx.fillStyle = g;
+        mctx.fillRect(0, 0, w, h);
+        mctx.restore();
+      };
+      const shortSide = Math.min(w, h);
+      drawSoftEllipse(cx, cy, shortSide * 0.42, shortSide * 0.34, 0.55);
+      // Deterministic offset bulges (5 of them around the perimeter)
+      s = seed + 7919;
+      for (let i = 0; i < 5; i++) {
+        const angle = (i / 5) * Math.PI * 2 + rand() * 0.6;
+        const dist = shortSide * (0.20 + rand() * 0.10);
+        const bx = cx + Math.cos(angle) * dist;
+        const by = cy + Math.sin(angle) * dist * 0.75;   // vertical squash
+        const br = shortSide * (0.22 + rand() * 0.10);
+        drawSoftEllipse(bx, by, br, br * 0.85, 0.35);
+      }
+      // Apply mask to the fill.
+      ctx.globalCompositeOperation = 'destination-in';
+      ctx.setTransform(1, 0, 0, 1, 0, 0);       // reset to raw canvas coords for drawImage
+      ctx.drawImage(maskCanvas, 0, 0);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.globalCompositeOperation = 'source-over';
     };
     sizeAndFill();
     window.addEventListener('resize', () => { if (!isFullyDug) sizeAndFill(); });

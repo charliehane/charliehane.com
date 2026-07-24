@@ -2966,28 +2966,17 @@ body.director-fall-locked {
 }
 .dig-chest-cover {
   position: absolute;
-  /* Bumped inset -50 → -80 so the fade-out region has more room
-     without shrinking the actual dig zone. Feels more like a loose
-     mound of dirt spilled over the chest. */
+  /* Bumped inset -50 → -80 so the fade-out region has room without
+     shrinking the actual dig zone. The blob shape itself is painted
+     into the canvas via destination-in (see postproduction-dig.js) —
+     CSS masks were unreliable with layered radial gradients on canvas
+     across browsers. */
   inset: -80px;
   width: calc(100% + 160px);
   height: calc(100% + 160px);
   display: block;
   cursor: none;
-  pointer-events: none;   /* JS listens on window; canvas doesn't need to catch */
-  /* Soft roughened blob mask — Charlie: 'the dirt covering the secret
-     video is a bit too square, roughen the edges and make it more
-     spherical.' Multiple layered radial gradients at slightly offset
-     centers produce an irregular circular blob instead of the harsh
-     rectangle the raw canvas fill was showing. */
-  --mask: radial-gradient(ellipse 55% 55% at 48% 46%, #000 40%, transparent 78%),
-          radial-gradient(circle 22% at 30% 60%, #000 30%, transparent 75%),
-          radial-gradient(circle 20% at 70% 62%, #000 30%, transparent 75%),
-          radial-gradient(circle 18% at 55% 30%, #000 30%, transparent 75%);
-  mask-image: var(--mask);
-  -webkit-mask-image: var(--mask);
-  mask-composite: add;
-  -webkit-mask-composite: source-over;
+  pointer-events: none;
 }
 .dig-chest.is-fully-dug .dig-chest-cover { display: none; }
 

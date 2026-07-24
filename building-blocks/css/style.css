@@ -2970,9 +2970,9 @@ body.director-fall-locked {
      hide the KEEP DIGGING hint text underneath too (Charlie: 'make
      it a bit bigger, its showing some of the text below it'). Blob
      shape carved into the canvas via destination-in in JS. */
-  inset: -120px;
-  width: calc(100% + 240px);
-  height: calc(100% + 240px);
+  inset: -160px;
+  width: calc(100% + 320px);
+  height: calc(100% + 320px);
   display: block;
   cursor: none;
   pointer-events: none;

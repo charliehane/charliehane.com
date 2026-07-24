@@ -52,6 +52,12 @@
     return m ? { kind: m[1], code: m[2] } : null;
   };
 
+  // Direct video files (mp4 / webm / mov / m4v) — served either from
+  // the site (local dev) or a host like R2. Play in a native <video>
+  // element rather than an iframe.
+  const isDirectVideo = (url) => /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(url || '');
+
+  let videoEl = null;
   const build = () => {
     overlay = document.createElement('div');
     overlay.className = 'video-lightbox';
@@ -60,9 +66,11 @@
       '<button class="video-lightbox-close" type="button" aria-label="Close video">&times;</button>' +
       '<div class="video-lightbox-frame">' +
         '<iframe allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>' +
+        '<video controls playsinline preload="metadata" style="display:none;width:100%;height:100%;background:#000"></video>' +
       '</div>';
     document.body.appendChild(overlay);
     iframe = overlay.querySelector('iframe');
+    videoEl = overlay.querySelector('video');
 
     overlay.addEventListener('click', (e) => {
       // click on backdrop OR the close button
@@ -76,24 +84,36 @@
   };
 
   const open = (url) => {
-    // Try YouTube → Vimeo → Instagram in order. Each produces an
-    // autoplay-friendly embed URL. Instagram doesn't autoplay video —
-    // its /embed view shows the post with a native play control.
-    const ytId = extractYouTubeId(url);
-    const vim  = ytId ? null : extractVimeo(url);
-    const ig = (ytId || vim) ? null : extractInstagram(url);
-    if (!ytId && !vim && !ig) return false;
+    // YouTube → Vimeo → Instagram → direct .mp4/.webm/.mov/.m4v file.
+    const ytId   = extractYouTubeId(url);
+    const vim    = ytId ? null : extractVimeo(url);
+    const ig     = (ytId || vim) ? null : extractInstagram(url);
+    const direct = (ytId || vim || ig) ? null : (isDirectVideo(url) ? url : null);
+    if (!ytId && !vim && !ig && !direct) return false;
     if (!overlay) build();
-    if (ytId) {
-      iframe.src = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
-    } else if (vim) {
-      const q = new URLSearchParams({ autoplay: '1', title: '0', byline: '0', portrait: '0', playsinline: '1' });
-      if (vim.hash) q.set('h', vim.hash);
-      iframe.src = `https://player.vimeo.com/video/${vim.id}?${q.toString()}`;
+    if (direct) {
+      // Show native <video>, hide iframe.
+      iframe.src = 'about:blank';
+      iframe.style.display = 'none';
+      videoEl.style.display = 'block';
+      videoEl.src = direct;
+      // User gesture (click on chest) allows autoplay across browsers.
+      videoEl.play().catch(() => {});
     } else {
-      // Instagram embed URLs always use /p/CODE/embed/ regardless of
-      // whether the original was a /p/, /reel/, or /tv/ link.
-      iframe.src = `https://www.instagram.com/p/${ig.code}/embed/`;
+      videoEl.style.display = 'none';
+      videoEl.pause();
+      videoEl.removeAttribute('src');
+      videoEl.load();
+      iframe.style.display = '';
+      if (ytId) {
+        iframe.src = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+      } else if (vim) {
+        const q = new URLSearchParams({ autoplay: '1', title: '0', byline: '0', portrait: '0', playsinline: '1' });
+        if (vim.hash) q.set('h', vim.hash);
+        iframe.src = `https://player.vimeo.com/video/${vim.id}?${q.toString()}`;
+      } else {
+        iframe.src = `https://www.instagram.com/p/${ig.code}/embed/`;
+      }
     }
     overlay.classList.add('is-open');
     overlay.setAttribute('aria-hidden', 'false');
@@ -113,6 +133,11 @@
     // Clearing src stops the video's audio + tears down the player,
     // so no ghost audio if the user reopens quickly.
     iframe.src = 'about:blank';
+    if (videoEl) {
+      videoEl.pause();
+      videoEl.removeAttribute('src');
+      videoEl.load();
+    }
     document.documentElement.classList.remove('video-lightbox-open');
   };
 

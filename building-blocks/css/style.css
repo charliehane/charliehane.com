@@ -2966,14 +2966,13 @@ body.director-fall-locked {
 }
 .dig-chest-cover {
   position: absolute;
-  /* Bumped inset -50 → -80 so the fade-out region has room without
-     shrinking the actual dig zone. The blob shape itself is painted
-     into the canvas via destination-in (see postproduction-dig.js) —
-     CSS masks were unreliable with layered radial gradients on canvas
-     across browsers. */
-  inset: -80px;
-  width: calc(100% + 160px);
-  height: calc(100% + 160px);
+  /* Cover extends well past the chest so the blob is big enough to
+     hide the KEEP DIGGING hint text underneath too (Charlie: 'make
+     it a bit bigger, its showing some of the text below it'). Blob
+     shape carved into the canvas via destination-in in JS. */
+  inset: -120px;
+  width: calc(100% + 240px);
+  height: calc(100% + 240px);
   display: block;
   cursor: none;
   pointer-events: none;

@@ -139,7 +139,12 @@
     });
     underground.appendChild(canvas);
     const ctx = canvas.getContext('2d');
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Cap DPR at 1 for the underground canvas — it's HUGE (grows to
+    // ~2880x16000+ CSS px as the coffin list expands), and 2x DPR
+    // there means a 190MB backing store per allocation. Perf tanked
+    // after the 2-column / bigger-coffin refactor. Shovel + worm
+    // paint reads fine at 1x on retina since strokes are wide.
+    const dpr = 1;
 
     const resize = () => {
       const r = underground.getBoundingClientRect();
@@ -491,28 +496,25 @@
       return (coffinArea / totalArea) <= COVERAGE_MAX;
     };
 
-    // Fire on the underground so the dig-canvas init can resize its
-    // backing store to match. Placing coffins may extend digWorldHost
-    // (and therefore the underground); dig-canvas needs to know.
-    const notifyResize = () => undergroundHost.dispatchEvent(
-      new CustomEvent('dig-underground-resized', { bubbles: false })
-    );
-
     // Try to place; each failure extends .dig-world by another viewport
     // of underground and retries. Cap at 8 extensions so we can't loop
     // forever if the viewport is impossibly small.
     for (let round = 0; round < 8; round++) {
       // Reset positions for a clean attempt
       unpinned.forEach(el => { el.style.top = ''; el.style.left = ''; el.style.removeProperty('--rot'); });
-      if (attemptRound()) { notifyResize(); return; }
+      if (attemptRound()) break;
 
       extensionVh += 100;
       digWorldHost.style.height = `calc(320vh + ${extensionVh}vh)`;
       // Force layout so the next getBoundingClientRect sees the new size.
       void digWorldHost.offsetHeight;
-      notifyResize();
     }
-    notifyResize();
+    // Only notify AFTER the loop settles — firing inside the loop
+    // reallocated the ~2880xNNN dig-canvas backing store on every
+    // extension iteration (up to 8x per load), which tanked perf.
+    undergroundHost.dispatchEvent(
+      new CustomEvent('dig-underground-resized', { bubbles: false })
+    );
   };
 
   if (document.querySelector('.dig-underground .coffin')) placeUnpinnedCoffins();

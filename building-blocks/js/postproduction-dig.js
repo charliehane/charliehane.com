@@ -143,12 +143,24 @@
 
     const resize = () => {
       const r = underground.getBoundingClientRect();
-      canvas.width  = Math.max(1, r.width  * dpr);
-      canvas.height = Math.max(1, r.height * dpr);
+      const newW = Math.max(1, Math.round(r.width  * dpr));
+      const newH = Math.max(1, Math.round(r.height * dpr));
+      if (canvas.width === newW && canvas.height === newH) return;
+      canvas.width  = newW;
+      canvas.height = newH;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
     window.addEventListener('resize', resize);
+    // Underground grows AFTER content:loaded (placeUnpinnedCoffins can
+    // extend digWorldHost by another viewport whenever coffins don't
+    // fit). Without a size-sync here the canvas backing stayed at the
+    // initial small size and CSS stretched it to fit, offsetting every
+    // paint stroke — Charlie: 'the dig effect is really low compared
+    // to the shovel/cursor… the worm tunnel no longer aligns.'
+    // placeUnpinnedCoffins fires this custom event after each extension.
+    underground.addEventListener('dig-underground-resized', resize);
+    document.addEventListener('content:loaded', () => setTimeout(resize, 0));
 
     let lx = null, ly = null;
 
@@ -359,8 +371,8 @@
   // ============================================================
   const undergroundHost = document.getElementById('digUnderground');
   const digWorldHost    = document.getElementById('digWorld');
-  const COFFIN_W_PX     = 400;   // matches .coffin { width: 400px }
-  const COFFIN_H_PX     = 640;   // matches .coffin { height: 640px }
+  const COFFIN_W_PX     = 500;   // matches .coffin { width: 500px }
+  const COFFIN_H_PX     = 800;   // matches .coffin { height: 800px }
   const COFFIN_PAD_PX   = 40;    // min gap between any two coffins
   const COVERAGE_MAX    = 0.25;  // trigger for extending underground
   const PLACE_ATTEMPTS  = 60;    // retries per unplaced coffin
@@ -416,20 +428,35 @@
       // JSON list).
       const skeleton = undergroundHost.querySelector('#coffinSkeleton');
       if (skeleton) pinnedRects.push(localRect(skeleton, ugRect));
+      // Chest dirt patch is another no-go zone. Charlie: 'the dirt is
+      // covering the coffin currently for the random video, I would
+      // really like if there could be a rule that a coffin is never
+      // set overtop of the hidden videos dirt.'
+      const chest = document.getElementById('digChest');
+      if (chest && chest.offsetParent !== null) {
+        const cr = chest.getBoundingClientRect();
+        // Expand by the dirt-cover's -50px inset so the whole 250×250
+        // dig zone (not just the 150×150 chest) is off-limits.
+        pinnedRects.push({
+          x: cr.left - ugRect.left - 50,
+          y: cr.top  - ugRect.top  - 50,
+          w: cr.width  + 100,
+          h: cr.height + 100,
+        });
+      }
 
       const placed = [...pinnedRects];
       const usableW = ugRect.width  - COFFIN_W_PX - 2 * COFFIN_PAD_PX;
       const usableH = ugRect.height - COFFIN_H_PX - 2 * COFFIN_PAD_PX;
       if (usableW <= 0 || usableH <= 0) return false;   // underground too small
 
-      // Loose 3-column grid with jitter. Charlie: pure random made
-      // the screen look messy. Each unpinned coffin lands in one of
-      // 3 columns in rotation (idx % 3), keeping the graveyard-scatter
-      // vibe via small X jitter and a small rotation — but never
-      // two coffins randomly stacked on top of each other.
-      const COL_CENTERS_FRAC = [0.15, 0.5, 0.85];   // 3 columns across usableW
-      const X_JITTER_PX = 40;
-      const Y_JITTER_FRAC = 0.05;
+      // Two-column grid, minimal randomness. Charlie: 'do the
+      // Two-column grid (least random, cleanest) option.' Coffins
+      // alternate left/right columns down the underground, with just
+      // a whisper of jitter + rotation so it doesn't feel robotic.
+      const COL_CENTERS_FRAC = [0.25, 0.75];   // 2 columns
+      const X_JITTER_PX = 18;
+      const Y_JITTER_FRAC = 0.02;
       for (let idx = 0; idx < unpinned.length; idx++) {
         const el = unpinned[idx];
         const targetY = COFFIN_PAD_PX + ((idx + 1) / (unpinned.length + 1)) * usableH;
@@ -464,19 +491,28 @@
       return (coffinArea / totalArea) <= COVERAGE_MAX;
     };
 
+    // Fire on the underground so the dig-canvas init can resize its
+    // backing store to match. Placing coffins may extend digWorldHost
+    // (and therefore the underground); dig-canvas needs to know.
+    const notifyResize = () => undergroundHost.dispatchEvent(
+      new CustomEvent('dig-underground-resized', { bubbles: false })
+    );
+
     // Try to place; each failure extends .dig-world by another viewport
     // of underground and retries. Cap at 8 extensions so we can't loop
     // forever if the viewport is impossibly small.
     for (let round = 0; round < 8; round++) {
       // Reset positions for a clean attempt
       unpinned.forEach(el => { el.style.top = ''; el.style.left = ''; el.style.removeProperty('--rot'); });
-      if (attemptRound()) return;
+      if (attemptRound()) { notifyResize(); return; }
 
       extensionVh += 100;
       digWorldHost.style.height = `calc(320vh + ${extensionVh}vh)`;
       // Force layout so the next getBoundingClientRect sees the new size.
       void digWorldHost.offsetHeight;
+      notifyResize();
     }
+    notifyResize();
   };
 
   if (document.querySelector('.dig-underground .coffin')) placeUnpinnedCoffins();

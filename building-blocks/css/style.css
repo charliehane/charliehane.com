@@ -2894,13 +2894,11 @@ body.director-fall-locked {
 /* hexagonal coffins, top-down view */
 .coffin {
   position: absolute;
-  /* Charlie: 'DOUBLE the size of each coffin'. Was 200x320.
-     Fixed size at every desktop width — the narrow-window
-     @media rule below the pinned per-scene positions instead
-     switches the layout to a full vertical stack (like iPhone)
-     so text stays readable and coffins never overlap. */
-  width: 400px;
-  height: 640px;
+  /* Bumped 400x640 → 500x800 (Charlie: 'scale up the coffin size').
+     Coffin content is percentage-positioned so the interior text +
+     video thumbnail scale up proportionally with the container. */
+  width: 500px;
+  height: 800px;
   transform: rotate(var(--rot, 0deg));
   z-index: 5;
 }

@@ -131,10 +131,15 @@ content:
                 type: text
                 required: false
               - name: youtubeUrl
-                label: YouTube video URL (optional — click opens video in the site)
+                label: Video URL (YouTube, Vimeo, Instagram, or any link)
                 type: string
                 required: false
-                description: 'Paste any YouTube URL — https://youtu.be/… or https://youtube.com/watch?v=… — the site auto-embeds.'
+                description: 'YouTube / Vimeo auto-embed in the popup. Instagram embeds too but may need a manual thumbnail. Other links (articles etc.) open in a new tab.'
+              - name: thumbnailUrl
+                label: Thumbnail image URL (only needed for Instagram / articles — YouTube & Vimeo auto-detect)
+                type: string
+                required: false
+                description: 'Optional image URL to show on the card. Leave blank for YouTube or Vimeo (auto-fetched). Required for Instagram / non-video links if you want an image on the card.'
               - { name: meta,        label: Meta line (year / role / credit) }
 
       # ----------------------------------------------------------
@@ -165,10 +170,15 @@ content:
               - { name: credit, label: Credit / role }
               - { name: blurb,  label: One-line description (optional short blurb, separate from Description) }
               - name: youtubeUrl
-                label: YouTube video URL (optional)
+                label: Video URL (YouTube, Vimeo, Instagram, or any link)
                 type: string
                 required: false
-                description: 'Paste any YouTube URL — the site auto-embeds.'
+                description: 'YouTube / Vimeo auto-embed. Instagram embeds too. Other links open in a new tab.'
+              - name: thumbnailUrl
+                label: Thumbnail image URL (only needed for Instagram / articles)
+                type: string
+                required: false
+                description: 'Optional image URL for the card. Leave blank for YouTube or Vimeo — auto-detected.'
 
       # ----------------------------------------------------------
       # POSTPRODUCTION — coffins
@@ -197,10 +207,15 @@ content:
                 required: false
               - { name: credit, label: Credit / role }
               - name: youtubeUrl
-                label: YouTube video URL (optional)
+                label: Video URL (YouTube, Vimeo, Instagram, or any link)
                 type: string
                 required: false
-                description: 'Paste any YouTube URL — the site auto-embeds.'
+                description: 'YouTube / Vimeo auto-embed. Instagram embeds too. Other links open in a new tab.'
+              - name: thumbnailUrl
+                label: Thumbnail image URL (only needed for Instagram / articles)
+                type: string
+                required: false
+                description: 'Optional image URL for the card. Leave blank for YouTube or Vimeo — auto-detected.'
               - name: position
                 label: Coffin position (advanced — leave alone unless repositioning)
                 type: object

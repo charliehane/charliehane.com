@@ -168,6 +168,16 @@
     document.querySelectorAll('.popup-video, .work-thumb, .coffin-video').forEach((el) => {
       const url = el.getAttribute('href');
       if (!url) return;
+      // Manual thumbnailUrl override (data-thumbnail attr, wired from
+      // the JSON's thumbnailUrl field via data-attr-data-thumbnail).
+      // Wins over auto-detect so Charlie can pin a specific frame for
+      // Instagram / articles / anything the auto-fetchers can't handle.
+      const manual = el.dataset.thumbnail;
+      if (manual) {
+        el.style.backgroundImage = `url("${manual}")`;
+        el.classList.add('has-video');
+        return;
+      }
       const ytId = extractYouTubeId(url);
       if (ytId) {
         el.style.backgroundImage = `url("https://i.ytimg.com/vi/${ytId}/hqdefault.jpg")`;
@@ -186,7 +196,8 @@
       }
       // Instagram / everything else: no easy thumbnail source without
       // auth. Still mark as has-video so the play-button overlay +
-      // hover treatment render — card uses its base color.
+      // hover treatment render — card uses its base color unless the
+      // author sets a manual thumbnailUrl.
       if (extractInstagram(url)) el.classList.add('has-video');
     });
   };

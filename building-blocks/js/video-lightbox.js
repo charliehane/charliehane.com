@@ -143,6 +143,27 @@
   // (480x360, always exists for a valid ID; no API key required).
   // Elements without a href just stay as their static placeholder
   // (colored gradient for .work-thumb, hidden for .popup-video).
+  // Vimeo oEmbed thumbnails — public unauthenticated endpoint, cached
+   // in sessionStorage so we don't refetch across in-session navigations.
+  const VIMEO_THUMB_CACHE = 'vimeoThumb:';
+  const fetchVimeoThumb = (url) => {
+    const key = VIMEO_THUMB_CACHE + url;
+    const cached = sessionStorage.getItem(key);
+    if (cached) return Promise.resolve(cached);
+    return fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(url)}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(j => {
+        // Vimeo's default thumbnail_url is smallish (~200px). Bump to
+        // hqdefault-ish size by swapping the trailing _WIDTHxHEIGHT
+        // params for a larger one — matches the YouTube hqdefault feel.
+        if (!j || !j.thumbnail_url) return null;
+        const big = j.thumbnail_url.replace(/_\d+x\d+(?=\.[a-z]+$)/i, '_640');
+        try { sessionStorage.setItem(key, big); } catch (_) {}
+        return big;
+      })
+      .catch(() => null);
+  };
+
   const paintThumbs = () => {
     document.querySelectorAll('.popup-video, .work-thumb, .coffin-video').forEach((el) => {
       const url = el.getAttribute('href');
@@ -153,12 +174,20 @@
         el.classList.add('has-video');
         return;
       }
-      // Vimeo / Instagram: no predictable thumbnail URL (Vimeo needs
-      // oEmbed API; Instagram needs their embed script). Still mark
-      // as has-video so the play-button overlay + hover treatment
-      // render — card falls back to its base color instead of a
-      // background image.
-      if (extractVimeo(url) || extractInstagram(url)) el.classList.add('has-video');
+      const vim = extractVimeo(url);
+      if (vim) {
+        el.classList.add('has-video');
+        // Fetch async, paint when it lands. Card renders its base
+        // color in the meantime.
+        fetchVimeoThumb(url).then((thumb) => {
+          if (thumb) el.style.backgroundImage = `url("${thumb}")`;
+        });
+        return;
+      }
+      // Instagram / everything else: no easy thumbnail source without
+      // auth. Still mark as has-video so the play-button overlay +
+      // hover treatment render — card uses its base color.
+      if (extractInstagram(url)) el.classList.add('has-video');
     });
   };
   document.addEventListener('content:loaded', paintThumbs);

@@ -979,16 +979,13 @@ body {
    preproduction.js DEADZONES; the JS math accounts for scene width
    changing between iPhone (100% of stage) and desktop (78% of stage).
    50% fallback if JS hasn't run yet or if content isn't loaded. */
-.scene--01 .brick,
-.scene--02 .brick,
-.scene--03 .brick,
-.scene--04 .brick,
-.scene--05 .brick { left: var(--brick-left-pct, 50%); }
-.scene--01 .brick { top: 32%; }
-.scene--02 .brick { top: 32%; }
+/* Shared across every scene — .scene works for any modifier count
+   (was hard-coded to scene--01..05, but preproduction.films now scales
+   past 5 so we need a modifier-agnostic selector). --brick-left-pct
+   is set per-scene by preproduction.js placeBricks(). */
+.scene .brick { left: var(--brick-left-pct, 50%); top: 32%; }
+/* Per-scene TOP overrides (only scene--03 differs from the 32% default). */
 .scene--03 .brick { top: 36%; }
-.scene--04 .brick { top: 32%; }
-.scene--05 .brick { top: 32%; }
 
 .brick-popup {
   position: absolute;
@@ -1043,11 +1040,7 @@ body {
 /* Popup left tracks its brick via the same --brick-left-pct custom
    property (set by preproduction.js placeBricks). +44px = brick's
    half-width, so popup center = brick center after translate(-50%). */
-.scene--01 .brick-popup,
-.scene--02 .brick-popup,
-.scene--03 .brick-popup,
-.scene--04 .brick-popup,
-.scene--05 .brick-popup { left: calc(var(--brick-left-pct, 50%) + 44px); }
+.scene .brick-popup { left: calc(var(--brick-left-pct, 50%) + 44px); }
 /* Popups BOTTOM-anchored so the popup grows UPWARD as content gets
    taller. On narrow-desktop resizes the tall popup (title +
    description + thumbnail) was overflowing the bottom of the scene
@@ -1057,11 +1050,7 @@ body {
    videos.' `.world-track-clip` uses overflow-x: clip; overflow-y:
    visible, so the top of a tall popup can safely extend past the
    scene without being clipped. */
-.scene--01 .brick-popup,
-.scene--02 .brick-popup,
-.scene--03 .brick-popup,
-.scene--04 .brick-popup,
-.scene--05 .brick-popup { bottom: 4vh; top: auto; }
+.scene .brick-popup { bottom: 4vh; top: auto; }
 
 /* While ANY brick popup is open (body flag set by preproduction.js),
    lift the .world-track-clip above the FG video (z:10). We have to
@@ -1101,11 +1090,7 @@ body.brick-popup-open .world-track-clip {
      height matters because the bike-jump peak is a single CSS keyframe
      height — with per-scene variation, some bricks got hit dead-on
      and others weren't reached. */
-  .scene--01 .brick,
-  .scene--02 .brick,
-  .scene--03 .brick,
-  .scene--04 .brick,
-  .scene--05 .brick { top: 28% !important; }
+  .scene .brick { top: 28% !important; }
 }
 
 .popup-tag {

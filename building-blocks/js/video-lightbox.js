@@ -12,19 +12,44 @@
 //   https://youtube.com/shorts/ID
 //   https://www.youtube.com/embed/ID
 //   https://www.youtube.com/v/ID
-// Non-YouTube URLs fall through to the default anchor behavior
-// (opens in the same tab or new tab depending on target).
+// And Vimeo:
+//   https://vimeo.com/ID
+//   https://vimeo.com/ID/HASH        ← unlisted/private with hash
+//   https://vimeo.com/channels/<any>/ID
+//   https://player.vimeo.com/video/ID(?h=HASH)
+// Non-YouTube / non-Vimeo URLs fall through to the default anchor
+// behavior (opens in the same tab or new tab depending on target).
 
 (() => {
   let overlay = null;
   let iframe = null;
 
-  const extractId = (url) => {
+  const extractYouTubeId = (url) => {
     if (!url) return null;
     const m = url.match(
       /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|v\/))([A-Za-z0-9_-]{6,})/
     );
     return m ? m[1] : null;
+  };
+
+  const extractVimeo = (url) => {
+    if (!url) return null;
+    // player.vimeo.com/video/ID?h=HASH
+    let m = url.match(/player\.vimeo\.com\/video\/(\d+)(?:\?.*?[?&]h=([A-Za-z0-9]+))?/);
+    if (m) return { id: m[1], hash: m[2] || null };
+    // vimeo.com/ID or vimeo.com/ID/HASH or vimeo.com/channels/<any>/ID(/HASH)
+    m = url.match(/vimeo\.com\/(?:channels\/[^\/]+\/)?(\d+)(?:\/([A-Za-z0-9]+))?/);
+    if (m) return { id: m[1], hash: m[2] || null };
+    return null;
+  };
+
+  const extractInstagram = (url) => {
+    if (!url) return null;
+    // instagram.com/(username/)?(p|reel|tv)/CODE — the username segment is
+    // optional (e.g. instagram.com/p/CODE and instagram.com/jai.gil/reel/CODE
+    // both work). The /p/, /reel/, /tv/ token is what /embed/ hangs off of.
+    const m = url.match(/instagram\.com\/(?:[A-Za-z0-9_.-]+\/)?(p|reel|tv)\/([A-Za-z0-9_-]+)/);
+    return m ? { kind: m[1], code: m[2] } : null;
   };
 
   const build = () => {
@@ -51,12 +76,25 @@
   };
 
   const open = (url) => {
-    const id = extractId(url);
-    if (!id) return false;
+    // Try YouTube → Vimeo → Instagram in order. Each produces an
+    // autoplay-friendly embed URL. Instagram doesn't autoplay video —
+    // its /embed view shows the post with a native play control.
+    const ytId = extractYouTubeId(url);
+    const vim  = ytId ? null : extractVimeo(url);
+    const ig = (ytId || vim) ? null : extractInstagram(url);
+    if (!ytId && !vim && !ig) return false;
     if (!overlay) build();
-    // youtube-nocookie for privacy; autoplay OK because this is inside
-    // a user-gesture click handler (Safari's autoplay policy allows).
-    iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+    if (ytId) {
+      iframe.src = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`;
+    } else if (vim) {
+      const q = new URLSearchParams({ autoplay: '1', title: '0', byline: '0', portrait: '0', playsinline: '1' });
+      if (vim.hash) q.set('h', vim.hash);
+      iframe.src = `https://player.vimeo.com/video/${vim.id}?${q.toString()}`;
+    } else {
+      // Instagram embed URLs always use /p/CODE/embed/ regardless of
+      // whether the original was a /p/, /reel/, or /tv/ link.
+      iframe.src = `https://www.instagram.com/p/${ig.code}/embed/`;
+    }
     overlay.classList.add('is-open');
     overlay.setAttribute('aria-hidden', 'false');
     // Freeze page scroll while lightbox is up — otherwise iOS momentum
@@ -109,10 +147,18 @@
     document.querySelectorAll('.popup-video, .work-thumb, .coffin-video').forEach((el) => {
       const url = el.getAttribute('href');
       if (!url) return;
-      const id = extractId(url);
-      if (!id) return;
-      el.style.backgroundImage = `url("https://i.ytimg.com/vi/${id}/hqdefault.jpg")`;
-      el.classList.add('has-video');
+      const ytId = extractYouTubeId(url);
+      if (ytId) {
+        el.style.backgroundImage = `url("https://i.ytimg.com/vi/${ytId}/hqdefault.jpg")`;
+        el.classList.add('has-video');
+        return;
+      }
+      // Vimeo / Instagram: no predictable thumbnail URL (Vimeo needs
+      // oEmbed API; Instagram needs their embed script). Still mark
+      // as has-video so the play-button overlay + hover treatment
+      // render — card falls back to its base color instead of a
+      // background image.
+      if (extractVimeo(url) || extractInstagram(url)) el.classList.add('has-video');
     });
   };
   document.addEventListener('content:loaded', paintThumbs);

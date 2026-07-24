@@ -454,28 +454,46 @@
       // Space rows over usableH so all coffins are equidistant vertically
       // (regardless of which column). Row spacing = usableH / (N + 1);
       // row i center at (i + 1) / (N + 1) * usableH.
-      const ROW_H = usableH / (N + 1);
+      // Tight even distribution: coffin i at (i / (N-1)) * usableH.
+      // First coffin sits at top edge pad, last at bottom edge pad —
+      // minimizes both "too much dirt below" and "too much dirt above"
+      // that Charlie flagged. Edge pad is smaller than inter-coffin
+      // COFFIN_PAD_PX so cards land right where the diggable dirt
+      // starts / ends. N=1 falls back to center.
+      const EDGE_PAD_PX = 12;
+      const stepFrac = N > 1 ? 1 / (N - 1) : 0;
+      const usableHEdge = ugRect.height - COFFIN_H_PX - 2 * EDGE_PAD_PX;
+      const placedCoffins = [];   // includes each accepted coffin so
+                                  // later coffins dodge earlier ones,
+                                  // not just skeleton/chest.
       for (let idx = 0; idx < N; idx++) {
         const el = coffins[idx];
         const col = idx % COL_CENTERS_FRAC.length;
-        const baseY = COFFIN_PAD_PX + (idx + 1) * ROW_H;
+        const baseY = EDGE_PAD_PX + (N > 1 ? idx * stepFrac : 0.5) * usableHEdge;
         const baseX = COFFIN_PAD_PX + COL_CENTERS_FRAC[col] * usableW;
-        // If the grid slot collides with the skeleton or chest, nudge
-        // Y up/down by up to ± half a row (stays roughly equidistant).
-        // Also try the OTHER column as a last resort. Keeps the strict
-        // 2-column look while dodging pinned obstacles.
-        let x = baseX, y = baseY, placed = false;
-        const yNudges = [0, -ROW_H * 0.3, ROW_H * 0.3, -ROW_H * 0.5, ROW_H * 0.5];
         const otherX = COFFIN_PAD_PX + COL_CENTERS_FRAC[(col + 1) % COL_CENTERS_FRAC.length] * usableW;
+        // Try the ideal slot; if it collides with skeleton, chest, OR
+        // any already-placed coffin, nudge Y slightly, then try the
+        // other column with the same nudges. Keeps the grid look while
+        // routing around obstacles.
+        const rowH = usableHEdge / Math.max(1, N - 1);
+        const yNudges = [0, -rowH * 0.25, rowH * 0.25, -rowH * 0.5, rowH * 0.5];
+        let x = baseX, y = baseY, placed = false;
         for (const xTry of [baseX, otherX]) {
           for (const dy of yNudges) {
-            const cand = { x: xTry, y: Math.max(COFFIN_PAD_PX, Math.min(COFFIN_PAD_PX + usableH, baseY + dy)),
-                           w: COFFIN_W_PX, h: COFFIN_H_PX };
-            if (!obstacles.some(o => overlaps(cand, o))) { x = cand.x; y = cand.y; placed = true; break; }
+            const cand = {
+              x: xTry,
+              y: Math.max(EDGE_PAD_PX, Math.min(EDGE_PAD_PX + usableHEdge, baseY + dy)),
+              w: COFFIN_W_PX, h: COFFIN_H_PX,
+            };
+            const hits = obstacles.some(o => overlaps(cand, o)) ||
+                         placedCoffins.some(p => overlaps(cand, p));
+            if (!hits) { x = cand.x; y = cand.y; placed = true; break; }
           }
           if (placed) break;
         }
-        if (!placed) return false;   // nothing fit — extend underground and retry
+        if (!placed) return false;   // nothing fit — extend + retry
+        placedCoffins.push({ x, y, w: COFFIN_W_PX, h: COFFIN_H_PX });
         const rotDeg = ((idx % 2 === 0) ? -6 : 6).toFixed(1);
         el.style.top  = `${(y / ugRect.height * 100).toFixed(2)}%`;
         el.style.left = `${(x / ugRect.width  * 100).toFixed(2)}%`;
@@ -795,9 +813,30 @@
       ctx.globalCompositeOperation = 'source-over';
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, cRect.width, cRect.height);
+      // Sprinkle the same dark-dot speckle pattern the underground's
+      // ::before pseudo-element has, so the cover blends into its
+      // surroundings — Charlie: 'the gradient of dirt hiding the
+      // secret video message is easily seen.' Semi-random dots seeded
+      // by position so re-fills give the same pattern.
+      const seed = Math.floor(cRect.left * 1000 + cRect.top);
+      let s = seed;
+      const rand = () => { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+      const dotCount = Math.round((cRect.width * cRect.height) / 900);
+      for (let i = 0; i < dotCount; i++) {
+        const dx = rand() * cRect.width;
+        const dy = rand() * cRect.height;
+        const rad = 3 + rand() * 5;
+        ctx.fillStyle = `rgba(0,0,0,${0.30 + rand() * 0.10})`;
+        ctx.beginPath(); ctx.arc(dx, dy, rad, 0, Math.PI * 2); ctx.fill();
+      }
     };
     sizeAndFill();
     window.addEventListener('resize', () => { if (!isFullyDug) sizeAndFill(); });
+    // Re-paint after underground extension (positions shift, gradient
+    // stops change slightly). Only if the chest hasn't been dug yet.
+    undergroundEl?.addEventListener('dig-underground-resized', () => {
+      if (!isFullyDug) sizeAndFill();
+    });
 
     const eraseSegment = (x0, y0, x1, y1) => {
       ctx.globalCompositeOperation = 'destination-out';

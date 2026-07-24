@@ -1004,7 +1004,11 @@ body {
      (which the per-scene rules below place at the brick's center X). */
   transform: translate(-50%, 0) scale(0.94);
   transform-origin: bottom center;
-  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(.3,1.5,.5,1);
+  /* Base = fast FADE-OUT curve (Charlie: 'have open ? boxes fade out
+     more quickly, so have more time of no boxes being open before the
+     next ? is clickable'). The .is-shown class below overrides with
+     the slower easing for the fade-IN so opening still feels smooth. */
+  transition: opacity 0.15s ease-out, transform 0.15s ease-out;
   /* Must sit ABOVE .world-fg-video (z-index: 10) — otherwise the
      FG coal-strip / biker renders on top of the popup and covers
      the video thumbnail / description on narrow-window resizes,
@@ -1022,6 +1026,9 @@ body {
      pointer-events: none so a hidden popup can't intercept clicks
      meant for the ? brick below it. */
   pointer-events: auto;
+  /* Slow fade-IN (feels like a pop). The base rule's fast transition
+     kicks in when this class is removed → snappy fade-OUT. */
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(.3,1.5,.5,1);
 }
 /* Popup sits DIRECTLY ABOVE its ? brick — Charlie: 'on the computer
    version the playbox on the preproduction page shows up to the left

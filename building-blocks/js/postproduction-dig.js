@@ -422,24 +422,31 @@
       const usableH = ugRect.height - COFFIN_H_PX - 2 * COFFIN_PAD_PX;
       if (usableW <= 0 || usableH <= 0) return false;   // underground too small
 
-      // Order-biased Y so array order maps to visual top→bottom
-      // (Charlie: coffins near the end of the JSON list should sit
-      // closer to the bottom of the underground). Coffin i of N
-      // unpinned targets y = (i+1)/(N+1) * usableH, with ±6% jitter
-      // for organic feel. X stays random (with retry) to keep the
-      // "scattered graveyard" scatter across the full width.
+      // Loose 3-column grid with jitter. Charlie: pure random made
+      // the screen look messy. Each unpinned coffin lands in one of
+      // 3 columns in rotation (idx % 3), keeping the graveyard-scatter
+      // vibe via small X jitter and a small rotation — but never
+      // two coffins randomly stacked on top of each other.
+      const COL_CENTERS_FRAC = [0.15, 0.5, 0.85];   // 3 columns across usableW
+      const X_JITTER_PX = 40;
+      const Y_JITTER_FRAC = 0.05;
       for (let idx = 0; idx < unpinned.length; idx++) {
         const el = unpinned[idx];
         const targetY = COFFIN_PAD_PX + ((idx + 1) / (unpinned.length + 1)) * usableH;
+        const targetX = COFFIN_PAD_PX + COL_CENTERS_FRAC[idx % 3] * usableW;
         let ok = false;
         for (let i = 0; i < PLACE_ATTEMPTS; i++) {
-          const x = COFFIN_PAD_PX + Math.random() * usableW;
-          const yJitter = (Math.random() - 0.5) * usableH * 0.06;
+          const xJit = (Math.random() - 0.5) * 2 * X_JITTER_PX;
+          const yJit = (Math.random() - 0.5) * usableH * Y_JITTER_FRAC;
+          const x = Math.max(COFFIN_PAD_PX,
+                    Math.min(COFFIN_PAD_PX + usableW, targetX + xJit));
           const y = Math.max(COFFIN_PAD_PX,
-                    Math.min(COFFIN_PAD_PX + usableH, targetY + yJitter));
+                    Math.min(COFFIN_PAD_PX + usableH, targetY + yJit));
           const candidate = { x, y, w: COFFIN_W_PX, h: COFFIN_H_PX };
           if (placed.every(p => !overlaps(candidate, p))) {
-            const rotDeg = (Math.random() * 24 - 12).toFixed(1);
+            // Reduced rotation range (±8 vs previous ±12) — reads
+            // organic without contributing to the "messy" feel.
+            const rotDeg = (Math.random() * 16 - 8).toFixed(1);
             el.style.top  = `${(y / ugRect.height * 100).toFixed(2)}%`;
             el.style.left = `${(x / ugRect.width  * 100).toFixed(2)}%`;
             el.style.setProperty('--rot', `${rotDeg}deg`);

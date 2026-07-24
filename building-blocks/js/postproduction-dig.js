@@ -411,38 +411,29 @@
                     !el.classList.contains('coffin--charlie'));
     if (!coffins.length) return;
 
-    const unpinned = coffins.filter(el => !isPinned(el));
-    if (!unpinned.length) return;   // nothing to do — every coffin is pinned
-
-    // Reset any prior auto-placement so re-runs on resize start clean.
-    unpinned.forEach(el => {
+    // Charlie: 'I want them to always be equidistant from one another.'
+    // Ignore any inline pinned positions from the JSON `position` field
+    // — force ALL coffins onto the same grid so the spacing is uniform.
+    coffins.forEach(el => {
       el.style.top = '';
       el.style.left = '';
+      el.style.right = '';
       el.style.removeProperty('--rot');
     });
 
     let extensionVh = 0;
     const attemptRound = () => {
       const ugRect = undergroundHost.getBoundingClientRect();
-      // pinned coffins have already been laid out by CSS — read their
-      // current pixel positions after any extension we've applied.
-      const pinnedRects = coffins.filter(isPinned).map(el => localRect(el, ugRect));
-
-      // Also count the skeleton/charlie coffins so they don't get
-      // overlapped by random placement (they're structural, not in the
-      // JSON list).
+      // Skeleton coffin (structural, not in the JSON coffins list).
+      const obstacles = [];
       const skeleton = undergroundHost.querySelector('#coffinSkeleton');
-      if (skeleton) pinnedRects.push(localRect(skeleton, ugRect));
-      // Chest dirt patch is another no-go zone. Charlie: 'the dirt is
-      // covering the coffin currently for the random video, I would
-      // really like if there could be a rule that a coffin is never
-      // set overtop of the hidden videos dirt.'
+      if (skeleton) obstacles.push(localRect(skeleton, ugRect));
+      // Chest dig zone off-limits. Charlie: 'a coffin is never set
+      // overtop of the hidden videos dirt.'
       const chest = document.getElementById('digChest');
       if (chest && chest.offsetParent !== null) {
         const cr = chest.getBoundingClientRect();
-        // Expand by the dirt-cover's -50px inset so the whole 250×250
-        // dig zone (not just the 150×150 chest) is off-limits.
-        pinnedRects.push({
+        obstacles.push({
           x: cr.left - ugRect.left - 50,
           y: cr.top  - ugRect.top  - 50,
           w: cr.width  + 100,
@@ -450,48 +441,50 @@
         });
       }
 
-      const placed = [...pinnedRects];
       const usableW = ugRect.width  - COFFIN_W_PX - 2 * COFFIN_PAD_PX;
       const usableH = ugRect.height - COFFIN_H_PX - 2 * COFFIN_PAD_PX;
-      if (usableW <= 0 || usableH <= 0) return false;   // underground too small
+      if (usableW <= 0 || usableH <= 0) return false;
 
-      // Two-column grid, minimal randomness. Charlie: 'do the
-      // Two-column grid (least random, cleanest) option.' Coffins
-      // alternate left/right columns down the underground, with just
-      // a whisper of jitter + rotation so it doesn't feel robotic.
-      const COL_CENTERS_FRAC = [0.25, 0.75];   // 2 columns
-      const X_JITTER_PX = 18;
-      const Y_JITTER_FRAC = 0.02;
-      for (let idx = 0; idx < unpinned.length; idx++) {
-        const el = unpinned[idx];
-        const targetY = COFFIN_PAD_PX + ((idx + 1) / (unpinned.length + 1)) * usableH;
-        const targetX = COFFIN_PAD_PX + COL_CENTERS_FRAC[idx % 3] * usableW;
-        let ok = false;
-        for (let i = 0; i < PLACE_ATTEMPTS; i++) {
-          const xJit = (Math.random() - 0.5) * 2 * X_JITTER_PX;
-          const yJit = (Math.random() - 0.5) * usableH * Y_JITTER_FRAC;
-          const x = Math.max(COFFIN_PAD_PX,
-                    Math.min(COFFIN_PAD_PX + usableW, targetX + xJit));
-          const y = Math.max(COFFIN_PAD_PX,
-                    Math.min(COFFIN_PAD_PX + usableH, targetY + yJit));
-          const candidate = { x, y, w: COFFIN_W_PX, h: COFFIN_H_PX };
-          if (placed.every(p => !overlaps(candidate, p))) {
-            // Reduced rotation range (±8 vs previous ±12) — reads
-            // organic without contributing to the "messy" feel.
-            const rotDeg = (Math.random() * 16 - 8).toFixed(1);
-            el.style.top  = `${(y / ugRect.height * 100).toFixed(2)}%`;
-            el.style.left = `${(x / ugRect.width  * 100).toFixed(2)}%`;
-            el.style.setProperty('--rot', `${rotDeg}deg`);
-            placed.push(candidate);
-            ok = true;
-            break;
+      // Strict two-column equidistant grid. No jitter — Charlie: 'do
+      // the Two-column grid (least random, cleanest)'. Small rotation
+      // for character. Coffin i goes at column (i%2), row (i//2 → even
+      // spacing across the underground's Y).
+      const COL_CENTERS_FRAC = [0.25, 0.75];
+      const N = coffins.length;
+      // Space rows over usableH so all coffins are equidistant vertically
+      // (regardless of which column). Row spacing = usableH / (N + 1);
+      // row i center at (i + 1) / (N + 1) * usableH.
+      const ROW_H = usableH / (N + 1);
+      for (let idx = 0; idx < N; idx++) {
+        const el = coffins[idx];
+        const col = idx % COL_CENTERS_FRAC.length;
+        const baseY = COFFIN_PAD_PX + (idx + 1) * ROW_H;
+        const baseX = COFFIN_PAD_PX + COL_CENTERS_FRAC[col] * usableW;
+        // If the grid slot collides with the skeleton or chest, nudge
+        // Y up/down by up to ± half a row (stays roughly equidistant).
+        // Also try the OTHER column as a last resort. Keeps the strict
+        // 2-column look while dodging pinned obstacles.
+        let x = baseX, y = baseY, placed = false;
+        const yNudges = [0, -ROW_H * 0.3, ROW_H * 0.3, -ROW_H * 0.5, ROW_H * 0.5];
+        const otherX = COFFIN_PAD_PX + COL_CENTERS_FRAC[(col + 1) % COL_CENTERS_FRAC.length] * usableW;
+        for (const xTry of [baseX, otherX]) {
+          for (const dy of yNudges) {
+            const cand = { x: xTry, y: Math.max(COFFIN_PAD_PX, Math.min(COFFIN_PAD_PX + usableH, baseY + dy)),
+                           w: COFFIN_W_PX, h: COFFIN_H_PX };
+            if (!obstacles.some(o => overlaps(cand, o))) { x = cand.x; y = cand.y; placed = true; break; }
           }
+          if (placed) break;
         }
-        if (!ok) return false;      // couldn't fit — bail so we extend
+        if (!placed) return false;   // nothing fit — extend underground and retry
+        const rotDeg = ((idx % 2 === 0) ? -6 : 6).toFixed(1);
+        el.style.top  = `${(y / ugRect.height * 100).toFixed(2)}%`;
+        el.style.left = `${(x / ugRect.width  * 100).toFixed(2)}%`;
+        el.style.setProperty('--rot', `${rotDeg}deg`);
       }
 
-      // Coverage check: reject if total coffin area exceeds threshold.
-      const coffinArea = placed.reduce((sum, r) => sum + r.w * r.h, 0);
+      // Coverage check: reject if coffin area exceeds threshold (means
+      // we need a taller underground to space them out more).
+      const coffinArea = N * COFFIN_W_PX * COFFIN_H_PX;
       const totalArea  = ugRect.width * ugRect.height;
       return (coffinArea / totalArea) <= COVERAGE_MAX;
     };
@@ -500,8 +493,7 @@
     // of underground and retries. Cap at 8 extensions so we can't loop
     // forever if the viewport is impossibly small.
     for (let round = 0; round < 8; round++) {
-      // Reset positions for a clean attempt
-      unpinned.forEach(el => { el.style.top = ''; el.style.left = ''; el.style.removeProperty('--rot'); });
+      coffins.forEach(el => { el.style.top = ''; el.style.left = ''; el.style.right = ''; el.style.removeProperty('--rot'); });
       if (attemptRound()) break;
 
       extensionVh += 100;

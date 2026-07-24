@@ -8,12 +8,14 @@
 
   Everything else is freely replaceable (skull, hat, ribs, limbs, etc.).
 -->
-<svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <ellipse cx="50" cy="52" rx="14" ry="16" fill="#e8e0d4"/>
   <rect x="44" y="66" width="12" height="6" fill="#e8e0d4"/>
-  <!-- pirate hat — PNG with red bandana + skull-and-crossbones -->
+  <!-- pirate hat — PNG with red bandana + skull-and-crossbones. Both
+       href and xlink:href set for maximum browser compatibility. -->
   <image class="pirate-hat"
          href="/assets/pirate-clipart-design-illustration-free-png.png"
+         xlink:href="/assets/pirate-clipart-design-illustration-free-png.png"
          x="14" y="0" width="72" height="60"
          preserveAspectRatio="xMidYMid meet"/>
   <!-- eyes — keep these IDs! they get color-swapped by JS on hover -->

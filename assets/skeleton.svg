@@ -11,14 +11,11 @@
 <svg viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
   <ellipse cx="50" cy="52" rx="14" ry="16" fill="#e8e0d4"/>
   <rect x="44" y="66" width="12" height="6" fill="#e8e0d4"/>
-  <!-- pirate tricorn hat -->
-  <g class="pirate-hat">
-    <path d="M28 36 Q50 22 72 36 L70 40 Q50 30 30 40 Z" fill="#1a1614"/>
-    <path d="M30 40 L70 40 Q72 46 68 50 L32 50 Q28 46 30 40 Z" fill="#1a1614"/>
-    <ellipse cx="50" cy="34" rx="3.5" ry="3" fill="#e8e0d4"/>
-    <line x1="48" y1="36" x2="52" y2="38" stroke="#1a1614" stroke-width="0.8"/>
-    <line x1="52" y1="36" x2="48" y2="38" stroke="#1a1614" stroke-width="0.8"/>
-  </g>
+  <!-- pirate hat — PNG with red bandana + skull-and-crossbones -->
+  <image class="pirate-hat"
+         href="/assets/pirate-clipart-design-illustration-free-png.png"
+         x="14" y="0" width="72" height="60"
+         preserveAspectRatio="xMidYMid meet"/>
   <!-- eyes — keep these IDs! they get color-swapped by JS on hover -->
   <circle class="skull-eye" id="skullEyeL" cx="44" cy="50" r="3" fill="#1a0a08"/>
   <circle class="skull-eye" id="skullEyeR" cx="56" cy="50" r="3" fill="#1a0a08"/>

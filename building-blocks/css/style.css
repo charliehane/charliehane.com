@@ -1229,6 +1229,26 @@ body.brick-popup-open .world-track-clip {
   border-width: 9px 0 9px 14px;
 }
 
+/* External-link cards (article, IMDb, etc. — anything the lightbox
+   can't embed) get a READ pill INSTEAD of the play triangle.
+   Charlie: 'make the button not a play button, make it say READ.'
+   The circle stays as a hit target / hover cue; ::after swaps to a
+   text glyph. */
+.is-external-link .video-play-btn::after {
+  content: 'READ';
+  border: 0;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  font-family: 'Space Mono', 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+}
+
 /* Coffin WATCH chip (postproduction) — Charlie: 'on post production
    use your -> Watch button that you had been using for PREPRODUCTION
    inside of the coffin, right below the context text'. Text chip

@@ -168,37 +168,36 @@
     document.querySelectorAll('.popup-video, .work-thumb, .coffin-video').forEach((el) => {
       const url = el.getAttribute('href');
       if (!url) return;
-      // Manual thumbnailUrl override (data-thumbnail attr, wired from
-      // the JSON's thumbnailUrl field via data-attr-data-thumbnail).
-      // Wins over auto-detect so Charlie can pin a specific frame for
-      // Instagram / articles / anything the auto-fetchers can't handle.
+      el.classList.add('has-video');
+
+      // URL-type detection FIRST — needed for the READ label on
+      // non-video links even when the author has set a manual
+      // thumbnailUrl (which used to short-circuit the check).
+      const ytId = extractYouTubeId(url);
+      const vim  = ytId ? null : extractVimeo(url);
+      const ig   = (ytId || vim) ? null : extractInstagram(url);
+      const isExternal = !(ytId || vim || ig);
+      if (isExternal) el.classList.add('is-external-link');
+
+      // Manual thumbnailUrl override wins over auto-detect for the
+      // background image.
       const manual = el.dataset.thumbnail;
       if (manual) {
         el.style.backgroundImage = `url("${manual}")`;
-        el.classList.add('has-video');
         return;
       }
-      const ytId = extractYouTubeId(url);
       if (ytId) {
         el.style.backgroundImage = `url("https://i.ytimg.com/vi/${ytId}/hqdefault.jpg")`;
-        el.classList.add('has-video');
         return;
       }
-      const vim = extractVimeo(url);
       if (vim) {
-        el.classList.add('has-video');
-        // Fetch async, paint when it lands. Card renders its base
-        // color in the meantime.
         fetchVimeoThumb(url).then((thumb) => {
           if (thumb) el.style.backgroundImage = `url("${thumb}")`;
         });
         return;
       }
-      // Instagram / everything else: no easy thumbnail source without
-      // auth. Still mark as has-video so the play-button overlay +
-      // hover treatment render — card uses its base color unless the
-      // author sets a manual thumbnailUrl.
-      if (extractInstagram(url)) el.classList.add('has-video');
+      // Instagram (no manual thumb) + external link (no manual thumb)
+      // fall through with just the base card color + play/READ overlay.
     });
   };
   document.addEventListener('content:loaded', paintThumbs);

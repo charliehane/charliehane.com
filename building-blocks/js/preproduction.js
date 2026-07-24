@@ -910,31 +910,24 @@
     popup._sourceBrick = brick;
 
     if (!isPortraitPhone) {
-      // Desktop: dismiss on the SECOND scroll burst. Charlie: 'you're
-      // able to scroll with it open one swipe, but on the second
-      // swipe it fades away, that way you never run into a situation
-      // where a ? is being even slightly blocked.' A "burst" is a
-      // run of scroll/wheel events separated by ~350ms of idle.
-      let burstIdx = -1;   // -1 = no burst yet, 0 = mid first burst, ...
-      let idleTimer = null;
+      // Desktop: dismiss after the user has scrolled a fixed distance
+      // (~one screen-worth) from the popup's opening scroll position.
+      // Charlie: 'make sure they are each fading out after similar
+      // amounts of swipes… shifted to sooner.' Distance-based is
+      // deterministic — no dependence on scroll-event frequency /
+      // burst timing, so every popup dismisses at the SAME amount
+      // of scrolling regardless of when in the ride it opened.
+      const DISMISS_AFTER_PX = 220;
+      let startY = null;
       const onScrollTick = () => {
-        // A new burst starts whenever idleTimer is null (nothing
-        // pending). Bump the counter, then arm the idle timer that
-        // resets us to "between bursts" state.
-        if (idleTimer === null) {
-          burstIdx++;
-          if (burstIdx >= 1) {   // 0 = first burst (keep), 1+ = second (dismiss)
-            hidePopup(popup);
-            return;
-          }
+        if (startY === null) { startY = window.scrollY; return; }
+        if (Math.abs(window.scrollY - startY) >= DISMISS_AFTER_PX) {
+          hidePopup(popup);
         }
-        clearTimeout(idleTimer);
-        idleTimer = setTimeout(() => { idleTimer = null; }, 350);
       };
       popup._scrollDismiss = onScrollTick;
-      // Attached one frame later so the tick that opened this popup
-      // (bike jump ends with the world already scrolling) doesn't
-      // instantly count as the first burst.
+      // Attach next frame so scroll motion that OPENED the popup (bike
+      // jump lands mid-scroll) doesn't seed startY on the way in.
       requestAnimationFrame(() => {
         window.addEventListener('scroll', onScrollTick, { passive: true });
         window.addEventListener('wheel',  onScrollTick, { passive: true });

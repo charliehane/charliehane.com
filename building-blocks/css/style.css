@@ -1231,22 +1231,31 @@ body.brick-popup-open .world-track-clip {
 
 /* External-link cards (article, IMDb, etc. — anything the lightbox
    can't embed) get a READ pill INSTEAD of the play triangle.
-   Charlie: 'make the button not a play button, make it say READ.'
-   The circle stays as a hit target / hover cue; ::after swaps to a
-   text glyph. */
+   Charlie: 'make sure the READ button surround the READ text fully.'
+   Drop the fixed-size circle entirely and let the ::after render as
+   a padded pill that hugs its own text — no clipping regardless of
+   font. */
+.is-external-link .video-play-btn::before { display: none; }
 .is-external-link .video-play-btn::after {
   content: 'READ';
-  border: 0;
-  margin: 0;
-  transform: translate(-50%, -50%);
+  position: absolute;
   top: 50%;
   left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 9px 18px;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1.5px solid #fa3941;
+  border-radius: 999px;
+  color: #fff;
   font-family: 'Space Mono', 'JetBrains Mono', monospace;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.14em;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.85);
+  line-height: 1;
+  white-space: nowrap;
+  margin: 0;
+  width: auto;
+  height: auto;
 }
 
 /* Coffin WATCH chip (postproduction) — Charlie: 'on post production

@@ -466,16 +466,13 @@
       const placedCoffins = [];   // includes each accepted coffin so
                                   // later coffins dodge earlier ones,
                                   // not just skeleton/chest.
+      let anyForced = false;
       for (let idx = 0; idx < N; idx++) {
         const el = coffins[idx];
         const col = idx % COL_CENTERS_FRAC.length;
         const baseY = EDGE_PAD_PX + (N > 1 ? idx * stepFrac : 0.5) * usableHEdge;
         const baseX = COFFIN_PAD_PX + COL_CENTERS_FRAC[col] * usableW;
         const otherX = COFFIN_PAD_PX + COL_CENTERS_FRAC[(col + 1) % COL_CENTERS_FRAC.length] * usableW;
-        // Try the ideal slot; if it collides with skeleton, chest, OR
-        // any already-placed coffin, nudge Y slightly, then try the
-        // other column with the same nudges. Keeps the grid look while
-        // routing around obstacles.
         const rowH = usableHEdge / Math.max(1, N - 1);
         const yNudges = [0, -rowH * 0.25, rowH * 0.25, -rowH * 0.5, rowH * 0.5];
         let x = baseX, y = baseY, placed = false;
@@ -492,7 +489,15 @@
           }
           if (placed) break;
         }
-        if (!placed) return false;   // nothing fit — extend + retry
+        // CRITICAL: never leave a coffin unplaced. Charlie's bug —
+        // 'the first two coffins overlap, this can NEVER happen' —
+        // was that a failed round cleared all inline positions and
+        // exited, stacking every coffin at (0,0). If nudges can't
+        // dodge the obstacle, force the base slot so at least the
+        // grid layout stands. Signal for a retry via anyForced so
+        // the outer loop extends the underground and gives a real
+        // clean layout on the next attempt.
+        if (!placed) { anyForced = true; }
         placedCoffins.push({ x, y, w: COFFIN_W_PX, h: COFFIN_H_PX });
         const rotDeg = ((idx % 2 === 0) ? -6 : 6).toFixed(1);
         el.style.top  = `${(y / ugRect.height * 100).toFixed(2)}%`;
@@ -500,11 +505,16 @@
         el.style.setProperty('--rot', `${rotDeg}deg`);
       }
 
-      // Coverage check: reject if coffin area exceeds threshold (means
-      // we need a taller underground to space them out more).
+      // Coverage check + no-force check: only accept the round as
+      // fully successful if placement never had to force-through a
+      // collision AND coffin area is under threshold. Failure returns
+      // false → outer loop extends the underground and tries again,
+      // BUT positions are already set on every coffin, so a final-
+      // round bail doesn't leave anything at (0,0).
       const coffinArea = N * COFFIN_W_PX * COFFIN_H_PX;
       const totalArea  = ugRect.width * ugRect.height;
-      return (coffinArea / totalArea) <= COVERAGE_MAX;
+      const coverageOK = (coffinArea / totalArea) <= COVERAGE_MAX;
+      return coverageOK && !anyForced;
     };
 
     // Try to place; each failure extends .dig-world by another viewport

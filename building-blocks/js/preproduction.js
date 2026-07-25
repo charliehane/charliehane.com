@@ -457,7 +457,12 @@
     [0.0,   0.5   ],  // 0-15f: opening blackout / establishing
     [5.8,   6.5   ],  // 5:24-6:15: mountain → fog transition
     [11.267, 13.067],  // 11:08-13:02: fog → ocean/lighthouse
-    [17.867, 19.5  ],  // 17:26-19:15: sunset ocean → city
+    // Extended the sunset → city transition (was [17.867, 19.5]) so
+    // bricks can't land in the "just arriving in city" moment either.
+    // Charlie: 'FILM 10 falls inside what should be a NO GO ZONE.'
+    // Extra 3s of skip pushes the first city brick to ~23s of the
+    // 27s clip — well inside the settled city view.
+    [17.867, 22.5  ],
   ];
   const VIDEO_DURATION = 27;
 

@@ -170,7 +170,10 @@
   // (colored gradient for .work-thumb, hidden for .popup-video).
   // Vimeo oEmbed thumbnails — public unauthenticated endpoint, cached
    // in sessionStorage so we don't refetch across in-session navigations.
-  const VIMEO_THUMB_CACHE = 'vimeoThumb:';
+   // Cache key includes a version so a bad cached URL from an earlier
+   // build gets invalidated automatically (previous _640 rewrite
+   // produced URLs that 404'd; now we use the oEmbed URL as-is).
+  const VIMEO_THUMB_CACHE = 'vimeoThumb:v2:';
   const fetchVimeoThumb = (url) => {
     const key = VIMEO_THUMB_CACHE + url;
     const cached = sessionStorage.getItem(key);
@@ -178,13 +181,10 @@
     return fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(url)}`)
       .then(r => r.ok ? r.json() : null)
       .then(j => {
-        // Vimeo's default thumbnail_url is smallish (~200px). Bump to
-        // hqdefault-ish size by swapping the trailing _WIDTHxHEIGHT
-        // params for a larger one — matches the YouTube hqdefault feel.
         if (!j || !j.thumbnail_url) return null;
-        const big = j.thumbnail_url.replace(/_\d+x\d+(?=\.[a-z]+$)/i, '_640');
-        try { sessionStorage.setItem(key, big); } catch (_) {}
-        return big;
+        const thumb = j.thumbnail_url;
+        try { sessionStorage.setItem(key, thumb); } catch (_) {}
+        return thumb;
       })
       .catch(() => null);
   };

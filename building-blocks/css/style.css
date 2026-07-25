@@ -476,9 +476,12 @@ body {
 }
 .sm-body p:last-child { margin-bottom: 0; }
 .sm-body em {
+  /* Film titles in bio paragraphs — same deep red as the nav pills
+     (Charlie: 'make the titles of all films in my bio the same
+     deep red as these'). */
   font-style: italic;
-  color: #5a4126;
-  font-weight: 500;
+  color: #fa3941;
+  font-weight: 600;
 }
 
 /* Bio sign — full-viewport invisible click target with a plain-text

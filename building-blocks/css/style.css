@@ -476,12 +476,18 @@ body {
 }
 .sm-body p:last-child { margin-bottom: 0; }
 .sm-body em {
-  /* Film titles in bio paragraphs — same deep red as the nav pills
-     (Charlie: 'make the titles of all films in my bio the same
-     deep red as these'). */
+  /* Film titles Charlie WORKED ON — nav-pill red so they pop.
+     Reference titles for other people's work (Holly Hines / Eric
+     Jarboe credits) use plain <i> instead of <em> so they stay
+     italic without the accent color. */
   font-style: italic;
   color: #fa3941;
   font-weight: 600;
+}
+.sm-body i {
+  font-style: italic;
+  color: inherit;
+  font-weight: inherit;
 }
 
 /* Bio sign — full-viewport invisible click target with a plain-text

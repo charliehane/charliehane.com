@@ -1662,6 +1662,15 @@ html.video-lightbox-open .shovel-cursor {
   letter-spacing: -0.03em;
 }
 .page-title em { color: var(--rust); font-style: italic; }
+.page-subtitle {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(18px, 2vw, 26px);
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  margin: -12px 0 32px;
+  opacity: 0.82;
+}
 .page-lede {
   font-family: var(--serif);
   font-weight: 350;

@@ -113,7 +113,6 @@ content:
         fields:
           - { name: pageTitle,  label: Browser tab title }
           - { name: title,      label: Page headline (e.g. "Preproduction.") }
-          - { name: subtitle,   label: Subheading (small line under the big headline) }
           - { name: eyebrow,    label: Section label (e.g. "section i") }
           - { name: lede,       label: Lede paragraph (under headline) }
           - { name: caption,    label: Bottom caption ("swipe to ride · click to jump") }

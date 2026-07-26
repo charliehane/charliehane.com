@@ -1571,47 +1571,52 @@ html.video-lightbox-open .shovel-cursor {
   letter-spacing: -0.02em;
   color: var(--ink);
 }
-/* Strip wraps the frames + adds the sprocket-hole film-reel edges. */
-.reel-strip {
-  background: #0a0a0a;
-  padding: 22px 20px;
-  border-radius: 6px;
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+/* Wrapper carries the max-width + centering. */
+.reel-strip-wrap {
   max-width: 1500px;
   margin: 0 auto;
-  /* Sprocket-hole perforations top + bottom (repeating gradient
-     draws light rectangles onto the black background). */
-  background-image:
-    radial-gradient(circle at 12px 11px, #f3ebe0 3.5px, transparent 4px),
-    radial-gradient(circle at 12px calc(100% - 11px), #f3ebe0 3.5px, transparent 4px);
-  background-size: 24px 22px, 24px 22px;
-  background-position: 0 0, 0 100%;
-  background-repeat: repeat-x, repeat-x;
 }
-.reel-strip::-webkit-scrollbar { display: none; }
+/* Strip is a responsive grid — frames auto-fit into as many columns as
+   the viewport allows and wrap to new rows when they don't fit. No
+   horizontal scroll: everything is visible without swiping. */
+.reel-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px 12px;
+  padding: 0;
+}
 
 .reel-thumb {
   position: relative;
-  flex: 0 0 auto;
-  width: clamp(220px, 26vw, 340px);
   aspect-ratio: 16 / 9;
   background: #1a1a1a center / cover no-repeat;
-  border-radius: 3px;
   overflow: hidden;
-  scroll-snap-align: start;
   text-decoration: none;
   color: var(--cream);
   cursor: pointer;
   transition: transform 0.25s ease;
   display: block;
+  width: 100%;
 }
 .reel-thumb:hover { transform: translateY(-3px); }
+/* Sprocket-hole edges: black bars along the top and bottom of every
+   frame, evoking a physical filmstrip cel. When frames wrap into
+   multiple rows, each row still reads as a strip because every frame
+   carries its own perforated edges. */
+.reel-thumb::before,
+.reel-thumb::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 18px;
+  background:
+    radial-gradient(circle at 12px 9px, #f3ebe0 3px, transparent 3.6px) 0 0 / 24px 18px repeat-x,
+    #0a0a0a;
+  z-index: 2;
+  pointer-events: none;
+}
+.reel-thumb::before { top: 0; }
+.reel-thumb::after  { bottom: 0; }
 
 /* Play triangle overlay — only shown once thumb has an actual image
    (has-video class set by video-lightbox paintThumbs). */
@@ -1636,11 +1641,12 @@ html.video-lightbox-open .shovel-cursor {
 }
 .reel-thumb.has-video .reel-play { opacity: 1; }
 
-/* Caption strip along the bottom of each frame. */
+/* Caption strip along the bottom of each frame — sits just above the
+   bottom sprocket-hole bar so both remain visible. */
 .reel-caption {
   position: absolute;
-  left: 0; right: 0; bottom: 0;
-  padding: 16px 14px 12px;
+  left: 0; right: 0; bottom: 18px;
+  padding: 16px 14px 10px;
   background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.75) 60%, rgba(0,0,0,0.9) 100%);
   display: flex;
   flex-direction: column;
@@ -1665,8 +1671,7 @@ html.video-lightbox-open .shovel-cursor {
 
 @media (max-width: 700px) {
   .reel-section { padding: 80px 6vw 32px; }
-  .reel-strip   { padding: 16px 14px; }
-  .reel-thumb   { width: 240px; }
+  .reel-strip   { gap: 16px 10px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 }
 
 /* ============================================================

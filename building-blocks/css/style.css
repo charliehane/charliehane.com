@@ -1618,7 +1618,7 @@ html.video-lightbox-open .shovel-cursor {
 .reel-play {
   position: absolute;
   top: 50%; left: 50%;
-  width: 40px; height: 40px;
+  width: 30px; height: 30px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: rgba(255,255,255,0.55);
@@ -1629,12 +1629,10 @@ html.video-lightbox-open .shovel-cursor {
 .reel-play::before {
   content: '';
   position: absolute;
-  top: 50%; left: 55%;
-  width: 0; height: 0;
-  border-style: solid;
-  border-width: 8px 0 8px 13px;
-  border-color: transparent transparent transparent var(--rust);
+  top: 50%; left: 56%;
+  width: 12px; height: 14px;
   transform: translate(-50%, -50%);
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 14'><polygon points='1.5,1 11,7 1.5,13' fill='%23b94a2a' stroke='%23000' stroke-width='0.8' stroke-linejoin='round'/></svg>") center/contain no-repeat;
 }
 .reel-thumb.has-video .reel-play { opacity: 1; }
 

@@ -202,7 +202,7 @@ body {
   position: absolute;
   bottom: 36px; left: 8vw;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 20px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   opacity: 0.55;

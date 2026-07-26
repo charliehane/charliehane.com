@@ -10,6 +10,39 @@
     "year": "2026",
     "moreSoon": "more soon."
   },
+  "mostRecentWork": {
+    "eyebrow": "— what I've been up to",
+    "title": "Most Recent Work",
+    "items": [
+      {
+        "title": "THE ETERNAL STEPPE",
+        "role": "Producer",
+        "url": "https://vimeo.com/1165196426/316cfd264d",
+        "thumbnailUrl": "/Thumbnail/THE%20ETERNAL%20STEPPE.png"
+      },
+      {
+        "title": "UP THE WATER SPOUT",
+        "role": "Creative Producer & Animator",
+        "url": "https://www.youtube.com/watch?v=lxf5AGlkZg4"
+      },
+      {
+        "title": "HALCYON BLUES",
+        "role": "Producer & Assistant Director",
+        "url": "https://www.youtube.com/watch?v=C5_BH-eCXzs"
+      },
+      {
+        "title": "RUNAWAYS",
+        "role": "Producer",
+        "url": "https://www.instagram.com/p/DSNklkKCRvY/",
+        "thumbnailUrl": "/Thumbnail/RUNAWAYS.png"
+      },
+      {
+        "title": "MASHA/MARIA",
+        "role": "Assistant Director & Producer",
+        "url": "https://vimeo.com/1192460757/13611a6163"
+      }
+    ]
+  },
   "navLabels": {
     "home": "← home",
     "preproduction": "preproduction",

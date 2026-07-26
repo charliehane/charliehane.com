@@ -148,7 +148,7 @@
   // fine with content-loader's template render since the elements
   // exist by the time any user click happens.
   document.addEventListener('click', (e) => {
-    const link = e.target.closest('.popup-video, .work-thumb, .coffin-video, .coffin-watch, .popup-watch, .work-watch');
+    const link = e.target.closest('.popup-video, .work-thumb, .coffin-video, .coffin-watch, .popup-watch, .work-watch, .reel-thumb');
     if (!link) return;
     // Respect modifier-clicks — let ⌘-click open in a new tab.
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -190,7 +190,7 @@
   };
 
   const paintThumbs = () => {
-    document.querySelectorAll('.popup-video, .work-thumb, .coffin-video').forEach((el) => {
+    document.querySelectorAll('.popup-video, .work-thumb, .coffin-video, .reel-thumb').forEach((el) => {
       const url = el.getAttribute('href');
       if (!url) return;
       el.classList.add('has-video');

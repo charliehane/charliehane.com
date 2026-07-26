@@ -1541,6 +1541,137 @@ html.video-lightbox-open .shovel-cursor {
 
 
 /* ============================================================
+   MOST RECENT WORK — home page filmstrip reel
+   Horizontal row of clickable thumbnails between the forest cinema
+   and the big section links. Each frame opens the project video in
+   the shared video-lightbox. On desktop all frames fit in the row;
+   on mobile it becomes a horizontal-scroll strip.
+   ============================================================ */
+
+.reel-section {
+  background: var(--cream);
+  padding: 120px 8vw 40px;
+}
+.reel-header { margin: 0 auto 40px; max-width: 1500px; }
+.reel-eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin: 0 0 20px;
+  opacity: 0.55;
+}
+.reel-heading {
+  font-family: var(--serif);
+  font-weight: 350;
+  font-size: clamp(40px, 6vw, 72px);
+  font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+  line-height: 0.95;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+/* Strip wraps the frames + adds the sprocket-hole film-reel edges. */
+.reel-strip {
+  background: #0a0a0a;
+  padding: 22px 20px;
+  border-radius: 6px;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  max-width: 1500px;
+  margin: 0 auto;
+  /* Sprocket-hole perforations top + bottom (repeating gradient
+     draws light rectangles onto the black background). */
+  background-image:
+    radial-gradient(circle at 12px 11px, #f3ebe0 3.5px, transparent 4px),
+    radial-gradient(circle at 12px calc(100% - 11px), #f3ebe0 3.5px, transparent 4px);
+  background-size: 24px 22px, 24px 22px;
+  background-position: 0 0, 0 100%;
+  background-repeat: repeat-x, repeat-x;
+}
+.reel-strip::-webkit-scrollbar { display: none; }
+
+.reel-thumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: clamp(220px, 26vw, 340px);
+  aspect-ratio: 16 / 9;
+  background: #1a1a1a center / cover no-repeat;
+  border-radius: 3px;
+  overflow: hidden;
+  scroll-snap-align: start;
+  text-decoration: none;
+  color: var(--cream);
+  cursor: pointer;
+  transition: transform 0.25s ease;
+  display: block;
+}
+.reel-thumb:hover { transform: translateY(-3px); }
+
+/* Play triangle overlay — only shown once thumb has an actual image
+   (has-video class set by video-lightbox paintThumbs). */
+.reel-play {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 54px; height: 54px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+.reel-play::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 55%;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 10px 0 10px 16px;
+  border-color: transparent transparent transparent #0a0a0a;
+  transform: translate(-50%, -50%);
+}
+.reel-thumb.has-video .reel-play { opacity: 1; }
+
+/* Caption strip along the bottom of each frame. */
+.reel-caption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 16px 14px 12px;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.75) 60%, rgba(0,0,0,0.9) 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 1;
+}
+.reel-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  color: var(--cream);
+}
+.reel-role {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(243,235,224,0.7);
+}
+
+@media (max-width: 700px) {
+  .reel-section { padding: 80px 6vw 32px; }
+  .reel-strip   { padding: 16px 14px; }
+  .reel-thumb   { width: 240px; }
+}
+
+/* ============================================================
    big section links
    ============================================================ */
 

@@ -119,6 +119,31 @@
     </div>
   </section>
 
+  <!-- ========== MOST RECENT WORK — filmstrip reel ========== -->
+  <section class="reel-section">
+    <div class="reel-header">
+      <p class="reel-eyebrow"  data-content="mostRecentWork.eyebrow">— what I've been up to</p>
+      <h2 class="reel-heading" data-content="mostRecentWork.title">Most Recent Work</h2>
+    </div>
+    <div class="reel-strip"
+         data-template="reelFrameTpl"
+         data-source="mostRecentWork.items">
+    </div>
+
+    <template id="reelFrameTpl">
+      <a class="reel-thumb"
+         data-attr-href="url"
+         data-attr-data-thumbnail="thumbnailUrl"
+         target="_blank" rel="noopener noreferrer" aria-label="Play video">
+        <span class="reel-play" aria-hidden="true"></span>
+        <div class="reel-caption">
+          <span class="reel-title" data-field="title"></span>
+          <span class="reel-role"  data-field="role"></span>
+        </div>
+      </a>
+    </template>
+  </section>
+
   <!-- ========== BIG SECTION LINKS ========== -->
   <section class="lander-sections">
     <p class="sections-eyebrow">— jump to the work directly</p>
@@ -159,6 +184,7 @@
 
   <script src="building-blocks/js/loading-overlay.js"></script>
   <script src="building-blocks/js/content-loader.js"></script>
+  <script src="building-blocks/js/video-lightbox.js?v=reel"></script>
   <script src="building-blocks/js/art-loader.js"></script>
   <script src="building-blocks/js/landing.js"></script>
 </body>

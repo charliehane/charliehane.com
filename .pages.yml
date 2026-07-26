@@ -47,6 +47,30 @@ content:
           - { name: moreSoon, label: Footer "more soon." text }
 
       # ----------------------------------------------------------
+      # HOME — Most Recent Work filmstrip
+      # ----------------------------------------------------------
+      - name: mostRecentWork
+        label: Home — Most Recent Work reel
+        type: object
+        fields:
+          - { name: eyebrow, label: Section eyebrow (small line above heading) }
+          - { name: title,   label: Section heading (e.g. "Most Recent Work") }
+          - name: items
+            label: Reel frames (recommend 4-6)
+            type: object
+            list:
+              min: 1
+              max: 12
+            fields:
+              - { name: title,        label: Project title (e.g. "MASHA/MARIA") }
+              - { name: role,         label: Role (e.g. "Producer & Assistant Director") }
+              - { name: url,          label: Video / link URL (YouTube, Vimeo, Instagram, or any link) }
+              - name: thumbnailUrl
+                label: Thumbnail image URL (only needed for Instagram / articles — YouTube & Vimeo auto-detect)
+                type: string
+                required: false
+
+      # ----------------------------------------------------------
       # Nav labels (all 4 pages)
       # ----------------------------------------------------------
       - name: navLabels

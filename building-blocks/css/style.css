@@ -1618,10 +1618,10 @@ html.video-lightbox-open .shovel-cursor {
 .reel-play {
   position: absolute;
   top: 50%; left: 50%;
-  width: 54px; height: 54px;
+  width: 40px; height: 40px;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: rgba(255,255,255,0.92);
+  background: rgba(255,255,255,0.55);
   opacity: 0;
   transition: opacity 0.2s ease;
   pointer-events: none;
@@ -1632,8 +1632,8 @@ html.video-lightbox-open .shovel-cursor {
   top: 50%; left: 55%;
   width: 0; height: 0;
   border-style: solid;
-  border-width: 10px 0 10px 16px;
-  border-color: transparent transparent transparent #0a0a0a;
+  border-width: 8px 0 8px 13px;
+  border-color: transparent transparent transparent var(--rust);
   transform: translate(-50%, -50%);
 }
 .reel-thumb.has-video .reel-play { opacity: 1; }

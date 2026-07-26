@@ -1736,6 +1736,10 @@ html.video-lightbox-open .shovel-cursor {
     flex: 0 0 clamp(220px, 78vw, 300px);
     scroll-snap-align: start;
   }
+  /* Last frame snaps its RIGHT edge to the container's right edge minus
+     scroll-padding-right — so at max scroll the right cap sits with the
+     same breathing room as the left cap at the beginning. */
+  .reel-strip > .reel-thumb:last-child { scroll-snap-align: end; }
   /* Scroll hint: little red arrow + "scroll" label pinned to the right
      side of the visible strip so first-time visitors know the reel
      scrubs horizontally. */
@@ -1753,7 +1757,10 @@ html.video-lightbox-open .shovel-cursor {
     padding: 6px 4px;
     background: rgba(243, 235, 224, 0.85);
     border-radius: 4px;
+    opacity: 1;
+    transition: opacity 0.35s ease;
   }
+  .reel-scroll-hint.is-hidden { opacity: 0; }
   .reel-scroll-arrow {
     font-family: var(--serif);
     font-weight: 500;

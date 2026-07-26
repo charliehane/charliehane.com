@@ -197,5 +197,28 @@
   <script src="building-blocks/js/video-lightbox.js?v=reel"></script>
   <script src="building-blocks/js/art-loader.js"></script>
   <script src="building-blocks/js/landing.js"></script>
+  <script>
+    // Fade the mobile scroll hint once the reel is scrolled all the way
+    // to the end. Idempotent — updates on every scroll event.
+    (function fadeReelHint() {
+      const attach = () => {
+        const strip = document.querySelector('.reel-strip');
+        const hint  = document.querySelector('.reel-scroll-hint');
+        if (!strip || !hint) return;
+        const update = () => {
+          const maxScroll = strip.scrollWidth - strip.clientWidth;
+          const atEnd = maxScroll <= 0 || strip.scrollLeft >= maxScroll - 4;
+          hint.classList.toggle('is-hidden', atEnd);
+        };
+        strip.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+        update();
+      };
+      // content-loader fires this event after templates render, so the
+      // .reel-thumb children exist by the time we bind.
+      document.addEventListener('content:loaded', attach);
+      if (window.__CONTENT__) attach();
+    })();
+  </script>
 </body>
 </html>

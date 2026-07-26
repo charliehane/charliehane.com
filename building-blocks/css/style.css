@@ -1550,7 +1550,10 @@ html.video-lightbox-open .shovel-cursor {
 
 .reel-section {
   background: var(--cream);
-  padding: 60px 8vw 140px;
+  /* Horizontal padding uses max() so it stays >= cap-width + gutter on
+     narrower desktops. Otherwise the end caps would extend past the
+     wrap and hit the viewport edge on ~1000-1200px screens. */
+  padding: 60px max(8vw, 200px) 140px;
 }
 .reel-header { margin: 0 auto 40px; max-width: 1500px; }
 .reel-eyebrow {
@@ -1633,24 +1636,24 @@ html.video-lightbox-open .shovel-cursor {
 .reel-cap {
   position: absolute;
   top: 0; bottom: 0;
-  width: 100px;
-  /* Layered backgrounds (top to bottom):
-     1) Top sprocket-hole bar — pixel-sized to match the strip exactly,
-        clipped to only cover the main-body portion (right ~55%).
-     2) Bottom sprocket-hole bar — spans the whole shape's width.
-     3) The black cap shape (SVG path) — shape only, no sprockets.
-     The gradient layers use FIXED px so sprocket dots stay the same
-     size as the strip's own perforations regardless of cap dimensions. */
+  width: 175px;
+  /* Two full-width sprocket-hole bars (top and bottom), 24px pattern
+     that matches the strip's own perforations exactly. The bars stretch
+     across the whole cap element; each cream dot only reads as a sprocket
+     where the black SVG shape is behind it — over the transparent tongue-
+     top area, the dots land on the page's cream background and disappear.
+     Result: sprockets flow naturally along the shape's outer perimeter
+     without any manual masking. */
   background:
-    radial-gradient(circle at 12px 9px, #f3ebe0 3px, transparent 3.6px) right 0 top 0 / 55% 18px repeat-x,
-    radial-gradient(circle at 12px 9px, #f3ebe0 3px, transparent 3.6px) 0 100% / 100% 18px repeat-x,
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path fill='%230a0a0a' d='M 100 0 L 52 0 Q 38 0 38 15 Q 38 42 22 42 L 12 42 Q 0 42 0 62 L 0 80 Q 0 100 20 100 L 100 100 Z'/></svg>") center/100% 100% no-repeat;
+    radial-gradient(circle at 12px 9px, #f3ebe0 3px, transparent 3.6px) 0 0 / 24px 18px repeat-x,
+    radial-gradient(circle at 12px 9px, #f3ebe0 3px, transparent 3.6px) 0 100% / 24px 18px repeat-x,
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path fill='%230a0a0a' d='M 100 0 L 62 0 Q 50 0 50 15 Q 50 42 32 42 L 12 42 Q 0 42 0 62 L 0 80 Q 0 100 20 100 L 100 100 Z'/></svg>") center/100% 100% no-repeat;
   pointer-events: none;
   z-index: 3;
   display: none;
 }
-.reel-cap--left  { left:  -98px; }
-.reel-cap--right { right: -98px; transform: scaleX(-1); }
+.reel-cap--left  { left:  -173px; }
+.reel-cap--right { right: -173px; transform: scaleX(-1); }
 .reel-strip > .reel-thumb:first-child { overflow: visible; }
 .reel-strip > .reel-thumb:last-child  { overflow: visible; }
 .reel-strip > .reel-thumb:first-child .reel-cap--left  { display: block; }
@@ -1725,8 +1728,8 @@ html.video-lightbox-open .shovel-cursor {
     /* Reserve horizontal padding equal to (cap width + breathing room)
        so the end caps have space between them and the viewport edge on
        mobile. scroll-padding aligns snap points to account for it. */
-    padding: 0 110px;
-    scroll-padding-inline: 110px;
+    padding: 0 185px;
+    scroll-padding-inline: 185px;
   }
   .reel-strip::-webkit-scrollbar { display: none; }
   .reel-thumb {

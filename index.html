@@ -80,6 +80,35 @@
    </div>
   </section>
 
+  <!-- ========== MOST RECENT WORK — filmstrip reel ========== -->
+  <section class="reel-section">
+    <div class="reel-header">
+      <p class="reel-eyebrow"  data-content="mostRecentWork.eyebrow">— what I've been up to</p>
+      <h2 class="reel-heading" data-content="mostRecentWork.title">Most Recent Work</h2>
+    </div>
+    <div class="reel-strip-wrap">
+      <div class="reel-strip"
+           data-template="reelFrameTpl"
+           data-source="mostRecentWork.items">
+      </div>
+    </div>
+
+    <template id="reelFrameTpl">
+      <a class="reel-thumb"
+         data-attr-href="url"
+         data-attr-data-thumbnail="thumbnailUrl"
+         target="_blank" rel="noopener noreferrer" aria-label="Play video">
+        <span class="reel-cap reel-cap--left"  aria-hidden="true"></span>
+        <span class="reel-cap reel-cap--right" aria-hidden="true"></span>
+        <span class="reel-play" aria-hidden="true"></span>
+        <div class="reel-caption">
+          <span class="reel-title" data-field="title"></span>
+          <span class="reel-role"  data-field="role"></span>
+        </div>
+      </a>
+    </template>
+  </section>
+
   <!-- ========== FOREST — cinema scroll with interactive signs ========== -->
   <!--
     The forest is a pre-rendered After Effects clip that scrubs with scroll.
@@ -117,33 +146,6 @@
       <div class="forest-hotspots" id="forestHotspots" aria-label="Interactive testimonial signs"></div>
 
     </div>
-  </section>
-
-  <!-- ========== MOST RECENT WORK — filmstrip reel ========== -->
-  <section class="reel-section">
-    <div class="reel-header">
-      <p class="reel-eyebrow"  data-content="mostRecentWork.eyebrow">— what I've been up to</p>
-      <h2 class="reel-heading" data-content="mostRecentWork.title">Most Recent Work</h2>
-    </div>
-    <div class="reel-strip-wrap">
-      <div class="reel-strip"
-           data-template="reelFrameTpl"
-           data-source="mostRecentWork.items">
-      </div>
-    </div>
-
-    <template id="reelFrameTpl">
-      <a class="reel-thumb"
-         data-attr-href="url"
-         data-attr-data-thumbnail="thumbnailUrl"
-         target="_blank" rel="noopener noreferrer" aria-label="Play video">
-        <span class="reel-play" aria-hidden="true"></span>
-        <div class="reel-caption">
-          <span class="reel-title" data-field="title"></span>
-          <span class="reel-role"  data-field="role"></span>
-        </div>
-      </a>
-    </template>
   </section>
 
   <!-- ========== BIG SECTION LINKS ========== -->

@@ -1582,7 +1582,11 @@ html.video-lightbox-open .shovel-cursor {
 .reel-strip {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px 12px;
+  /* Zero column gap so frames within the same row butt against each
+     other and their sprocket-hole edges chain seamlessly into one
+     continuous filmstrip. 20px row gap gives breathing room between
+     wrapped rows. */
+  gap: 20px 0;
   padding: 0;
 }
 
@@ -1617,6 +1621,26 @@ html.video-lightbox-open .shovel-cursor {
 }
 .reel-thumb::before { top: 0; }
 .reel-thumb::after  { bottom: 0; }
+
+/* End caps — curved "film leader" bulges hanging off the outer edges
+   of the reel. Rendered by every frame's template but only visible on
+   the first frame (left cap) and last frame (right cap). Their parent
+   frame switches to overflow:visible so they can extend outside. */
+.reel-cap {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 46px;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 100' preserveAspectRatio='none'><path fill='%230a0a0a' d='M 80 0 L 40 0 C 15 0 0 20 0 50 C 0 80 15 100 40 100 L 80 100 Z'/></svg>") center/100% 100% no-repeat;
+  pointer-events: none;
+  z-index: 3;
+  display: none;
+}
+.reel-cap--left  { left:  -44px; }
+.reel-cap--right { right: -44px; transform: scaleX(-1); }
+.reel-strip > .reel-thumb:first-child { overflow: visible; }
+.reel-strip > .reel-thumb:last-child  { overflow: visible; }
+.reel-strip > .reel-thumb:first-child .reel-cap--left  { display: block; }
+.reel-strip > .reel-thumb:last-child  .reel-cap--right { display: block; }
 
 /* Play triangle overlay — only shown once thumb has an actual image
    (has-video class set by video-lightbox paintThumbs). */

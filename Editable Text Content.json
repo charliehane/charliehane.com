@@ -149,11 +149,10 @@
         "description": "Best Picture winner at the Texas 48 Hour Film Festival. co-wrote it across a very sleep-deprived night."
       },
       {
-        "tag": "Preproduction 07",
-        "title": "THE SWEET EAST'S ONLINE ODYSSEY - Writer",
-        "youtubeUrl": "https://brightlightsfilm.com/the-sweet-easts-online-odyssey-in-conversation-with-palme-dor-winning-producer-alex-coco/",
-        "thumbnailUrl": "/Thumbnail/Bright%20Lights.png",
-        "description": "A long-form conversation for Bright Lights Film Journal with Alex Coco, producer of The Sweet East and, later, Palme d'Or / Best-Picture-winner Anora."
+        "title": "HEAVEN - Director",
+        "youtubeUrl": "https://www.youtube.com/watch?v=gYK9nExIEXw",
+        "description": "A live performance I was brought in to direct day-of for Syd Taylor's HEAVEN (now over 6M views on Spotify).",
+        "tag": "Preproduction 07"
       },
       {
         "title": "RUNAWAYS - Producer",
@@ -163,10 +162,11 @@
         "tag": "Preproduction 08"
       },
       {
-        "title": "HEAVEN - Director",
-        "youtubeUrl": "https://www.youtube.com/watch?v=gYK9nExIEXw",
-        "description": "A live performance I was brought in to direct day-of for Syd Taylor's HEAVEN (now over 6M views on Spotify).",
-        "tag": "Preproduction 09"
+        "tag": "Preproduction 09",
+        "title": "THE SWEET EAST'S ONLINE ODYSSEY - Writer",
+        "youtubeUrl": "https://brightlightsfilm.com/the-sweet-easts-online-odyssey-in-conversation-with-palme-dor-winning-producer-alex-coco/",
+        "thumbnailUrl": "/Thumbnail/Bright%20Lights.png",
+        "description": "A long-form conversation for Bright Lights Film Journal with Alex Coco, producer of The Sweet East and, later, Palme d'Or / Best-Picture-winner Anora."
       }
     ]
   },

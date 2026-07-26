@@ -2716,9 +2716,7 @@ body.director-fall-locked {
      any residual vertical overlap has non-obscured text on each end. */
   max-width: 60ch;
   margin: 0 auto;
-  /* Charlie: 'make the text directly underneath post production
-     black instead of white'. */
-  color: #000;
+  color: #fff;
 }
 
 .dig-clouds {

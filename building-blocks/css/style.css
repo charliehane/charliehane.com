@@ -1550,7 +1550,7 @@ html.video-lightbox-open .shovel-cursor {
 
 .reel-section {
   background: var(--cream);
-  padding: 120px 8vw 40px;
+  padding: 60px 8vw 140px;
 }
 .reel-header { margin: 0 auto 40px; max-width: 1500px; }
 .reel-eyebrow {
@@ -1629,14 +1629,14 @@ html.video-lightbox-open .shovel-cursor {
 .reel-cap {
   position: absolute;
   top: 0; bottom: 0;
-  width: 46px;
-  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 100' preserveAspectRatio='none'><path fill='%230a0a0a' d='M 80 0 L 40 0 C 15 0 0 20 0 50 C 0 80 15 100 40 100 L 80 100 Z'/></svg>") center/100% 100% no-repeat;
+  width: 62px;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path fill='%230a0a0a' d='M 100 0 L 55 0 Q 38 0 38 18 Q 38 45 22 45 L 16 45 Q 0 45 0 65 L 0 80 Q 0 100 22 100 L 100 100 Z'/></svg>") center/100% 100% no-repeat;
   pointer-events: none;
   z-index: 3;
   display: none;
 }
-.reel-cap--left  { left:  -44px; }
-.reel-cap--right { right: -44px; transform: scaleX(-1); }
+.reel-cap--left  { left:  -60px; }
+.reel-cap--right { right: -60px; transform: scaleX(-1); }
 .reel-strip > .reel-thumb:first-child { overflow: visible; }
 .reel-strip > .reel-thumb:last-child  { overflow: visible; }
 .reel-strip > .reel-thumb:first-child .reel-cap--left  { display: block; }

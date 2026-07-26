@@ -91,6 +91,13 @@
            data-template="reelFrameTpl"
            data-source="mostRecentWork.items">
       </div>
+      <!-- Mobile-only hint that the strip scrolls horizontally when the
+           frames don't fit on one screen. Hidden by default; the mobile
+           media query flips it on. -->
+      <span class="reel-scroll-hint" aria-hidden="true">
+        <span class="reel-scroll-arrow">→</span>
+        <span class="reel-scroll-label">scroll</span>
+      </span>
     </div>
 
     <template id="reelFrameTpl">

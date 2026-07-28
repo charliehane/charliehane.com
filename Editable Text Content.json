@@ -10,6 +10,33 @@
     "year": "2026",
     "moreSoon": "more soon."
   },
+  "mostRecentWork": {
+    "eyebrow": "— what I've been up to",
+    "title": "Most Recent Work",
+    "items": [
+      {
+        "title": "THE ETERNAL STEPPE",
+        "role": "Producer",
+        "url": "https://vimeo.com/1165196426/316cfd264d",
+        "thumbnailUrl": "/Thumbnail/THE%20ETERNAL%20STEPPE.png"
+      },
+      {
+        "title": "HALCYON BLUES",
+        "role": "Producer & Assistant Director",
+        "url": "https://www.youtube.com/watch?v=C5_BH-eCXzs"
+      },
+      {
+        "title": "UP THE WATER SPOUT",
+        "role": "Creative Producer & Animator",
+        "url": "https://www.youtube.com/watch?v=lxf5AGlkZg4"
+      },
+      {
+        "title": "MASHA/MARIA",
+        "role": "Assistant Director & Producer",
+        "url": "https://vimeo.com/1192460757/13611a6163"
+      }
+    ]
+  },
   "navLabels": {
     "home": "← home",
     "preproduction": "preproduction",
@@ -28,16 +55,16 @@
         "title": "Charlie Hane",
         "scrollIn": 0.06,
         "scrollOut": 0.38,
-        "labelShort": "click the sign",
-        "paragraphs": [
-          "Charlie Hane is a Los Angeles-based director, producer, and writer. In 2025, he began producing the feature documentary <em>THE ETERNAL STEPPE</em>, building it from scratch in Mongolia's remote steppe and leading a twelve-person international crew; it is now in post-production, with network distribution talks underway. That same year, he released <em>DIVORCED DADS HOTEL</em>, a short film he wrote, directed, edited, and starred in, and which won the IndieFEST Film Festival and International Independent Shorts Awards, plus a Cannes Indie Shorts Semi-Finalist nod. In 2026, he produced and assistant-directed <em>MASHA/MARIA</em>, a Dance on Camera Production Grant recipient that premiered at Film at Lincoln Center, shot with SCUBA cinematography in a blackout pool. That same year, he produced and assistant-directed the music video for Citizen's <em>HALCYON BLUES</em> (over 200 million Spotify streams), and creatively produced and animated the proof-of-concept pilot <em>UP THE WATER SPOUT</em>, which drew 500,000 Instagram views within 24 hours."
-        ],
         "hotspot": {
           "x": "0%",
           "y": "0%",
           "w": "100%",
           "h": "100%"
-        }
+        },
+        "labelShort": "click the sign",
+        "paragraphs": [
+          "Charlie Hane is a Los Angeles-based director, producer, and writer. In 2025, he began producing the feature documentary <em>THE ETERNAL STEPPE</em>, building it from scratch in Mongolia's remote steppe and leading a twelve-person international crew; it is now in post-production, with network distribution talks underway. That same year, he released <em>DIVORCED DADS HOTEL</em>, a short film he wrote, directed, edited, and starred in, and which won the IndieFEST Film Festival and International Independent Shorts Awards, plus a Cannes Indie Shorts Semi-Finalist nod. In 2026, he produced and assistant-directed <em>MASHA/MARIA</em>, a Dance on Camera Production Grant recipient that premiered at Film at Lincoln Center, shot with SCUBA cinematography in a blackout pool. That same year, he produced and assistant-directed the music video for Citizen's <em>HALCYON BLUES</em> (over 200 million Spotify streams), and creatively produced and animated the proof-of-concept pilot <em>UP THE WATER SPOUT</em>, which drew 500,000 Instagram views within 24 hours."
+        ]
       },
       {
         "kind": "bio",
@@ -45,16 +72,16 @@
         "title": "Charlie Hane",
         "scrollIn": 0.38,
         "scrollOut": 0.64,
-        "labelShort": "click the sign",
-        "paragraphs": [
-          "Before going freelance full-time, Charlie was the Coordinator at Happy Accidents Media, helping oversee fifteen US and international productions with budgets ranging from $1-5 million, as well as the Asa Butterfield-led horror comedy show <em>GNOMES</em>. He reported directly to Executive Producers and Co-Founders Holly Hines (<i>GINNY &amp; GEORGIA</i>, <i>THE OFFICE</i>) and Eric Jarboe (<i>THE PRINCESS SWITCH</i>). He associate produced the SAG-AFTRA series <em>SWOLE MATE</em>, a $250,000 production shot over fourteen straight days. Beyond producing, he has written film criticism for Bright Lights Film Journal, including a 2024 interview with <em>ANORA</em>'s Palme d'Or and Academy Award-winning producer, Alex Coco."
-        ],
         "hotspot": {
           "x": "0%",
           "y": "0%",
           "w": "100%",
           "h": "100%"
-        }
+        },
+        "labelShort": "click the sign",
+        "paragraphs": [
+          "Before going freelance full-time, Charlie was the Coordinator at Happy Accidents Media, helping oversee fifteen US and international productions with budgets ranging from $1-5 million, as well as the Asa Butterfield-led horror comedy show <em>GNOMES</em>. He reported directly to Executive Producers and Co-Founders Holly Hines (<i>GINNY &amp; GEORGIA</i>, <i>THE OFFICE</i>) and Eric Jarboe (<i>THE PRINCESS SWITCH</i>). He associate produced the SAG-AFTRA series <em>SWOLE MATE</em>, a $250,000 production shot over fourteen straight days. Beyond producing, he has written film criticism for Bright Lights Film Journal, including a 2024 interview with <em>ANORA</em>'s Palme d'Or and Academy Award-winning producer, Alex Coco."
+        ]
       },
       {
         "kind": "bio",
@@ -62,70 +89,84 @@
         "title": "Charlie Hane",
         "scrollIn": 0.64,
         "scrollOut": 1,
-        "labelShort": "click the sign",
-        "paragraphs": [
-          "Charlie's filmmaking took root in high school, where his early films won multiple international and national awards. His first recognition came when <em>56 SWEET STREET</em> took third place for Best Narrative Film at the Connecticut Cablevision Awards in 2014, and <em>PRINCIPLES OF ROBBERY</em> later won the 2017 Fritz Eager Award, the first film in nearly a decade added to his school's permanent art collection. That same summer, Northwestern's National High School Film &amp; Video Institute picked him as one of ten directors; there, he directed, shot, and edited <em>FIVE STRING</em>, which won Outstanding Cinematography at the National New Age Film Festival. He then studied Film and Business at Syracuse University, but when the pandemic hit, he co-founded the Austin-based commercial videography company Voyager LLC, which cleared over $29,000 in profit in under six months and produced the $25,000 short film <em>HALCYON DAYS</em>. During that time he also wrote <em>SHE'S A GOOD GIRL</em>, which won Best Picture at the Texas 48 Hour Film Festival. Upon his return his junior year, he studied abroad at Prague's FAMU Film School, one of the world's top five film programs. While there, he was one of six chosen from twenty-three to direct a film, shooting on 35mm and leading a twenty-person production with a half-Czech crew and cast."
-        ],
         "hotspot": {
           "x": "0%",
           "y": "0%",
           "w": "100%",
           "h": "100%"
-        }
+        },
+        "labelShort": "click the sign",
+        "paragraphs": [
+          "Charlie's filmmaking took root in high school, where his early films won multiple international and national awards. His first recognition came when <em>56 SWEET STREET</em> took third place for Best Narrative Film at the Connecticut Cablevision Awards in 2014, and <em>PRINCIPLES OF ROBBERY</em> later won the 2017 Fritz Eager Award, the first film in nearly a decade added to his school's permanent art collection. That same summer, Northwestern's National High School Film &amp; Video Institute picked him as one of ten directors; there, he directed, shot, and edited <em>FIVE STRING</em>, which won Outstanding Cinematography at the National New Age Film Festival. He then studied Film and Business at Syracuse University, but when the pandemic hit, he co-founded the Austin-based commercial videography company Voyager LLC, which cleared over $29,000 in profit in under six months and produced the $25,000 short film <em>HALCYON DAYS</em>. During that time he also wrote <em>SHE'S A GOOD GIRL</em>, which won Best Picture at the Texas 48 Hour Film Festival. Upon his return his junior year, he studied abroad at Prague's FAMU Film School, one of the world's top five film programs. While there, he was one of six chosen from twenty-three to direct a film, shooting on 35mm and leading a twenty-person production with a half-Czech crew and cast."
+        ]
       }
-    ]
+    ],
+    "quotes": []
   },
   "preproduction": {
     "pageTitle": "Charlie Hane — Preproduction",
     "title": "Preproduction.",
     "eyebrow": "section i",
     "lede": "Where the world is an infinite expanse of possibilities.",
-    "caption": "SCROLL TO RIDE  •  CLICK TO WATCH ",
+    "caption": "SCROLL TO RIDE",
     "films": [
       {
         "tag": "Preproduction 01",
         "title": "THE ETERNAL STEPPE - Producer",
-        "youtubeUrl": "https://vimeo.com/1165196426/316cfd264d"
+        "youtubeUrl": "https://vimeo.com/1165196426/316cfd264d",
+        "thumbnailUrl": "/Thumbnail/THE%20ETERNAL%20STEPPE.png",
+        "description": "A feature doc built from scratch on Mongolia's remote steppe, leading a twelve-person international crew. now in post, with network distribution talks underway."
       },
       {
         "tag": "Preproduction 02",
         "title": "UP THE WATER SPOUT - Creative Producer & Animator",
-        "youtubeUrl": "https://www.youtube.com/watch?v=lxf5AGlkZg4"
+        "youtubeUrl": "https://www.youtube.com/watch?v=lxf5AGlkZg4",
+        "description": "An animated proof-of-concept pilot. it drew 500,000 Instagram views in its first 24 hours."
       },
       {
         "tag": "Preproduction 03",
         "title": "HALCYON BLUES - Producer & Assistant Director",
-        "youtubeUrl": "https://www.youtube.com/watch?v=C5_BH-eCXzs"
+        "youtubeUrl": "https://www.youtube.com/watch?v=C5_BH-eCXzs",
+        "description": "Music video for the album's titular track by the band Citizen, who have crossed 200 million Spotify streams."
       },
       {
         "tag": "Preproduction 04",
         "title": "PARÍS - Director, Editor, & Producer",
-        "youtubeUrl": "https://www.youtube.com/watch?v=_5RTu4O9Rik"
+        "youtubeUrl": "https://www.youtube.com/watch?v=_5RTu4O9Rik",
+        "description": "A music video I Conceptualized, directed, edited, and produced for $0."
       },
       {
         "tag": "Preproduction 05",
         "title": "MARTY SUPREME: THE REAL STORY - Director, Editor, & Star",
-        "youtubeUrl": "https://www.instagram.com/bycharliehane/reel/DR6A4CXkg89/"
+        "youtubeUrl": "https://www.instagram.com/bycharliehane/reel/DR6A4CXkg89/",
+        "thumbnailUrl": "/Thumbnail/Marty%20Supreme.png",
+        "description": "Winner of the Jack Duffy 24 Hour Film Festival Challenge. Conceptualized, filmed, and edited in 24 hours."
       },
       {
         "tag": "Preproduction 06",
         "title": "SHE'S A GOOD GIRL - Writer",
-        "youtubeUrl": "https://www.youtube.com/watch?v=0une0HQMt1M"
+        "youtubeUrl": "https://www.youtube.com/watch?v=0une0HQMt1M",
+        "description": "Best Picture winner at the Texas 48 Hour Film Festival. co-wrote it across a very sleep-deprived night."
       },
       {
-        "tag": "Preproduction 07",
         "title": "HEAVEN - Director",
-        "youtubeUrl": "https://www.youtube.com/watch?v=gYK9nExIEXw"
+        "youtubeUrl": "https://www.youtube.com/watch?v=gYK9nExIEXw",
+        "description": "A live performance I was brought in to direct day-of for Syd Taylor's HEAVEN (now over 6M views on Spotify).",
+        "tag": "Preproduction 07"
       },
       {
-        "tag": "Preproduction 08",
         "title": "RUNAWAYS - Producer",
-        "youtubeUrl": "https://www.instagram.com/p/DSNklkKCRvY/"
+        "youtubeUrl": "https://www.instagram.com/p/DSNklkKCRvY/",
+        "description": "A fashion campaign for LAWCINTO shot on 35mm film.",
+        "thumbnailUrl": "/Thumbnail/RUNAWAYS.png",
+        "tag": "Preproduction 08"
       },
       {
         "tag": "Preproduction 09",
         "title": "THE SWEET EAST'S ONLINE ODYSSEY - Writer",
-        "youtubeUrl": "https://brightlightsfilm.com/the-sweet-easts-online-odyssey-in-conversation-with-palme-dor-winning-producer-alex-coco/"
+        "youtubeUrl": "https://brightlightsfilm.com/the-sweet-easts-online-odyssey-in-conversation-with-palme-dor-winning-producer-alex-coco/",
+        "thumbnailUrl": "/Thumbnail/Bright%20Lights.png",
+        "description": "A long-form conversation for Bright Lights Film Journal with Alex Coco, producer of The Sweet East and, later, Palme d'Or / Best-Picture-winner Anora."
       }
     ]
   },
@@ -136,24 +177,31 @@
     "lede": "Jumping off the cliff and building a plane on the way down.",
     "works": [
       {
-        "tag": "Production 01",
         "title": "MASHA/MARIA - Assistant Director & Producer",
-        "youtubeUrl": "https://vimeo.com/1192460757/13611a6163"
+        "youtubeUrl": "https://vimeo.com/1192460757/13611a6163",
+        "description": "A Dance on Camera Production Grant recipient that premiered at Film at Lincoln Center. shot with SCUBA cinematography in a blackout pool.",
+        "tag": "Production 01"
       },
       {
         "tag": "Production 02",
         "title": "WANTED - Assistant Director",
-        "youtubeUrl": "https://www.instagram.com/p/DP8_f1qgCdF/"
+        "youtubeUrl": "https://www.instagram.com/p/DP8_f1qgCdF/",
+        "thumbnailUrl": "/Thumbnail/wanted.webp",
+        "description": "A 16mm spec commercial shot over one day with a limited crew."
       },
       {
         "tag": "Production 03",
         "title": "TRICKS - Gaffer",
-        "youtubeUrl": "https://www.instagram.com/p/DUWG-AIgbjj/?hl=en"
+        "youtubeUrl": "https://www.instagram.com/p/DUWG-AIgbjj/?hl=en",
+        "thumbnailUrl": "/Thumbnail/Fontains.png",
+        "description": "Commercial for Zach Mueller, founder of the artform of cardistry."
       },
       {
         "tag": "Production 04",
         "title": "SWOLE MATE - Associate Producer",
-        "youtubeUrl": "https://www.imdb.com/title/tt33661891/"
+        "youtubeUrl": "https://www.imdb.com/title/tt33661891/",
+        "thumbnailUrl": "/Thumbnail/SWOLE%20MATE.png",
+        "description": "A SAG-AFTRA series shot over fourteen straight days on a $250,000 budget, currently in post production."
       }
     ]
   },
@@ -164,76 +212,89 @@
     "lede": "Digging through what was to find what will be.",
     "coffins": [
       {
-        "tag": "Postproduction 01",
         "title": "MESMER - Editor & Director",
-        "youtubeUrl": "https://www.youtube.com/watch?v=i6xWJbtQnaQ"
+        "youtubeUrl": "https://www.youtube.com/watch?v=i6xWJbtQnaQ",
+        "description": "A one-day, no-budget shoot for a lyric video.",
+        "tag": "Postproduction 01"
       },
       {
         "tag": "Postproduction 02",
         "title": "WE STILL DANCE - Motion Graphics Designer",
-        "youtubeUrl": "https://www.youtube.com/watch?v=iAEpG3S-OPE",
         "position": {
           "top": "6%",
           "left": "6%",
           "rot": "-8deg"
-        }
+        },
+        "youtubeUrl": "https://www.youtube.com/watch?v=iAEpG3S-OPE",
+        "description": "Designed and implemented the motion graphics package for this music video using VFX."
       },
       {
         "tag": "Postproduction 03",
         "title": "LAUNCH BEYOND - VFX Artist & Director",
-        "youtubeUrl": "https://vimeo.com/510473594",
         "position": {
           "top": "24%",
           "right": "6%",
           "rot": "12deg"
-        }
+        },
+        "youtubeUrl": "https://vimeo.com/510473594",
+        "description": "Co-directed and handled the VFX for this commercial from our Austin-based commercial videography company."
       },
       {
         "tag": "Postproduction 04",
         "title": "XOVOX - Animation Director, Editor, & Lead Animator",
-        "youtubeUrl": "https://www.youtube.com/watch?v=UF57wwQCHpA",
         "position": {
           "top": "44%",
           "left": "30%",
           "rot": "4deg"
-        }
+        },
+        "youtubeUrl": "https://www.youtube.com/watch?v=UF57wwQCHpA",
+        "description": "An animated piece I Conceptualized and led the animation on, for a file conversion company."
       },
       {
         "tag": "Postproduction 05",
         "title": "CASCADE APARTMENTS - Editor, Director, & VFX Artist",
-        "youtubeUrl": "https://vimeo.com/521572286"
+        "youtubeUrl": "https://vimeo.com/521572286",
+        "description": "Edited, co-directed, and did the VFX for this apartment spot."
       },
       {
         "tag": "Postproduction 06",
         "title": "FREE AGENT OUTFITTERS - Editor & Graphic Designer",
-        "youtubeUrl": "https://vimeo.com/572684412"
+        "youtubeUrl": "https://vimeo.com/572684412",
+        "description": "Handled the graphic design and motion graphics work for this laptop strap company."
       },
       {
         "tag": "Postproduction 07",
         "title": "CAN'T WIN - VFX Artist",
-        "youtubeUrl": "https://www.youtube.com/watch?v=wTWE-ROwO64"
+        "youtubeUrl": "https://www.youtube.com/watch?v=wTWE-ROwO64",
+        "description": "Was brought in last-minute to fix the VFX on this piece with limited time."
       },
       {
-        "tag": "Postproduction 08",
         "title": "SWEET NOTHINGS - Editor & Co-Director",
-        "youtubeUrl": "https://vimeo.com/485769382"
+        "youtubeUrl": "https://vimeo.com/485769382",
+        "description": "Edited and co-directed as a project during my junior year of college.",
+        "tag": "Postproduction 08"
       },
       {
-        "tag": "Postproduction 09",
         "title": "ROLLING STILL - Editor",
-        "youtubeUrl": "https://vimeo.com/572667529"
+        "youtubeUrl": "https://vimeo.com/572667529",
+        "description": "Created the motion graphics for this tequila company.",
+        "tag": "Postproduction 09"
       },
       {
-        "tag": "Postproduction 10",
         "title": "WATERLOO RECORDS - Animation Director & Editor",
-        "youtubeUrl": "https://vimeo.com/555851838"
+        "youtubeUrl": "https://vimeo.com/555851838",
+        "description": "Animated and cut a piece for Austin's Waterloo Records.",
+        "tag": "Postproduction 10"
       }
     ],
     "skeletonCoffinPosition": {
       "top": "62%",
       "right": "12%",
       "rot": "-10deg"
-    }
+    },
+    "chestVideoUrls": [
+      "https://pub-3feaceb432134076b4773fdc45eba874.r2.dev/Secret%20Charlie%20Video.mp4"
+    ]
   },
   "menus": {
     "home": [

@@ -421,6 +421,41 @@
       el.style.removeProperty('--rot');
     });
 
+    // MOBILE fast path: on narrow viewports the desktop nudge algorithm
+    // leaves wildly uneven gaps between coffins (single column can't
+    // dodge collisions without huge Y shifts). Bypass it entirely and
+    // stack coffins in a straight column with fixed even spacing, then
+    // size the dig-world to fit exactly. Simple, predictable, no giant
+    // empty scroll stretches between coffins.
+    if (window.innerWidth < 640) {
+      const measured = coffins[0].getBoundingClientRect();
+      const cofH = measured.height || COFFIN_H_PX;
+      const N = coffins.length;
+      const GAP = 60;                     // vertical air between coffins
+      const TOP_PAD = 80;                 // grass-line breathing room
+      const BOTTOM_PAD = 120;             // room for Charlie-in-Hell below
+      const stackH = TOP_PAD + N * cofH + (N - 1) * GAP + BOTTOM_PAD;
+      digWorldHost.style.height = stackH + 'px';
+      void digWorldHost.offsetHeight;
+      const ugRectM = undergroundHost.getBoundingClientRect();
+      const ugH = ugRectM.height || stackH;
+      const ugW = ugRectM.width;
+      const cofW = measured.width || COFFIN_W_PX;
+      // Coffin has no CSS transform-based centering; use % of the actual
+      // (ugW - cofW)/2 offset so it sits centered horizontally.
+      const centerLeftPct = ((ugW - cofW) / 2 / ugW * 100).toFixed(2);
+      coffins.forEach((el, i) => {
+        const y = TOP_PAD + i * (cofH + GAP);
+        el.style.top  = `${(y / ugH * 100).toFixed(2)}%`;
+        el.style.left = `${centerLeftPct}%`;
+        el.style.setProperty('--rot', `${(i % 2 === 0 ? -6 : 6).toFixed(1)}deg`);
+      });
+      undergroundHost.dispatchEvent(
+        new CustomEvent('dig-underground-resized', { bubbles: false })
+      );
+      return;
+    }
+
     let extensionVh = 0;
     const attemptRound = () => {
       const ugRect = undergroundHost.getBoundingClientRect();
@@ -441,28 +476,29 @@
         });
       }
 
-      const usableW = ugRect.width  - COFFIN_W_PX - 2 * COFFIN_PAD_PX;
-      const usableH = ugRect.height - COFFIN_H_PX - 2 * COFFIN_PAD_PX;
+      // Measure a coffin's actual rendered size (CSS scales them down on
+      // mobile — hardcoded desktop constants would go negative on iPhone
+      // and skip placement entirely, stacking every coffin at (0,0)).
+      const measured = coffins[0].getBoundingClientRect();
+      const cofW = measured.width  || COFFIN_W_PX;
+      const cofH = measured.height || COFFIN_H_PX;
+      const usableW = ugRect.width  - cofW - 2 * COFFIN_PAD_PX;
+      const usableH = ugRect.height - cofH - 2 * COFFIN_PAD_PX;
       if (usableW <= 0 || usableH <= 0) return false;
 
-      // Strict two-column equidistant grid. No jitter — Charlie: 'do
-      // the Two-column grid (least random, cleanest)'. Small rotation
-      // for character. Coffin i goes at column (i%2), row (i//2 → even
-      // spacing across the underground's Y).
-      const COL_CENTERS_FRAC = [0.25, 0.75];
+      // Column count adapts to viewport width. On narrow screens
+      // (iPhone) a two-column layout tries to fit two coffins side by
+      // side that can't actually fit, and the fallback nudges leave big
+      // gaps of empty dirt between rows. Single column stacks cleanly.
+      const isNarrow = ugRect.width < 640;
+      const COL_CENTERS_FRAC = isNarrow ? [0.5] : [0.25, 0.75];
       const N = coffins.length;
-      // Space rows over usableH so all coffins are equidistant vertically
-      // (regardless of which column). Row spacing = usableH / (N + 1);
-      // row i center at (i + 1) / (N + 1) * usableH.
-      // Tight even distribution: coffin i at (i / (N-1)) * usableH.
-      // First coffin sits at top edge pad, last at bottom edge pad —
-      // minimizes both "too much dirt below" and "too much dirt above"
-      // that Charlie flagged. Edge pad is smaller than inter-coffin
-      // COFFIN_PAD_PX so cards land right where the diggable dirt
-      // starts / ends. N=1 falls back to center.
-      const EDGE_PAD_PX = 12;
+      // Bigger top pad on mobile so the first coffin doesn't sit
+      // right up against the grass line (Charlie: 'the first coffin
+      // is WAY too close to the top').
+      const EDGE_PAD_PX = isNarrow ? 80 : 12;
       const stepFrac = N > 1 ? 1 / (N - 1) : 0;
-      const usableHEdge = ugRect.height - COFFIN_H_PX - 2 * EDGE_PAD_PX;
+      const usableHEdge = ugRect.height - cofH - 2 * EDGE_PAD_PX;
       const placedCoffins = [];   // includes each accepted coffin so
                                   // later coffins dodge earlier ones,
                                   // not just skeleton/chest.
@@ -481,7 +517,7 @@
             const cand = {
               x: xTry,
               y: Math.max(EDGE_PAD_PX, Math.min(EDGE_PAD_PX + usableHEdge, baseY + dy)),
-              w: COFFIN_W_PX, h: COFFIN_H_PX,
+              w: cofW, h: cofH,
             };
             const hits = obstacles.some(o => overlaps(cand, o)) ||
                          placedCoffins.some(p => overlaps(cand, p));
@@ -511,7 +547,7 @@
       // false → outer loop extends the underground and tries again,
       // BUT positions are already set on every coffin, so a final-
       // round bail doesn't leave anything at (0,0).
-      const coffinArea = N * COFFIN_W_PX * COFFIN_H_PX;
+      const coffinArea = N * cofW * cofH;
       const totalArea  = ugRect.width * ugRect.height;
       const coverageOK = (coffinArea / totalArea) <= COVERAGE_MAX;
       return coverageOK && !anyForced;
@@ -540,11 +576,20 @@
   if (document.querySelector('.dig-underground .coffin')) placeUnpinnedCoffins();
   document.addEventListener('content:loaded', placeUnpinnedCoffins);
   // Re-run on resize with a debounce so proportions stay sensible when
-  // viewport changes.
+  // viewport changes. iOS Safari fires `resize` every time the address
+  // bar shows/hides, which was collapsing the extended dig-world back
+  // to baseline mid-scroll and snapping the user up. Skip re-placement
+  // when only the viewport HEIGHT changed — coffin layout depends on
+  // width, not height.
   let coffinResizeT = 0;
+  let lastReplacementW = window.innerWidth;
   window.addEventListener('resize', () => {
+    if (window.innerWidth === lastReplacementW) return;
     clearTimeout(coffinResizeT);
-    coffinResizeT = setTimeout(placeUnpinnedCoffins, 250);
+    coffinResizeT = setTimeout(() => {
+      lastReplacementW = window.innerWidth;
+      placeUnpinnedCoffins();
+    }, 250);
   });
 
 

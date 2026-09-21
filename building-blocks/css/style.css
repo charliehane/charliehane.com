@@ -1857,7 +1857,6 @@ html.video-lightbox-open .shovel-cursor {
 .work-list-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 18px;
   padding: 12px 0;
   border-top: 1px solid rgba(26, 22, 20, 0.08);
@@ -1878,10 +1877,12 @@ html.video-lightbox-open .shovel-cursor {
   border-radius: 3px;
 }
 .work-list-item-body {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 4px;
-  min-width: 0;
 }
 .work-list-item-title {
   font-family: var(--serif);

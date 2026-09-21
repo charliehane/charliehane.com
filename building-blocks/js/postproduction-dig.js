@@ -425,13 +425,32 @@
     // leaves wildly uneven gaps between coffins (single column can't
     // dodge collisions without huge Y shifts). Bypass it entirely and
     // stack coffins in a straight column with fixed even spacing, then
-    // size the dig-world to fit exactly. Simple, predictable, no giant
-    // empty scroll stretches between coffins.
+    // size the dig-world to fit exactly. The skeleton coffin gets a
+    // slot in the stack too — its desktop percentage position (top:62%
+    // right:12%) would land right on top of a regular coffin here.
     if (window.innerWidth < 640) {
       const measured = coffins[0].getBoundingClientRect();
       const cofH = measured.height || COFFIN_H_PX;
-      const N = coffins.length;
-      const GAP = 60;                     // vertical air between coffins
+      const cofW = measured.width  || COFFIN_W_PX;
+      // Build the full stack: regular coffins in order, skeleton
+      // inserted at the halfway point (Charlie's desktop layout puts
+      // it ~62% down the underground). Ignoring it, or leaving it at
+      // percentage-position, causes an overlap Charlie flagged.
+      const skeleton = undergroundHost.querySelector('#coffinSkeleton');
+      const stack = [...coffins];
+      let skeletonIdx = -1;
+      if (skeleton) {
+        skeletonIdx = Math.floor(stack.length / 2);
+        stack.splice(skeletonIdx, 0, skeleton);
+        // Clear any inline positioning inherited from JSON so the
+        // stack rules take over.
+        skeleton.style.top = '';
+        skeleton.style.left = '';
+        skeleton.style.right = '';
+        skeleton.style.removeProperty('--rot');
+      }
+      const N = stack.length;
+      const GAP = 60;                     // vertical air between items
       const TOP_PAD = 80;                 // grass-line breathing room
       const BOTTOM_PAD = 120;             // room for Charlie-in-Hell below
       const stackH = TOP_PAD + N * cofH + (N - 1) * GAP + BOTTOM_PAD;
@@ -440,11 +459,10 @@
       const ugRectM = undergroundHost.getBoundingClientRect();
       const ugH = ugRectM.height || stackH;
       const ugW = ugRectM.width;
-      const cofW = measured.width || COFFIN_W_PX;
       // Coffin has no CSS transform-based centering; use % of the actual
       // (ugW - cofW)/2 offset so it sits centered horizontally.
       const centerLeftPct = ((ugW - cofW) / 2 / ugW * 100).toFixed(2);
-      coffins.forEach((el, i) => {
+      stack.forEach((el, i) => {
         const y = TOP_PAD + i * (cofH + GAP);
         el.style.top  = `${(y / ugH * 100).toFixed(2)}%`;
         el.style.left = `${centerLeftPct}%`;

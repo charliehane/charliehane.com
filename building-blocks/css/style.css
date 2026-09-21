@@ -1787,8 +1787,9 @@ html.video-lightbox-open .shovel-cursor {
 .work-list {
   background: var(--cream);
   /* Sits flush with the reel section above so the two read as one
-     continuous "the work" block (Most Recent Work → The Rest). */
-  padding: 20px max(8vw, 130px) 100px;
+     continuous "the work" block. Horizontal padding matches the
+     reel-section's `max(8vw, 200px)` so headings share the same X. */
+  padding: 20px max(8vw, 200px) 100px;
 }
 .work-list-inner { max-width: 1500px; margin: 0 auto; }
 .work-list-eyebrow {

@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://use.typekit.net/yfy2byi.css">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="building-blocks/css/style.css?v=reel-scrollfade" />
+  <link rel="stylesheet" href="building-blocks/css/style.css?v=work-list" />
 </head>
 <body class="page-landing">
 
@@ -112,6 +112,48 @@
           <span class="reel-title" data-field="title"></span>
           <span class="reel-role"  data-field="role"></span>
         </div>
+      </a>
+    </template>
+  </section>
+
+  <!-- ========== WORK LIST — flat index of everything for anyone who
+       wants to skip the interactive experience. Three collapsible groups
+       (open by default), each row opens the video in the shared
+       lightbox. ========== -->
+  <section class="work-list">
+    <div class="work-list-inner">
+      <p class="work-list-eyebrow">— all the work, all in one place</p>
+      <h2 class="work-list-heading">The Work.</h2>
+
+      <details class="work-list-group" open>
+        <summary class="work-list-section-title">Preproduction</summary>
+        <div class="work-list-items"
+             data-template="workListItemTpl"
+             data-source="preproduction.films"></div>
+      </details>
+      <details class="work-list-group" open>
+        <summary class="work-list-section-title">Production</summary>
+        <div class="work-list-items"
+             data-template="workListItemTpl"
+             data-source="production.works"></div>
+      </details>
+      <details class="work-list-group" open>
+        <summary class="work-list-section-title">Postproduction</summary>
+        <div class="work-list-items"
+             data-template="workListItemTpl"
+             data-source="postproduction.coffins"></div>
+      </details>
+    </div>
+
+    <template id="workListItemTpl">
+      <a class="work-list-item"
+         data-attr-href="youtubeUrl"
+         target="_blank" rel="noopener noreferrer">
+        <span class="work-list-item-body">
+          <span class="work-list-item-title" data-field="title"></span>
+          <span class="work-list-item-desc"  data-field="description"></span>
+        </span>
+        <span class="work-list-item-play" aria-hidden="true">▶</span>
       </a>
     </template>
   </section>

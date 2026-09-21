@@ -1777,6 +1777,131 @@ html.video-lightbox-open .shovel-cursor {
 }
 
 /* ============================================================
+   WORK LIST — home page flat index of every project. Fallback for
+   visitors who'd rather see a plain scannable list than the bespoke
+   interactive experience. Same underlying JSON data, no thumbnails,
+   click a row and it opens in the shared video lightbox.
+   ============================================================ */
+.work-list {
+  background: var(--cream);
+  padding: 40px max(8vw, 130px) 100px;
+}
+.work-list-inner { max-width: 1200px; margin: 0 auto; }
+.work-list-eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin: 0 0 20px;
+  opacity: 0.55;
+}
+.work-list-heading {
+  font-family: var(--serif);
+  font-weight: 350;
+  font-size: clamp(40px, 6vw, 72px);
+  font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin: 0 0 32px;
+  color: var(--ink);
+}
+.work-list-group {
+  border-top: 1px solid rgba(26, 22, 20, 0.15);
+  padding: 12px 0 4px;
+}
+.work-list-group:last-of-type { border-bottom: 1px solid rgba(26, 22, 20, 0.15); }
+.work-list-section-title {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 10px 0;
+  cursor: pointer;
+  list-style: none;
+  color: var(--ink);
+  opacity: 0.7;
+  position: relative;
+  padding-left: 22px;
+}
+.work-list-section-title::-webkit-details-marker { display: none; }
+.work-list-section-title::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  width: 8px; height: 8px;
+  border-right: 2px solid var(--ink);
+  border-bottom: 2px solid var(--ink);
+  transform: translateY(-70%) rotate(45deg);
+  transition: transform 0.2s ease;
+}
+.work-list-group[open] > .work-list-section-title::before {
+  transform: translateY(-30%) rotate(-135deg);
+}
+.work-list-items { display: flex; flex-direction: column; }
+.work-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 0 16px;
+  border-top: 1px solid rgba(26, 22, 20, 0.08);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background 0.15s ease, padding 0.15s ease;
+}
+.work-list-item:hover {
+  background: rgba(26, 22, 20, 0.04);
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.work-list-item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.work-list-item-title {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(16px, 1.6vw, 20px);
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+.work-list-item-desc {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(13px, 1.2vw, 15px);
+  line-height: 1.35;
+  opacity: 0.65;
+  /* Cap at two lines so long descriptions don't blow up row heights. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.work-list-item-play {
+  flex: 0 0 auto;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--rust);
+  color: #fff;
+  font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  padding-left: 3px;   /* optical centering of the triangle */
+  transition: transform 0.2s ease;
+}
+.work-list-item:hover .work-list-item-play { transform: scale(1.08); }
+
+@media (max-width: 700px) {
+  .work-list { padding: 40px 6vw 80px; }
+  .work-list-heading { margin-bottom: 20px; }
+  .work-list-item { gap: 12px; }
+  .work-list-item-play { width: 28px; height: 28px; font-size: 10px; }
+}
+
+
+/* ============================================================
    big section links
    ============================================================ */
 

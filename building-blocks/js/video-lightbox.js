@@ -148,7 +148,7 @@
   // fine with content-loader's template render since the elements
   // exist by the time any user click happens.
   document.addEventListener('click', (e) => {
-    const link = e.target.closest('.popup-video, .work-thumb, .coffin-video, .coffin-watch, .popup-watch, .work-watch, .reel-thumb');
+    const link = e.target.closest('.popup-video, .work-thumb, .coffin-video, .coffin-watch, .popup-watch, .work-watch, .reel-thumb, .work-list-item');
     if (!link) return;
     // Respect modifier-clicks — let ⌘-click open in a new tab.
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;

@@ -655,9 +655,43 @@
     // add explicit press-and-hold handlers. Feels the same as hover — the
     // eyes glow while your finger is on the coffin and go dark when you
     // lift it — but doesn't require the ambiguous tap-to-toggle model.
-    skeletonCoffin.addEventListener('touchstart', setRed, { passive: true });
-    skeletonCoffin.addEventListener('touchend', setDark);
-    skeletonCoffin.addEventListener('touchcancel', setDark);
+    // ALSO on touch: press-and-hold for 1 second opens a random secret
+    // video from postproduction.chestVideoUrls — the desktop chest is
+    // hover-only, so the pirate is the mobile way in.
+    const LONG_PRESS_MS = 1000;
+    let longPressT = 0;
+    let longPressFired = false;
+    const pickChestVideo = () => {
+      const post = window.__CONTENT__ && window.__CONTENT__.postproduction;
+      const list = post && post.chestVideoUrls;
+      if (Array.isArray(list) && list.length) {
+        return list[Math.floor(Math.random() * list.length)];
+      }
+      return (post && post.chestVideoUrl) || null;
+    };
+    skeletonCoffin.addEventListener('touchstart', (e) => {
+      setRed();
+      longPressFired = false;
+      clearTimeout(longPressT);
+      longPressT = setTimeout(() => {
+        const url = pickChestVideo();
+        if (url && window.VideoLightbox) {
+          longPressFired = true;
+          setDark();
+          window.VideoLightbox.open(url);
+        }
+      }, LONG_PRESS_MS);
+    }, { passive: true });
+    const endTouch = (e) => {
+      clearTimeout(longPressT);
+      setDark();
+      // If the long-press already fired and opened the video, swallow
+      // the pending click/tap so it doesn't do anything else.
+      if (longPressFired && e && e.cancelable) e.preventDefault();
+    };
+    skeletonCoffin.addEventListener('touchend', endTouch);
+    skeletonCoffin.addEventListener('touchcancel', endTouch);
+    skeletonCoffin.addEventListener('touchmove', () => clearTimeout(longPressT), { passive: true });
   };
   if (document.getElementById('skullEyeL')) wireSkeletonEyes();
   else document.addEventListener('art:loaded', wireSkeletonEyes, { once: true });

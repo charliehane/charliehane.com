@@ -1552,8 +1552,10 @@ html.video-lightbox-open .shovel-cursor {
   background: var(--cream);
   /* Horizontal padding uses max() so it stays >= cap-width + gutter on
      narrower desktops. Otherwise the end caps would extend past the
-     wrap and hit the viewport edge on ~1000-1200px screens. */
-  padding: 60px max(8vw, 200px) 140px;
+     wrap and hit the viewport edge on ~1000-1200px screens. Bottom
+     padding is small because the work-list section follows immediately
+     — Charlie: "I want these to feel more connected". */
+  padding: 60px max(8vw, 200px) 50px;
 }
 .reel-header { margin: 0 auto 40px; max-width: 1500px; }
 .reel-eyebrow {
@@ -1784,9 +1786,11 @@ html.video-lightbox-open .shovel-cursor {
    ============================================================ */
 .work-list {
   background: var(--cream);
-  padding: 40px max(8vw, 130px) 100px;
+  /* Sits flush with the reel section above so the two read as one
+     continuous "the work" block (Most Recent Work → The Rest). */
+  padding: 20px max(8vw, 130px) 100px;
 }
-.work-list-inner { max-width: 1200px; margin: 0 auto; }
+.work-list-inner { max-width: 1500px; margin: 0 auto; }
 .work-list-eyebrow {
   font-family: var(--mono);
   font-size: 12px;
@@ -1802,7 +1806,18 @@ html.video-lightbox-open .shovel-cursor {
   font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
   line-height: 0.95;
   letter-spacing: -0.02em;
-  margin: 0 0 32px;
+  margin: 0 0 14px;
+  color: var(--ink);
+}
+.work-list-subhead {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(16px, 1.6vw, 20px);
+  line-height: 1.4;
+  max-width: 48ch;
+  margin: 0 0 40px;
+  opacity: 0.72;
   color: var(--ink);
 }
 .work-list-group {

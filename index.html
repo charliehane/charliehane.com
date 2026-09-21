@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://use.typekit.net/yfy2byi.css">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="building-blocks/css/style.css?v=work-list" />
+  <link rel="stylesheet" href="building-blocks/css/style.css?v=work-list-by-role" />
 </head>
 <body class="page-landing">
 
@@ -116,42 +116,27 @@
     </template>
   </section>
 
-  <!-- ========== WORK LIST — flat index of everything for anyone who
-       wants to skip the interactive experience. Three collapsible groups
-       (open by default), each row opens the video in the shared
-       lightbox. ========== -->
+  <!-- ========== WORK LIST — flat index of everything, sitting flush
+       under the Most Recent Work reel so the two read as one continuous
+       "the work" block. Grouped by ROLE on set instead of site section,
+       so a film Charlie wrote/directed/edited/produced shows up in each
+       of those buckets. Buckets are built at runtime in landing.js from
+       preproduction.films + production.works + postproduction.coffins.
+       Each row opens the video in the shared lightbox. ========== -->
   <section class="work-list">
     <div class="work-list-inner">
-      <p class="work-list-eyebrow">— all the work, all in one place</p>
-      <h2 class="work-list-heading">The Work.</h2>
-
-      <details class="work-list-group" open>
-        <summary class="work-list-section-title">Preproduction</summary>
-        <div class="work-list-items"
-             data-template="workListItemTpl"
-             data-source="preproduction.films"></div>
-      </details>
-      <details class="work-list-group" open>
-        <summary class="work-list-section-title">Production</summary>
-        <div class="work-list-items"
-             data-template="workListItemTpl"
-             data-source="production.works"></div>
-      </details>
-      <details class="work-list-group" open>
-        <summary class="work-list-section-title">Postproduction</summary>
-        <div class="work-list-items"
-             data-template="workListItemTpl"
-             data-source="postproduction.coffins"></div>
-      </details>
+      <p class="work-list-eyebrow">— the rest, by role</p>
+      <h2 class="work-list-heading">The Rest of the Work.</h2>
+      <p class="work-list-subhead">Every video also lives somewhere in the ride, the sky, or the dirt. If you'd rather not go digging, here's the shortcut.</p>
+      <div id="workListGroups"></div>
     </div>
 
     <template id="workListItemTpl">
       <a class="work-list-item"
-         data-attr-href="youtubeUrl"
          target="_blank" rel="noopener noreferrer">
         <span class="work-list-item-body">
-          <span class="work-list-item-title" data-field="title"></span>
-          <span class="work-list-item-desc"  data-field="description"></span>
+          <span class="work-list-item-title"></span>
+          <span class="work-list-item-desc"></span>
         </span>
         <span class="work-list-item-play" aria-hidden="true">▶</span>
       </a>
@@ -260,6 +245,73 @@
       // .reel-thumb children exist by the time we bind.
       document.addEventListener('content:loaded', attach);
       if (window.__CONTENT__) attach();
+    })();
+
+    // Populate The Rest of the Work list — categorize every project
+    // by ROLE on set. A film Charlie both directed and edited shows
+    // up in both buckets. Same data as the interactive pages, just
+    // grouped differently for the plain-list fallback view.
+    (function populateWorkList() {
+      const bucketSpecs = [
+        // Order below is the order they render on the page.
+        { name: 'Producing',        test: (t) => /producer/i.test(t) || /assistant director/i.test(t) },
+        { name: 'Directing',        test: (t) => /director/i.test(t) && !/assistant director/i.test(t) },
+        { name: 'Writing',          test: (t) => /\bwriter\b/i.test(t) },
+        { name: 'Editing',          test: (t) => /\beditor\b/i.test(t) },
+        { name: 'VFX, Animation & Motion', test: (t) => /vfx|animator|motion graphics|graphic designer/i.test(t) },
+        { name: 'Camera & Crew',    test: (t) => /gaffer|camera operator|\bstar\b/i.test(t) },
+      ];
+      const build = () => {
+        const host = document.getElementById('workListGroups');
+        const tpl  = document.getElementById('workListItemTpl');
+        const data = window.__CONTENT__;
+        if (!host || !tpl || !data) return;
+        // Reset in case content:loaded fires more than once.
+        host.textContent = '';
+        // Fresh buckets each build.
+        const buckets = bucketSpecs.map(s => ({ ...s, items: [] }));
+        const all = [
+          ...(data.preproduction && data.preproduction.films   ? data.preproduction.films   : []),
+          ...(data.production    && data.production.works      ? data.production.works      : []),
+          ...(data.postproduction && data.postproduction.coffins ? data.postproduction.coffins : []),
+        ];
+        for (const item of all) {
+          const title = (item.title || '').trim();
+          if (!title) continue;
+          const dashIdx = title.lastIndexOf(' - ');
+          const roleStr = dashIdx >= 0 ? title.slice(dashIdx + 3) : '';
+          if (!roleStr) continue;
+          for (const bucket of buckets) {
+            if (bucket.test(roleStr)) bucket.items.push(item);
+          }
+        }
+        for (const bucket of buckets) {
+          if (!bucket.items.length) continue;
+          const details = document.createElement('details');
+          details.className = 'work-list-group';
+          details.open = true;
+          const summary = document.createElement('summary');
+          summary.className = 'work-list-section-title';
+          summary.textContent = bucket.name;
+          details.appendChild(summary);
+          const list = document.createElement('div');
+          list.className = 'work-list-items';
+          for (const item of bucket.items) {
+            const clone = tpl.content.cloneNode(true);
+            const a     = clone.querySelector('.work-list-item');
+            const tEl   = clone.querySelector('.work-list-item-title');
+            const dEl   = clone.querySelector('.work-list-item-desc');
+            a.setAttribute('href', item.youtubeUrl || '#');
+            tEl.textContent = item.title || '';
+            dEl.textContent = item.description || '';
+            list.appendChild(clone);
+          }
+          details.appendChild(list);
+          host.appendChild(details);
+        }
+      };
+      document.addEventListener('content:loaded', build);
+      if (window.__CONTENT__) build();
     })();
   </script>
 </body>

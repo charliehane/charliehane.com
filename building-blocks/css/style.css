@@ -1858,8 +1858,8 @@ html.video-lightbox-open .shovel-cursor {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  padding: 14px 0 16px;
+  gap: 18px;
+  padding: 12px 0;
   border-top: 1px solid rgba(26, 22, 20, 0.08);
   color: var(--ink);
   text-decoration: none;
@@ -1869,6 +1869,13 @@ html.video-lightbox-open .shovel-cursor {
   background: rgba(26, 22, 20, 0.04);
   padding-left: 8px;
   padding-right: 8px;
+}
+.work-list-thumb {
+  flex: 0 0 auto;
+  width: 96px;
+  aspect-ratio: 16 / 9;
+  background: #1a1a1a center / cover no-repeat;
+  border-radius: 3px;
 }
 .work-list-item-body {
   display: flex;
@@ -1911,8 +1918,9 @@ html.video-lightbox-open .shovel-cursor {
 
 @media (max-width: 700px) {
   .work-list { padding: 40px 6vw 80px; }
-  .work-list-heading { margin-bottom: 20px; }
+  .work-list-heading { margin-bottom: 14px; }
   .work-list-item { gap: 12px; }
+  .work-list-thumb { width: 68px; }
   .work-list-item-play { width: 28px; height: 28px; font-size: 10px; }
 }
 

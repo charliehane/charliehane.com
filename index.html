@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://use.typekit.net/yfy2byi.css">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="building-blocks/css/style.css?v=work-list-align" />
+  <link rel="stylesheet" href="building-blocks/css/style.css?v=work-list-thumbs" />
 </head>
 <body class="page-landing">
 
@@ -134,6 +134,7 @@
     <template id="workListItemTpl">
       <a class="work-list-item"
          target="_blank" rel="noopener noreferrer">
+        <span class="work-list-thumb" aria-hidden="true"></span>
         <span class="work-list-item-body">
           <span class="work-list-item-title"></span>
           <span class="work-list-item-desc"></span>
@@ -285,6 +286,33 @@
             if (bucket.test(roleStr)) bucket.items.push(item);
           }
         }
+        // Best-effort thumbnail URL per item. Same logic pattern as
+        // video-lightbox.js paintThumbs, inlined here so this section
+        // doesn't have to wait on video-lightbox's own scan.
+        const ytIdRE  = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|v\/))([A-Za-z0-9_-]{6,})/;
+        const vimRE   = /vimeo\.com\/(?:channels\/[^\/]+\/)?(\d+)/;
+        const VIMEO_CACHE = 'vimeoThumb:v2:';
+        const paintThumb = (thumbEl, item) => {
+          const url = item.youtubeUrl || '';
+          const manual = item.thumbnailUrl;
+          if (manual) { thumbEl.style.backgroundImage = `url("${manual}")`; return; }
+          const yt = url.match(ytIdRE);
+          if (yt) { thumbEl.style.backgroundImage = `url("https://i.ytimg.com/vi/${yt[1]}/hqdefault.jpg")`; return; }
+          if (vimRE.test(url)) {
+            const key = VIMEO_CACHE + url;
+            let cached = null;
+            try { cached = sessionStorage.getItem(key); } catch (_) {}
+            if (cached) { thumbEl.style.backgroundImage = `url("${cached}")`; return; }
+            fetch(`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(url)}`)
+              .then(r => r.ok ? r.json() : null)
+              .then(j => {
+                if (!j || !j.thumbnail_url) return;
+                try { sessionStorage.setItem(key, j.thumbnail_url); } catch (_) {}
+                thumbEl.style.backgroundImage = `url("${j.thumbnail_url}")`;
+              })
+              .catch(() => {});
+          }
+        };
         for (const bucket of buckets) {
           if (!bucket.items.length) continue;
           const details = document.createElement('details');
@@ -297,12 +325,14 @@
           list.className = 'work-list-items';
           for (const item of bucket.items) {
             const clone = tpl.content.cloneNode(true);
-            const a     = clone.querySelector('.work-list-item');
-            const tEl   = clone.querySelector('.work-list-item-title');
-            const dEl   = clone.querySelector('.work-list-item-desc');
+            const a       = clone.querySelector('.work-list-item');
+            const thumbEl = clone.querySelector('.work-list-thumb');
+            const tEl     = clone.querySelector('.work-list-item-title');
+            const dEl     = clone.querySelector('.work-list-item-desc');
             a.setAttribute('href', item.youtubeUrl || '#');
             tEl.textContent = item.title || '';
             dEl.textContent = item.description || '';
+            paintThumb(thumbEl, item);
             list.appendChild(clone);
           }
           details.appendChild(list);

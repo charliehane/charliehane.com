@@ -453,12 +453,16 @@
       const GAP = 60;                     // vertical air between items
       const TOP_PAD = 80;                 // grass-line breathing room
       const BOTTOM_PAD = 180;             // room before the .hell section
-      // The underground is absolutely positioned at top:calc(75vh + 32px)
-      // inside dig-world, so its available height = dig-world height minus
-      // that offset. If we don't add the offset back into dig-world's
-      // height, the underground can't fit the full coffin stack and the
-      // last coffin gets clipped (Charlie flagged this on iPhone).
-      const UNDERGROUND_OFFSET = window.innerHeight * 0.75 + 32;
+      // Measure the underground's offset inside dig-world dynamically
+      // (rather than hardcoding the CSS `top: calc(75vh + 32px)`) so
+      // this stays correct as coffins are added, on rotation, and if
+      // that CSS is ever tweaked. Underground fills bottom:0 → its
+      // available height = dig-world height − offset, so we add the
+      // measured offset into stackH to guarantee the whole stack fits
+      // no matter how many coffins Charlie adds.
+      const dwTop = digWorldHost.getBoundingClientRect().top;
+      const ugTop = undergroundHost.getBoundingClientRect().top;
+      const UNDERGROUND_OFFSET = ugTop - dwTop;
       const stackH = UNDERGROUND_OFFSET + TOP_PAD + N * cofH + (N - 1) * GAP + BOTTOM_PAD;
       digWorldHost.style.height = stackH + 'px';
       void digWorldHost.offsetHeight;
